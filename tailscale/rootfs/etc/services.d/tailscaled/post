@@ -7,9 +7,6 @@ declare -a addresses
 declare -a routes
 declare ipinfo
 
-# Start with a short sleep
-sleep 2
-
 # Find addresses from which we can extract routes can be advertised
 addresses+=($(bashio::network.ipv4_address || true))
 addresses+=($(bashio::network.ipv6_address || true))
@@ -20,6 +17,12 @@ for address in "${addresses[@]}"; do
     ipinfo="$(/usr/bin/ipcalc --json "${address}")"
     routes+=($(bashio::jq "${ipinfo}" '.NETWORK + "/" + .PREFIX'))
   fi
+done
+
+# Wait for socket to be available
+while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock";
+do
+  sleep 1
 done
 
 # Wait for the network to be available and logged in
@@ -38,5 +41,5 @@ do
     bashio::exit.ok
   fi
   # Well... wait a bit more
-  sleep 5
+  sleep 2
 done
