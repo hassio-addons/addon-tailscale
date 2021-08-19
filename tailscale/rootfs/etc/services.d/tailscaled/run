@@ -9,8 +9,8 @@ bashio::log.info 'Starting Tailscale...'
 
 options+=(--state=/data/tailscaled.state)
 
-# Trigger post-login process to run
-./post-login &
+# Trigger post process to run, after stuff got connected
+./post &
 
 # Run Tailscale
 exec /opt/tailscaled "${options[@]}"
