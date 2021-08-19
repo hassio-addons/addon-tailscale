@@ -3,14 +3,24 @@
 # Home Assistant Community Add-on: Tailscale
 # Runs after the machine has been logged in into the Tailscale network
 # ==============================================================================
+declare -a addresses
 declare -a routes
+declare ipinfo
 
 # Start with a short sleep
 sleep 2
 
-# Find routes that can be advertised
-routes+=($(bashio::network.ipv4_address || true))
-routes+=($(bashio::network.ipv6_address || true))
+# Find addresses from which we can extract routes can be advertised
+addresses+=($(bashio::network.ipv4_address || true))
+addresses+=($(bashio::network.ipv6_address || true))
+routes=()
+
+for address in "${addresses[@]}"; do
+  if bashio::var.has_value "${address}"; then
+    ipinfo="$(/usr/bin/ipcalc --json "${address}")"
+    routes+=($(bashio::jq "${ipinfo}" '.NETWORK + "/" + .PREFIX'))
+  fi
+done
 
 # Wait for the network to be available and logged in
 while true;

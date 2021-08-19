@@ -9,6 +9,8 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG BUILD_ARCH=amd64
 RUN \
     apk add --no-cache \
+        ip6tables=1.8.7-r1 \
+        ipcalc=1.0.1-r0 \
         iproute2=5.12.0-r0 \
         iptables=1.8.7-r1 \
         nginx=1.20.1-r3 \
