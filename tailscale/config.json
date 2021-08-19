@@ -8,7 +8,7 @@
   "ingress_port": 0,
   "ingress_stream": true,
   "startup": "services",
-  "panel_icon": "mdi:docker",
+  "panel_icon": "mdi:vpn",
   "arch": ["aarch64", "amd64", "armhf", "armv7", "i386"],
   "init": false,
   "hassio_api": true,
