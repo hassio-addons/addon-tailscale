@@ -1,7 +1,5 @@
 # Home Assistant Community Add-on: Tailscale
 
-Zero config VPN for building secure networks.
-
 Tailscale is a zero config VPN, which installs on any device in minutes on
 any device, including your Home Assistant instance.
 
@@ -9,18 +7,42 @@ Create a secure network between your servers, computers, and cloud instances.
 Even when separated by firewalls or subnets, Tailscale just works. Tailscale
 manages firewall rules for you, and works from anywhere you are.
 
+## Prerequisites
+
+In order to use this add-on, you'll need a Tailscale account.
+
+It is free to use for personal & hobby projects, up to 20 clients/devices on a
+single user account. Sign up using your Google, Microsoft or GitHub account at
+the following URL:
+
+<https://login.tailscale.com/start>
+
+You can also create an account during the add-on installation processes,
+however, it is nice to know where you need to go later on.
+
 ## Installation
 
 1. Search for the "Tailscale" add-on in the Supervisor add-on store and
    install it.
 1. Start the "Tailscale" add-on.
 1. Check the logs of the "Tailscale" add-on to see if everything went well.
-1. Open the Web UI of the "Tailscale" add-on to complete authentication.
+1. Open the Web UI of the "Tailscale" add-on to complete authentication and
+   couple your Home Assistant instance with your Tailscale account.
 1. Done!
 
 ## Configuration
 
 This add-on has no additional configuration options for the add-on itself.
+
+However, when logging in to Tailscale, you can configure your Tailscale
+network right from their interface.
+
+<https://login.tailscale.com/>
+
+The add-on exposes "Exit Node" capabilities that you can enable from your
+Tailscale account. Additionally, if the Supervisor managed your network (
+which is the default), the add-on will also advertise routes to your
+subnet to Tailscale.
 
 ## Changelog & Releases
 
