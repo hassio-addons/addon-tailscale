@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Runs the Nginx daemon
+# ==============================================================================
+
+# Wait for the Tailscale webinterface to become available
+bashio::net.wait_for 25899 localhost 900
+
+bashio::log.info "Starting NGinx..."
+exec nginx
