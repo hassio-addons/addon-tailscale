@@ -15,6 +15,8 @@ RUN \
         iptables=1.8.7-r1 \
         nginx=1.20.1-r3 \
     \
+    && ln -sf /sbin/xtables-nft-multi /sbin/ip6tables \
+    \
     && if [ "${BUILD_ARCH}" = "aarch64" ]; then ARCH="arm64"; fi \
     && if [ "${BUILD_ARCH}" = "armhf" ]; then ARCH="arm"; fi \
     && if [ "${BUILD_ARCH}" = "armv7" ]; then ARCH="arm"; fi \
