@@ -1,0 +1,16 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Runs tailscale
+# ==============================================================================
+declare -a options
+
+bashio::log.info 'Starting Tailscale...'
+
+options+=(--state=/data/tailscaled.state)
+
+# Trigger post-login process to run
+./post-login &
+
+# Run Tailscale
+exec /opt/tailscaled "${options[@]}"

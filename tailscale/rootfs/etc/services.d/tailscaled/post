@@ -1,0 +1,32 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Runs after the machine has been logged in into the Tailscale network
+# ==============================================================================
+declare -a routes
+
+# Start with a short sleep
+sleep 2
+
+# Find routes that can be advertised
+routes+=($(bashio::network.ipv4_address || true))
+routes+=($(bashio::network.ipv6_address || true))
+
+# Wait for the network to be available and logged in
+while true;
+do
+  if /opt/tailscale status --json --peers false --self false \
+    | jq --exit-status '.BackendState == "Running"';
+  then
+    IFS=","
+    /opt/tailscale up \
+      --hostname "$(bashio::info.hostname)" \
+      --advertise-exit-node \
+      --accept-routes \
+      --advertise-routes "${routes[*]}"
+
+    bashio::exit.ok
+  fi
+  # Well... wait a bit more
+  sleep 5
+done
