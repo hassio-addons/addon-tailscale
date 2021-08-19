@@ -115,7 +115,7 @@ SOFTWARE.
 [github-actions]: https://github.com/hassio-addons/addon-tailscale/actions
 [github-sponsors-shield]: https://frenck.dev/wp-content/uploads/2019/12/github_sponsor.png
 [github-sponsors]: https://github.com/sponsors/frenck
-[i386-shield]: https://img.shields.io/badge/i386-no-red.svg
+[i386-shield]: https://img.shields.io/badge/i386-yes-green.svg
 [issue]: https://github.com/hassio-addons/addon-tailscale/issues
 [license-shield]: https://img.shields.io/github/license/hassio-addons/addon-tailscale.svg
 [maintenance-shield]: https://img.shields.io/maintenance/yes/2021.svg
