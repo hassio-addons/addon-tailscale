@@ -14,6 +14,12 @@ routes=()
 
 for address in "${addresses[@]}"; do
   if bashio::var.has_value "${address}"; then
+    # Skip local link addresses
+    if [[ "${address:0:6}" == "fe80::" ]] || [[ "${address:0:8}" == "169.254." ]];
+    then
+      continue
+    fi
+    
     ipinfo="$(/usr/bin/ipcalc --json "${address}")"
     routes+=($(bashio::jq "${ipinfo}" '.NETWORK + "/" + .PREFIX'))
   fi
