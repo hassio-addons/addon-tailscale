@@ -19,7 +19,15 @@ for address in "${addresses[@]}"; do
     then
       continue
     fi
-    
+
+    # Skip if forwarding for the address family is disabled
+    if [[ "${address}" =~ .*:.* ]];
+    then
+      [[ $(</proc/sys/net/ipv6/conf/all/forwarding) -eq 0 ]] && continue
+    else
+      [[ $(</proc/sys/net/ipv4/ip_forward) -eq 0 ]] && continue
+    fi
+
     ipinfo="$(/usr/bin/ipcalc --json "${address}")"
     routes+=($(bashio::jq "${ipinfo}" '.NETWORK + "/" + .PREFIX'))
   fi
