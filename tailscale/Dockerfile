@@ -13,7 +13,7 @@ RUN \
         ipcalc=1.0.1-r0 \
         iproute2=5.12.0-r0 \
         iptables=1.8.7-r1 \
-        nginx=1.20.1-r3 \
+        nginx=1.20.2-r0 \
     \
     && ln -sf /sbin/xtables-nft-multi /sbin/ip6tables \
     && ln -sf /sbin/xtables-nft-multi /sbin/iptables \
