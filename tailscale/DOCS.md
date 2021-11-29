@@ -47,8 +47,8 @@ subnet to Tailscale.
 
 ```yaml
 tags:
- - tag:example
- - tag:homeassistant
+  - tag:example
+  - tag:homeassistant
 ```
 
 #### Option: `tags`
