@@ -6,6 +6,7 @@
 declare -a addresses
 declare -a routes
 declare ipinfo
+declare tags
 
 # Find addresses from which we can extract routes can be advertised
 addresses+=($(bashio::network.ipv4_address || true))
@@ -33,6 +34,9 @@ for address in "${addresses[@]}"; do
   fi
 done
 
+# Get configured tags
+tags=$(bashio::config "tags | join(\",\")" "")
+
 # Wait for socket to be available
 while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock";
 do
@@ -50,7 +54,8 @@ do
       --hostname "$(bashio::info.hostname)" \
       --advertise-exit-node \
       --accept-routes \
-      --advertise-routes "${routes[*]}"
+      --advertise-routes "${routes[*]}" \
+      --advertise-tags="${tags}"
 
     bashio::exit.ok
   fi
