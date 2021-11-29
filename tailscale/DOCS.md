@@ -51,7 +51,7 @@ tags:
   - tag:homeassistant
 ```
 
-#### Option: `tags`
+### Option: `tags`
 
 This option allows you to specify specific ACL tags for this Tailscale
 instance. They need to start with `tag:`.
