@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:10.2.3
+ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:11.0.0
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
@@ -11,7 +11,7 @@ RUN \
     apk add --no-cache \
         ip6tables=1.8.7-r1 \
         ipcalc=1.0.1-r0 \
-        iproute2=5.12.0-r0 \
+        iproute2=5.15.0-r0 \
         iptables=1.8.7-r1 \
         nginx=1.20.2-r0 \
     \
