@@ -47,7 +47,7 @@ done
 while true;
 do
   if /opt/tailscale status --json --peers false --self false \
-    | jq --exit-status '.BackendState == "Running"';
+    | jq --exit-status '.BackendState == "Running" or .BackendState == "NeedsLogin"';
   then
     IFS=","
     /opt/tailscale up \
