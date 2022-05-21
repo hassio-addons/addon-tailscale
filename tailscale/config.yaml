@@ -20,7 +20,6 @@ init: false
 map:
   - ssl:rw
 options:
-  request_cert: false
   certfile: fullchain.pem
   keyfile: privkey.pem
 hassio_api: true
@@ -31,7 +30,6 @@ devices:
 host_network: true
 schema:
   tags: ["match(^tag:[a-zA-Z0-9]-?[a-zA-Z0-9]+$)?"]
-  request_cert: bool
   domain_alias: match(^[a-z0-9][a-z0-9\-_]{0,61}\.ts\.net$)?
   certfile: str
   keyfile: str

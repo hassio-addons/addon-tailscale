@@ -4,10 +4,9 @@
 # Runs tailscale cert periodically
 # ==============================================================================
 
-# Request TLS certificate if configured
+# Request TLS certificate if domain_alias is set
 tailscale_cert() {
-  if bashio::config.true 'request_cert'; then
-    bashio::config.require 'domain_alias'
+  if bashio::config.has_value 'domain_alias'; then
     /opt/tailscale cert \
       --cert-file "/ssl/$(bashio::config 'certfile')" \
       --key-file "/ssl/$(bashio::config 'keyfile')" \
@@ -15,7 +14,7 @@ tailscale_cert() {
   fi
 }
 
-cert_err='Error running `tailscale cert`. Visit https://tailscale.com/kb/1153/enabling-https/ to setup HTTPS.'
+cert_err='Error running "tailscale cert". Visit https://tailscale.com/kb/1153/enabling-https/ to setup HTTPS.'
 
 if ! tailscale_cert; then
   bashio::exit.nok "$cert_err"
