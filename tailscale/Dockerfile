@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:11.1.2
+ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:12.0.0
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
@@ -9,11 +9,11 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG BUILD_ARCH=amd64
 RUN \
     apk add --no-cache \
-        ip6tables=1.8.7-r1 \
+        ip6tables=1.8.8-r1 \
         ipcalc=1.0.1-r0 \
-        iproute2=5.15.0-r0 \
-        iptables=1.8.7-r1 \
-        nginx=1.20.2-r1 \
+        iproute2=5.17.0-r0 \
+        iptables=1.8.8-r1 \
+        nginx=1.22.0-r0 \
     \
     && ln -sf /sbin/xtables-nft-multi /sbin/ip6tables \
     && ln -sf /sbin/xtables-nft-multi /sbin/iptables \
