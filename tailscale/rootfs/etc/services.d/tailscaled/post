@@ -46,7 +46,7 @@ done
 # Wait for the network to be available and logged in
 while true;
 do
-  if /opt/tailscale status --json --peers false --self false \
+  if /opt/tailscale status --json --peers=false --self=false \
     | jq --exit-status '.BackendState == "Running" or .BackendState == "NeedsLogin"';
   then
     IFS=","
@@ -54,7 +54,7 @@ do
       --hostname "$(bashio::info.hostname)" \
       --advertise-exit-node \
       --accept-routes \
-      --advertise-routes "${routes[*]}" \
+      --advertise-routes="${routes[*]}" \
       --advertise-tags="${tags}"
 
     bashio::exit.ok
