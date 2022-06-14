@@ -8,8 +8,8 @@
 tailscale_cert() {
   if bashio::config.has_value 'domain_alias'; then
     /opt/tailscale cert \
-      --cert-file "/ssl/$(bashio::config 'certfile')" \
-      --key-file "/ssl/$(bashio::config 'keyfile')" \
+      --cert-file "/ssl/tailscale/fullchain.pem" \
+      --key-file "/ssl/tailscale/privkey.pem" \
       "$(bashio::info.hostname).$(bashio::config 'domain_alias')"
   fi
 }

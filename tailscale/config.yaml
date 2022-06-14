@@ -19,9 +19,6 @@ arch:
 init: false
 map:
   - ssl:rw
-options:
-  certfile: fullchain.pem
-  keyfile: privkey.pem
 hassio_api: true
 privileged:
   - NET_ADMIN
@@ -31,5 +28,3 @@ host_network: true
 schema:
   tags: ["match(^tag:[a-zA-Z0-9]-?[a-zA-Z0-9]+$)?"]
   domain_alias: match(^[a-z0-9][a-z0-9\-_]{0,61}\.ts\.net$)?
-  certfile: str
-  keyfile: str
