@@ -3,14 +3,18 @@
 # Home Assistant Community Add-on: Tailscale
 # Runs after the machine has been logged in into the Tailscale network
 # ==============================================================================
+declare -a interfaces
 declare -a addresses
 declare -a routes
 declare ipinfo
 declare tags
 
-# Find addresses from which we can extract routes can be advertised
-addresses+=($(bashio::network.ipv4_address || true))
-addresses+=($(bashio::network.ipv6_address || true))
+# Find interfaces and matching addresses from which we can extract routes to be advertised
+interfaces+=($(bashio::network.interfaces))
+for interface in "${interfaces[@]}"; do
+    addresses+=($(bashio::network.ipv4_address "${interface}"))
+    addresses+=($(bashio::network.ipv6_address "${interface}"))
+done
 routes=()
 
 for address in "${addresses[@]}"; do
