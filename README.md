@@ -1,4 +1,5 @@
-# This is fork of https://github.com/hassio-addons/addon-tailscale
+# This is fork of 
+https://github.com/hassio-addons/addon-tailscale
 
 ![Supports aarch64 Architecture][aarch64-shield]
 ![Supports amd64 Architecture][amd64-shield]
@@ -10,6 +11,9 @@ Zero config VPN for building secure networks.
 
 ## About
 
+I've made it for myself, to keep updated versions of packages, but if anyone is interested you can check it out, i will try to keep it on newest versions possible.
+This is my first github repository fork so please be kind ;)
+
 Updated:
 - tailscale to 1.35.30
 - alpine linux to 3.17 (base addon to v13.0.0)
@@ -18,9 +22,6 @@ Updated:
 - iproute2 to 6.0.0-r1
 - iptables to 1.8.8-r2
 - nginx to 1.22.1-r0
-
-I've made it for myself, to keep updated versions of packages, but if anyone is interested you can check it out, i will try to keep it on newest versions possible.
-This is my first github repository fork so please be kind ;)
 
 To use it you need to 
 - add this repository, 
