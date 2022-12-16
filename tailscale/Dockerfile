@@ -21,8 +21,8 @@ RUN \
     && if [ "${BUILD_ARCH}" = "aarch64" ]; then ARCH="arm64"; fi \
     && if [ "${BUILD_ARCH}" = "armhf" ]; then ARCH="arm"; fi \
     && if [ "${BUILD_ARCH}" = "armv7" ]; then ARCH="arm"; fi \
-    && if [ "${BUILD_ARCH}" = "x86_64" ]; then ARCH="amd64"; fi \
-    && if [ "${BUILD_ARCH}" = "x86" ]; then ARCH="386"; fi \
+    && if [ "${BUILD_ARCH}" = "amd64" ]; then ARCH="amd64"; fi \
+    && if [ "${BUILD_ARCH}" = "i386" ]; then ARCH="386"; fi \
     \
     && curl -L -s \
         "https://pkgs.tailscale.com/unstable/tailscale_1.35.30_${ARCH}.tgz" \
