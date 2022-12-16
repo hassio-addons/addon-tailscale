@@ -8,7 +8,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Setup base
 ARG BUILD_ARCH=amd64
 RUN \
-    apk add \
+    apk add --update \
         ip6tables=1.8.8-r2 \
         ipcalc=1.0.1-r1 \
         iproute2=6.1.0-r0 \
@@ -21,8 +21,8 @@ RUN \
     && if [ "${BUILD_ARCH}" = "aarch64" ]; then ARCH="arm64"; fi \
     && if [ "${BUILD_ARCH}" = "armhf" ]; then ARCH="arm"; fi \
     && if [ "${BUILD_ARCH}" = "armv7" ]; then ARCH="arm"; fi \
-    && if [ "${BUILD_ARCH}" = "amd64" ]; then ARCH="amd64"; fi \
-    && if [ "${BUILD_ARCH}" = "i386" ]; then ARCH="386"; fi \
+    && if [ "${BUILD_ARCH}" = "x86_64" ]; then ARCH="amd64"; fi \
+    && if [ "${BUILD_ARCH}" = "x86" ]; then ARCH="386"; fi \
     \
     && curl -L -s \
         "https://pkgs.tailscale.com/unstable/tailscale_1.35.30_${ARCH}.tgz" \
