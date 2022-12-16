@@ -1,8 +1,4 @@
-# Home Assistant Community Add-on: Tailscale
-
-[![GitHub Release][releases-shield]][releases]
-![Project Stage][project-stage-shield]
-[![License][license-shield]](LICENSE.md)
+# This is fork of https://github.com/hassio-addons/addon-tailscale
 
 ![Supports aarch64 Architecture][aarch64-shield]
 ![Supports amd64 Architecture][amd64-shield]
@@ -10,68 +6,26 @@
 ![Supports armv7 Architecture][armv7-shield]
 ![Supports i386 Architecture][i386-shield]
 
-[![Github Actions][github-actions-shield]][github-actions]
-![Project Maintenance][maintenance-shield]
-[![GitHub Activity][commits-shield]][commits]
-
-[![Discord][discord-shield]][discord]
-[![Community Forum][forum-shield]][forum]
-
-[![Sponsor Frenck via GitHub Sponsors][github-sponsors-shield]][github-sponsors]
-
-[![Support Frenck on Patreon][patreon-shield]][patreon]
-
 Zero config VPN for building secure networks.
 
 ## About
 
-Tailscale is a zero config VPN, which installs on any device in minutes,
-including your Home Assistant instance.
+Updated:
+- tailscale to 1.35.30
+- alpine linux to 3.17 (base addon to v13.0.0)
+- ip6tables to 1.8.8-r2
+- ipcalc to 1.0.1-r1
+- iproute2 to 6.0.0-r1
+- iptables to 1.8.8-r2
+- nginx to 1.22.1-r0
 
-Create a secure network between your servers, computers, and cloud instances.
-Even when separated by firewalls or subnets, Tailscale just works. Tailscale
-manages firewall rules for you, and works from anywhere you are.
+I've made it for myself, to keep updated versions of packages, but if anyone is interested you can check it out, i will try to keep it on newest versions possible.
+This is my first github repository fork so please be kind ;)
 
-[:books: Read the full add-on documentation][docs]
-
-## Support
-
-Got questions?
-
-You have several options to get them answered:
-
-- The [Home Assistant Community Add-ons Discord chat server][discord] for add-on
-  support and feature requests.
-- The [Home Assistant Discord chat server][discord-ha] for general Home
-  Assistant discussions and questions.
-- The Home Assistant [Community Forum][forum].
-- Join the [Reddit subreddit][reddit] in [/r/homeassistant][reddit]
-
-You could also [open an issue here][issue] GitHub.
-
-## Contributing
-
-This is an active open-source project. We are always open to people who want to
-use the code or contribute to it.
-
-We have set up a separate document containing our
-[contribution guidelines](,github/CONTRIBUTING.md).
-
-Thank you for being involved! :heart_eyes:
-
-## Authors & contributors
-
-The original setup of this repository is by [Franck Nijhof][frenck].
-
-For a full list of all authors and contributors,
-check [the contributor's page][contributors].
-
-## We have got some Home Assistant add-ons for you
-
-Want some more functionality to your Home Assistant instance?
-
-We have created multiple add-ons for Home Assistant. For a full list, check out
-our [GitHub Repository][repository].
+To use it you need to 
+- add this repository, 
+- install addon Tailscale-unstable from it, 
+- remove official one and reauthenticate
 
 ## License
 
