@@ -8,7 +8,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Setup base
 ARG BUILD_ARCH=amd64
 RUN \
-    apk add --no-cache \
+    apk add \
         ip6tables=1.8.8-r2 \
         ipcalc=1.0.1-r1 \
         iproute2=6.1.0-r0 \
