@@ -1,0 +1,6 @@
+channel: dev
+addons:
+  tailscale-unstable:
+    repository: lakafior/addon-tailscale
+    target: tailscale-unstable
+    image: ghcr.io/hassio-addons/tailscale/{arch}
