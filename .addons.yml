@@ -1,4 +1,4 @@
-channel: dev
+channel: edge
 addons:
   tailscale-unstable:
     repository: lakafior/addon-tailscale
