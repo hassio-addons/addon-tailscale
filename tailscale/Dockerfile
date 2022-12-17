@@ -25,7 +25,7 @@ RUN \
     && if [ "${BUILD_ARCH}" = "i386" ]; then ARCH="386"; fi \
     \
     && curl -L -s \
-        "https://pkgs.tailscale.com/unstable/tailscale_1.35.30_${ARCH}.tgz" \
+        "https://pkgs.tailscale.com/unstable/tailscale_1.35.69_${ARCH}.tgz" \
         | tar zxvf - -C /opt/ --strip-components 1 \
     \
     && rm -f -r \
