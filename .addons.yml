@@ -1,6 +1,6 @@
 channel: edge
 addons:
-  tailscale-unstable:
+  tailscale:
     repository: lakafior/addon-tailscale
-    target: tailscale-unstable
+    target: tailscale
     image: ghcr.io/hassio-addons/tailscale/{arch}
