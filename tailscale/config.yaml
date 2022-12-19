@@ -1,9 +1,9 @@
 ---
-name: Tailscale-unstable
-version: dev
-slug: tailscale-unstable
+name: Tailscale-hassio
+version: "0.0.5"
+slug: tailscale-hassio
 description: Zero config VPN for building secure networks
-url: https://github.com/lakafior/addon-tailscale
+url: https://github.com/lakafior/lakafiors-hassio
 codenotary: mar@mar.ovh
 ingress: true
 ingress_port: 0
