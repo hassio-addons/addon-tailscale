@@ -15,7 +15,7 @@ I've made it for myself, to keep updated versions of packages, but if anyone is 
 This is my first github repository fork so please be kind ;)
 
 Updated:
-- tailscale to 1.35.69
+- tailscale to 1.35.84
 - alpine linux to 3.17 (base addon to v13.0.0)
 - ip6tables to 1.8.8-r2
 - ipcalc to 1.0.1-r1

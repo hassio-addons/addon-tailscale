@@ -1,6 +1,6 @@
 ---
 name: Tailscale-hassio
-version: "0.0.5"
+version: "0.0.6"
 slug: tailscale
 description: Zero config VPN for building secure networks
 url: https://github.com/lakafior/addon-tailscale
