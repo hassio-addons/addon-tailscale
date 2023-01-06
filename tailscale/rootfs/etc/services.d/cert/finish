@@ -1,0 +1,11 @@
+#!/usr/bin/execlineb -S0
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Take down the S6 supervision tree when Tailscale cert fails
+# ==============================================================================
+if [[ "${1}" -ne 0 ]] && [[ "${1}" -ne 256 ]]; then
+  bashio::log.warning "tailscale cert crashed, halting add-on"
+  /run/s6/basedir/bin/halt
+fi
+
+bashio::log.info "tailscale cert stopped, restarting..."

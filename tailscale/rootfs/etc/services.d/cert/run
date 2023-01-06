@@ -1,0 +1,30 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Runs tailscale cert periodically
+# ==============================================================================
+
+# Request TLS certificate if cert_domain is set
+tailscale_cert() {
+  if bashio::config.has_value 'cert_domain'; then
+    /opt/tailscale cert \
+      --cert-file "/ssl/tailscale/fullchain.pem" \
+      --key-file "/ssl/tailscale/privkey.pem" \
+      "$(bashio::info.hostname).$(bashio::config 'cert_domain')"
+  fi
+}
+
+cert_err='Error running "tailscale cert". Visit https://tailscale.com/kb/1153/enabling-https/ to setup HTTPS.'
+
+if ! tailscale_cert; then
+  bashio::exit.nok "$cert_err"
+fi
+
+bashio::log.info 'Starting Tailscale TLS certificate fetcher...'
+
+while true; do
+  if ! tailscale_cert; then
+    bashio::log.error "$cert_err"
+  fi
+  sleep 86400 # Fetch certs once a day
+done
