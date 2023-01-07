@@ -25,9 +25,14 @@ fi
 
 bashio::log.info 'Starting Tailscale TLS certificate fetcher...'
 
-while true; do
-  if ! tailscale_cert; then
-    bashio::log.error "$cert_err"
+while true;
+do
+  # Fetch certs once a day
+  sleep 86400
+  # Fetch only if expiration is within 1 week
+  if ! openssl x509 -checkend 604800 -noout -in /ssl/tailscale/fullchain.pem > /dev/null; then
+    if ! tailscale_cert; then
+      bashio::log.error "$cert_err"
+    fi
   fi
-  sleep 86400 # Fetch certs once a day
 done
