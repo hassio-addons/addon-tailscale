@@ -7,6 +7,9 @@
 # Request TLS certificate if cert_domain is set
 tailscale_cert() {
   if bashio::config.has_value 'cert_domain'; then
+    if ! bashio::fs.directory_exists "/ssl/tailscale"; then
+        mkdir -p "/ssl/tailscale"
+    fi
     /opt/tailscale cert \
       --cert-file "/ssl/tailscale/fullchain.pem" \
       --key-file "/ssl/tailscale/privkey.pem" \

@@ -7,7 +7,7 @@ declare -a options
 
 bashio::log.info 'Starting Tailscale...'
 
-options+=(--state=/data/tailscaled.state)
+options+=(--statedir=/data)
 options+=(--tun=userspace-networking)
 
 # Trigger post process to run, after stuff got connected
