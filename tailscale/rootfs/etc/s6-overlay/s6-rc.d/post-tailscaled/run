@@ -36,7 +36,7 @@ for address in "${addresses[@]}"; do
 done
 
 # Get configured tags
-tags=$(bashio::config "tags | join(\",\")" "")
+tags=$(bashio::config "tags//[] | join(\",\")" "")
 
 # Wait for socket to be available
 while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock";
