@@ -74,8 +74,8 @@ This option (if set) configures tailscale to provision TLS certificates. The for
 1. Go to [DNS tab](https://login.tailscale.com/admin/dns) in Tailscale's admin page
 2. Choose a **Tailnet name** and click **Enable HTTPS** under HTTPS Certificates
 3. Find your Home-Assistant in the [Machines tab](https://login.tailscale.com/admin/machines) and note under which name your device is reachable
-4. Your device should now be reachable under `https://<device-name>.<tailnet-domain-alias>.ts.net` (but with an invalid ssl certificate)
-5. Go to the **Configuration tab** of this add-on and set the above domain at `cert_domain:` (only the domain, without the machine name)
+4. Your device should now be reachable under `https://<machine-name>.<tailnet-name>.ts.net` (but with an invalid ssl certificate)
+5. Go to the **Configuration tab** of this add-on and set the above domain at `cert_domain:` (only the domain `<tailnet-name>.ts.net`, without the machine name)
 6. Restart the add-on, you should now have two new files under `/ssl/tailscale` which you can use to configure any webserver
 7. Visit again the above domain, you should have now a valid ssl certificate (if you encounter strange browser behaviour or strange error messages, try to clear all site related cookies, clear all browser cache, restart browser)
 
