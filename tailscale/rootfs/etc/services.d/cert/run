@@ -4,16 +4,16 @@
 # Runs tailscale cert periodically
 # ==============================================================================
 
-# Request TLS certificate if cert_domain is set
+# Request TLS certificate if certificate_tailnet_name is set
 tailscale_cert() {
-  if bashio::config.has_value 'cert_domain'; then
+  if bashio::config.has_value 'certificate_tailnet_name'; then
     if ! bashio::fs.directory_exists "/ssl/tailscale"; then
         mkdir -p "/ssl/tailscale"
     fi
     /opt/tailscale cert \
       --cert-file "/ssl/tailscale/fullchain.pem" \
       --key-file "/ssl/tailscale/privkey.pem" \
-      "$(bashio::info.hostname).$(bashio::config 'cert_domain')"
+      "$(bashio::info.hostname).$(bashio::config 'certificate_tailnet_name')"
   fi
 }
 
