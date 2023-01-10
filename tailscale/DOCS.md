@@ -30,10 +30,12 @@ however, it is nice to know where you need to go later on.
 1. Click the "Install" button to install the add-on.
 1. Start the "Tailscale" add-on.
 1. Check the logs of the "Tailscale" add-on to see if everything went well.
-1. Open the Web UI of the "Tailscale" add-on to complete authentication and
+1. Open the **Web UI** of the "Tailscale" add-on to complete authentication and
    couple your Home Assistant instance with your Tailscale account.
-   **Note:** Some browsers don't work with this step. It is recommended to
-   complete this step on a desktop or laptop computer using the Chrome browser.
+   
+   **Note:** _Some browsers don't work with this step. It is recommended to
+   complete this step on a desktop or laptop computer using the Chrome browser._
+
 1. Done!
 
 ## Configuration
