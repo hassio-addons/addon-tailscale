@@ -121,6 +121,47 @@ When not set, this option is enabled by default.
 
 Received files are stored in the `/share/taildrop` directory.
 
+## Tailscale Proxy
+
+Tailscale can provide a TLS certificate for your Home Assistant device within
+your tailnet domain.
+
+This can prevent browsers to warn that HTTP URLs to your Home Assistant device
+look unencrypted (browsers are not aware of that connections between Tailscale
+nodes are secured with end-to-end encryption).
+
+More information: [Enabling HTTPS][tailscale_info_https]
+
+1. Configure Home Assistant to be accessible through HTTP connection (this is
+   the default). See [HTTP integration documentation][http_integration] for more
+   information. If you still want to use another HTTPS connection to access Home
+   Assistant, please use a reverse proxy add-on.
+
+1. Home Assistant, by default, blocks requests from reverse proxies, like the
+   Tailscale Proxy. In order to enable it, add the following lines to your
+   `configuration.yaml`, without changing anything:
+
+   ```yaml
+   http:
+     use_x_forwarded_for: true
+     trusted_proxies:
+       - 127.0.0.1
+   ```
+
+1. Navigate to the [DNS page][tailscale_dns] of the admin console:
+
+   - Choose a Tailnet name.
+
+   - Enable MagicDNS if not already enabled.
+
+   - Under HTTPS Certificates section, click Enable HTTPS.
+
+1. Restart the add-on.
+
+**Note:** _You should not use any port number in the url that you used
+previously to access Home Assistant. Tailscale Proxy works on the default HTTPS
+port 443._
+
 ## Changelog & Releases
 
 This repository keeps a change log using [GitHub's releases][releases]
@@ -188,9 +229,12 @@ SOFTWARE.
 [forum]: https://community.home-assistant.io/?u=frenck
 [frenck]: https://github.com/frenck
 [headscale]: https://github.com/juanfont/headscale
+[http_integration]: https://www.home-assistant.io/integrations/http/
 [issue]: https://github.com/hassio-addons/addon-tailscale/issues
 [reddit]: https://reddit.com/r/homeassistant
 [releases]: https://github.com/hassio-addons/addon-tailscale/releases
 [semver]: https://semver.org/spec/v2.0.0.html
 [taildrop]: https://tailscale.com/taildrop/
+[tailscale_dns]: https://login.tailscale.com/admin/dns
+[tailscale_info_https]: https://tailscale.com/kb/1153/enabling-https/
 [tailscale_info_key_expiry]: https://tailscale.com/kb/1028/key-expiry/
