@@ -11,7 +11,7 @@ server {
         proxy_pass http://backend;
 
         sub_filter_once off;
-        sub_filter 'document.location.href = url' 'var result = window.open(url, "_blank"); if (result!== null) {result.focus()} else {document.write(\'<font color=white>Unable to open Tailscale in new window.  Please copy this URL; open in a separate browser; and re-load the addon Web UI here when complete.   <a href="\' + url + \'">\'+url+\'</a></font>\')}';
+        sub_filter 'document.location.href = url' 'var result = window.open(url, "_blank"); if (result!== null) {result.focus()} else {document.write(\'<div style="background-color:white"><font color=black>Unable to open Tailscale in new window.  Please copy this URL; open in a separate browser; and re-load the addon Web UI here when complete.   <a href="\' + url + \'">\'+url+\'</a></font></div>\')}';
 
     }
 }
