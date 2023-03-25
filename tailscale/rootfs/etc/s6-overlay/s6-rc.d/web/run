@@ -1,8 +1,9 @@
 #!/command/with-contenv bashio
+# shellcheck shell=bash
 # ==============================================================================
 # Home Assistant Community Add-on: Tailscale
 # Runs tailscale web interface
-# ==============================================================================
+# =============================================================================
 declare -a options
 
 bashio::log.info 'Starting Tailscale web...'
