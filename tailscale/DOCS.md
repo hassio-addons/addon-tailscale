@@ -34,7 +34,6 @@ however, it is nice to know where you need to go later on.
    couple your Home Assistant instance with your Tailscale account.
    **Note:** Some browsers don't work with this step. It is recommended to
    complete this step on a desktop or laptop computer using the Chrome browser.
-
 1. Done!
 
 ## Configuration
