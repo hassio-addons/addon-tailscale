@@ -36,7 +36,7 @@ for address in "${addresses[@]}"; do
 done
 
 # Get configured tags
-tags=$(bashio::config "tags | join(\",\")" "")
+tags=$(bashio::config "tags//[] | join(\",\")" "")
 
 # Wait for socket to be available
 while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock";
@@ -48,7 +48,7 @@ done
 while true;
 do
   if /opt/tailscale status --json --peers=false --self=false \
-    | jq --exit-status '.BackendState == "Running" or .BackendState == "NeedsLogin"';
+    | jq --exit-status '.BackendState == "Running" or .BackendState == "NeedsLogin"' > /dev/null;
   then
     IFS=","
     /opt/tailscale up \
