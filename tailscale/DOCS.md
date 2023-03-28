@@ -49,7 +49,7 @@ network right from their interface.
 The add-on exposes "Exit Node" capabilities that you can enable from your
 Tailscale account. Additionally, if the Supervisor managed your network (
 which is the default), the add-on will also advertise routes to your
-subnet to Tailscale.
+subnets on all supported interfaces to Tailscale.
 
 ```yaml
 tags:
