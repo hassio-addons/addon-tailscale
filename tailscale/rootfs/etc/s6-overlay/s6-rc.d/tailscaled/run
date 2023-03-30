@@ -9,6 +9,7 @@ declare -a options
 bashio::log.info 'Starting Tailscale...'
 
 options+=(--state=/data/tailscaled.state)
+options+=(--statedir=/data/state)
 # Opt out of client log upload to log.tailscale.io
 options+=(--no-logs-no-support)
 options+=(--tun=userspace-networking)

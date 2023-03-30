@@ -23,6 +23,8 @@ privileged:
 devices:
   - /dev/net/tun
 host_network: true
+map:
+  - share:rw
 schema:
   tags: ["match(^tag:[a-zA-Z0-9]-?[a-zA-Z0-9]+$)?"]
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
