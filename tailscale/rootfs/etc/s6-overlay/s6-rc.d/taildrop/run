@@ -1,0 +1,20 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Fetches files send via Taildrop
+# ==============================================================================
+
+# Wait for the network to be available and logged in
+while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock" || \
+  ! /opt/tailscale status --json --peers=false --self=false \
+    | jq --exit-status '.BackendState == "Running"' > /dev/null
+done
+  sleep 2
+do
+
+# Ensure the directory exists
+mkdir -p /share/taildrop
+
+# Fetch files
+exec tailscale file get --loop /share/taildrop
