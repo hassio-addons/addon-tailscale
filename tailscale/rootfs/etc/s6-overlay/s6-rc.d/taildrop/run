@@ -9,12 +9,12 @@
 while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock" || \
   ! /opt/tailscale status --json --peers=false --self=false \
     | jq --exit-status '.BackendState == "Running"' > /dev/null
-done
-  sleep 2
 do
+  sleep 2
+done
 
 # Ensure the directory exists
 mkdir -p /share/taildrop
 
 # Fetch files
-exec tailscale file get --loop /share/taildrop
+exec /opt/tailscale file get --verbose --loop "/share/taildrop"
