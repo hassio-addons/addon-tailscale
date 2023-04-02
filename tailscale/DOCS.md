@@ -68,6 +68,14 @@ instance. They need to start with `tag:`.
 
 More information: <https://tailscale.com/kb/1068/acl-tags/>
 
+### Option: `proxy_port`
+
+Optionally select a port on localhost (`127.0.0.1`) to listen on for connections
+from SOCKS5 and HTTP proxy-speaking applications. Enabling this feature allows
+Home Assistant and other add-ons to access your Tailscale network.
+
+The proxy protocol is unauthenticated.
+
 ### Option: `log_level`
 
 Optionally enable tailscaled debug messages in the add-on's log. Turn it on only

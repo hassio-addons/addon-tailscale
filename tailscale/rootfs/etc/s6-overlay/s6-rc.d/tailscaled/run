@@ -13,6 +13,10 @@ options+=(--statedir=/data/state)
 # Opt out of client log upload to log.tailscale.io
 options+=(--no-logs-no-support)
 options+=(--tun=userspace-networking)
+if bashio::config.has_value "proxy_port"; then
+  options+=(--socks5-server=127.0.0.1:"$(bashio::config "proxy_port")")
+  options+=(--outbound-http-proxy-listen=127.0.0.1:"$(bashio::config "proxy_port")")
+fi
 
 # Run Tailscale
 if bashio::debug ; then
