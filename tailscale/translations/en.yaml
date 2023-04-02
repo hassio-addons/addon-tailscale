@@ -13,6 +13,13 @@ configuration:
       By setting a device on your network as an exit node, you can use it to
       route all your public internet traffic as needed, like a consumer VPN.
       When not set, this option is enabled by default.
+  funnel:
+    name: Tailscale Funnel
+    description: >-
+      This option allows you to enable Tailscale's Funnel feature to present your
+      Home Assistant instance on the wider internet using your Tailscale domain.
+      This requires Tailscale Proxy to be enabled.
+      When not set, this option is enabled by default.
   log_level:
     name: Log level
     description: >-
@@ -24,6 +31,12 @@ configuration:
       This option allows you to specify a custom control server for this
       Tailscale instance, for example, a self-host Headscale instance.
       By default, it uses the control server provided by Tailscale.
+  proxy:
+    name: Tailscale Proxy
+    description: >-
+      This option allows you to enable Tailscale's Proxy feature to present your
+      Home Assistant instance on your tailnet with a valid certificate.
+      When not set, this option is enabled by default.
   tags:
     name: Tags
     description: >-
@@ -34,10 +47,4 @@ configuration:
     description: >-
       This option allows you to enable Taildrop, a file sharing service
       that allows you to share files with other Tailscale nodes.
-      When not set, this option is enabled by default.
-  proxy:
-    name: Tailscale Proxy
-    description: >-
-      This option allows you to enable Tailscale's Proxy feature to present your
-      Home Assistant instance on your tailnet with a valid certificate.
       When not set, this option is enabled by default.
