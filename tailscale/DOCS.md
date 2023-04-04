@@ -51,7 +51,7 @@ Tailscale account. Additionally, if the Supervisor managed your network (
 which is the default), the add-on will also advertise routes to your
 subnets on all supported interfaces to Tailscale.
 
-Consider disabling key expiry to avoid loosing connection to your Home Assistant
+Consider disabling key expiry to avoid losing connection to your Home Assistant
 device. See [Key expiry][tailscale_info_key_expiry] for more information.
 
 ```yaml
