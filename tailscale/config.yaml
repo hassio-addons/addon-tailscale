@@ -18,10 +18,6 @@ arch:
   - i386
 init: false
 hassio_api: true
-privileged:
-  - NET_ADMIN
-devices:
-  - /dev/net/tun
 host_network: true
 map:
   - share:rw
