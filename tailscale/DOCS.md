@@ -54,6 +54,11 @@ subnets on all supported interfaces to Tailscale.
 Consider disabling key expiry to avoid losing connection to your Home Assistant
 device. See [Key expiry][tailscale_info_key_expiry] for more information.
 
+To allow Home Assistant and other add-ons to access your Tailscale network the
+add-on also provides a SOCKS5/HTTP proxy. The proxy protocol is unauthenticated.
+See [Userspace networking][tailscale_info_userspace_networking] for more
+information.
+
 ```yaml
 tags:
   - tag:example
@@ -67,16 +72,6 @@ This option allows you to specify specific ACL tags for this Tailscale
 instance. They need to start with `tag:`.
 
 More information: <https://tailscale.com/kb/1068/acl-tags/>
-
-### Option: `proxy_port`
-
-Optionally select a port on localhost (`127.0.0.1`) to listen on for connections
-from SOCKS5 and HTTP proxy-speaking applications. Enabling this feature allows
-Home Assistant and other add-ons to access your Tailscale network.
-
-The proxy protocol is unauthenticated.
-
-More information: [Userspace networking][tailscale_info_userspace_networking]
 
 ### Option: `log_level`
 
