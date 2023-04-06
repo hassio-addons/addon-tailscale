@@ -90,6 +90,11 @@ more severe level, e.g., `debug` also shows `info` messages. By default,
 the `log_level` is set to `info`, which is the recommended setting unless
 you are troubleshooting.
 
+### Option: `login_server`
+
+This option allows you to specify an alternative login server instead of the default `https://controlplane.tailscale.com`.
+You can for example specify a selfhosted [headscale](https://github.com/juanfont/headscale) instance.
+
 ## Taildrop
 
 This add-on support [Tailscale's Taildrop][taildrop] feature, which allows

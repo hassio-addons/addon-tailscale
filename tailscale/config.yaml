@@ -24,3 +24,6 @@ map:
 schema:
   tags: ["match(^tag:[a-zA-Z0-9]-?[a-zA-Z0-9]+$)?"]
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
+  login_server: str
+options:
+  login_server: "https://controlplane.tailscale.com"
