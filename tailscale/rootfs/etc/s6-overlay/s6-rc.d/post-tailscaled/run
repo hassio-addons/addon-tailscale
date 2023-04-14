@@ -5,14 +5,32 @@
 # Runs after the machine has been logged in into the Tailscale network
 # ==============================================================================
 declare -a addresses=()
+declare -a options
 declare -a routes=()
 declare ipinfo
+declare login_server
 declare tags
 
 function appendarray() {
   local -n array=${1}
   readarray -t -O "${#array[@]}" array
 }
+
+# Default options
+options+=(--accept-routes)
+options+=(--advertise-exit-node)
+options+=(--hostname "$(bashio::info.hostname)")
+
+# Get configured control server
+if bashio::config.has_value "login_server";
+then
+  tags=$(bashio::config "login_server")
+  options+=(--login_server="${login_server}")
+fi
+
+# Get configured tags
+tags=$(bashio::config "tags//[] | join(\",\")" "")
+options+=(--advertise-tags="${tags}")
 
 # Find interfaces and matching addresses from which we can extract routes to be advertised
 for interface in $(bashio::network.interfaces); do
@@ -41,34 +59,20 @@ for address in "${addresses[@]}"; do
     routes+=("$(bashio::jq "${ipinfo}" '.NETWORK + "/" + .PREFIX')")
   fi
 done
+
 # Remove duplicate entries
 readarray -t routes < <(printf "%s\n" "${routes[@]}" | sort -u)
 
-# Get configured tags
-tags=$(bashio::config "tags//[] | join(\",\")" "")
-
-# Wait for socket to be available
-while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock";
-do
-  sleep 1
-done
+IFS=","
+options+=(--advertise-routes="${routes[*]}")
+unset IFS
 
 # Wait for the network to be available and logged in
-while true;
-do
-  if /opt/tailscale status --json --peers=false --self=false \
+while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock" || \
+  ! /opt/tailscale status --json --peers=false --self=false \
     | jq --exit-status '.BackendState == "Running" or .BackendState == "NeedsLogin"' > /dev/null;
-  then
-    IFS=","
-    /opt/tailscale up \
-      --hostname "$(bashio::info.hostname)" \
-      --advertise-exit-node \
-      --accept-routes \
-      --advertise-routes="${routes[*]}" \
-      --advertise-tags="${tags}"
-
-    bashio::exit.ok
-  fi
-  # Well... wait a bit more
+do
   sleep 2
 done
+
+/opt/tailscale up "${options[@]}"
