@@ -1,3 +1,4 @@
+---
 configuration:
   log_level:
     name: Log level
