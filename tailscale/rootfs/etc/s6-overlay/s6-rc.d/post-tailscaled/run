@@ -25,7 +25,7 @@ options+=(--hostname "$(bashio::info.hostname)")
 if bashio::config.has_value "login_server";
 then
   login_server=$(bashio::config "login_server")
-  options+=(--login_server="${login_server}")
+  options+=(--login-server="${login_server}")
 fi
 
 # Get configured tags
