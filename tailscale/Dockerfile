@@ -36,6 +36,9 @@ RUN \
 # Copy root filesystem
 COPY rootfs /
 
+# S6 Overlay stage 2 hook
+ENV S6_STAGE2_HOOK=/etc/s6-overlay/scripts/stage2_hook.sh
+
 # Build arguments
 ARG BUILD_ARCH
 ARG BUILD_DATE
