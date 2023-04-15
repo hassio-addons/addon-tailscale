@@ -1,5 +1,12 @@
 ---
 configuration:
+  advertise_exit_node:
+    name: Advertise as an exit node
+    description: >-
+      This option allows you to advertise this Tailscale instance as an exit node.
+      By setting a device on your network as an exit node, you can use it to
+      route all your public internet traffic as needed, like a consumer VPN.
+      When not set, this option is enabled by default.
   log_level:
     name: Log level
     description: >-
