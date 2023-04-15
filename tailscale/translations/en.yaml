@@ -23,3 +23,9 @@ configuration:
     description: >-
       This option allows you to specify specific ACL tags for this
       Tailscale instance. They need to start with `tag:`.
+  taildrop:
+    name: Taildrop
+    description: >-
+      This option allows you to enable Taildrop, a file sharing service
+      that allows you to share files with other Tailscale nodes.
+      When not set, this option is enabled by default.
