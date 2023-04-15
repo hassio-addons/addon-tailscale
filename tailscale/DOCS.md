@@ -55,12 +55,24 @@ Consider disabling key expiry to avoid losing connection to your Home Assistant
 device. See [Key expiry][tailscale_info_key_expiry] for more information.
 
 ```yaml
+advertise_exit_node: true
 tags:
   - tag:example
   - tag:homeassistant
 log_level: info
 login_server: "https://controlplane.tailscale.com"
 ```
+
+### Option: `advertise_exit_node`
+
+This option allows you to advertise this Tailscale instance as an exit node.
+
+By setting a device on your network as an exit node, you can use it to
+route all your public internet traffic as needed, like a consumer VPN.
+
+More information: <https://tailscale.com/kb/1103/exit-nodes/>
+
+When not set, this option is enabled by default.
 
 ### Option: `log_level`
 

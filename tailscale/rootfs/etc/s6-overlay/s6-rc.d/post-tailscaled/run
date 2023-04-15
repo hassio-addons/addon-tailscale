@@ -18,8 +18,16 @@ function appendarray() {
 
 # Default options
 options+=(--accept-routes)
-options+=(--advertise-exit-node)
 options+=(--hostname "$(bashio::info.hostname)")
+
+# Advertise as exit node by default when not set, or when explicitly enabled
+if ! bashio::config.has_value "advertise_exit_node" || \
+  bashio::config.true "advertise_exit_node";
+then
+  options+=(--advertise-exit-node)
+else
+  options+=(--advertise-exit-node=false)
+fi
 
 # Get configured control server
 if bashio::config.has_value "login_server";
