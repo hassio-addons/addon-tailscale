@@ -120,6 +120,18 @@ When not set, this option is enabled by default.
 
 Received files are stored in the `/share/taildrop` directory.
 
+## Troubleshooting Tips
+
+### Access the tailscale CLI tool
+
+If you have SSH access to your Home Assistant set up (perhaps using
+[the SSH addon][addon-ssh]) you can access the official tailscale CLI
+tool with Docker:
+
+```
+docker exec -it $(docker ps --filter "name=tailscale" --format '{{ .Names }}') /opt/tailscale status
+```
+
 ## Changelog & Releases
 
 This repository keeps a change log using [GitHub's releases][releases]
@@ -193,3 +205,4 @@ SOFTWARE.
 [semver]: https://semver.org/spec/v2.0.0.html
 [taildrop]: https://tailscale.com/taildrop/
 [tailscale_info_key_expiry]: https://tailscale.com/kb/1028/key-expiry/
+[addon-ssh]: https://github.com/hassio-addons/addon-ssh
