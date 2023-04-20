@@ -56,11 +56,12 @@ device. See [Key expiry][tailscale_info_key_expiry] for more information.
 
 ```yaml
 advertise_exit_node: true
+log_level: info
+login_server: "https://controlplane.tailscale.com"
 tags:
   - tag:example
   - tag:homeassistant
-log_level: info
-login_server: "https://controlplane.tailscale.com"
+taildrop: true
 ```
 
 ### Option: `advertise_exit_node`
