@@ -62,6 +62,7 @@ tags:
   - tag:example
   - tag:homeassistant
 taildrop: true
+proxy: true
 ```
 
 ### Option: `advertise_exit_node`
@@ -121,7 +122,9 @@ When not set, this option is enabled by default.
 
 Received files are stored in the `/share/taildrop` directory.
 
-## Tailscale Proxy
+### Option: `proxy`
+
+When not set, this option is enabled by default.
 
 Tailscale can provide a TLS certificate for your Home Assistant device within
 your tailnet domain.
