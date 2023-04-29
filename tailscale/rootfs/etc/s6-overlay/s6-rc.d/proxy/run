@@ -1,0 +1,45 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Enables Tailscale Proxy feature
+# ==============================================================================
+
+declare domain
+
+# Wait for the network to be available and logged in
+while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock" || \
+  ! /opt/tailscale status --json --peers=false --self=false \
+    | jq --exit-status '.BackendState == "Running"' > /dev/null
+do
+  sleep 2
+done
+
+# Check if Tailscale HTTPS is enabled
+if ! /opt/tailscale status --self=true --peers=false --json \
+  | jq -rce ".CertDomains[0]" > /dev/null;
+then
+  bashio::log.notice "Tailscale's HTTPS support is disabled, therefore add-on's Tailscale Proxy functionality is disabled"
+  bashio::exit.ok
+fi
+
+domain=$(/opt/tailscale status --self=true --peers=false --json | jq -rc ".CertDomains[0]")
+
+# Checking if SSL is used
+if bashio::var.true "$(bashio::core.ssl)"; then
+  bashio::log.error "Tailscale's HTTPS support is enabled, but Home Assistant is not accessible through plain HTTP connection"
+  bashio::exit.nok
+fi
+
+# Set up proxy
+# Note: Configuration is persistent between reboots, though configuring the same value won't cause duplicate entries,
+#       but will overwite previous entry if core.port has been changed
+# Note: If a tailnet node is renamed, there will be deprecated entries in status json under .Web.<different-domain:443>,
+#       those can't be removed, no command for that situation currently
+if ! /opt/tailscale serve https:443 / "http://127.0.0.1:$(bashio::core.port)"; then
+  bashio::log.error "Unable to configure Tailscale Proxy"
+  bashio::exit.nok
+fi
+bashio::log.info "Tailscale Proxy is enabled:"
+bashio::log.info "  Your Home Assistant instance is available within your Tailnet VPN at"
+bashio::log.info "  https://${domain}"
