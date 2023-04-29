@@ -13,7 +13,6 @@ options+=(--statedir=/data/state)
 
 # Opt out of client log upload to log.tailscale.io
 options+=(--no-logs-no-support)
-options+=(--tun=userspace-networking)
 
 # Run Tailscale
 if bashio::debug ; then

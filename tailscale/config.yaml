@@ -19,6 +19,11 @@ arch:
 init: false
 hassio_api: true
 host_network: true
+privileged:
+  - NET_ADMIN
+  - NET_RAW
+devices:
+  - /dev/net/tun
 map:
   - share:rw
 schema:
