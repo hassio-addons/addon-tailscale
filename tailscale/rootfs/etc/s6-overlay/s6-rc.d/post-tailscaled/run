@@ -92,4 +92,17 @@ do
   sleep 2
 done
 
-/opt/tailscale up "${options[@]}"
+# Start Tailscale
+if ! /opt/tailscale up "${options[@]}"; then
+  bashio::log.error "Unable to start up Tailscale"
+  bashio::exit.nok
+fi
+
+# Wait for the network to be available and logged in
+while ! /opt/tailscale status --json --peers=false --self=false \
+  | jq --exit-status '.BackendState == "Running"' > /dev/null
+do
+  sleep 2
+done
+
+bashio::log.info "Tailscale is running"

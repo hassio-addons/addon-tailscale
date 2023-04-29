@@ -7,14 +7,6 @@
 
 declare domain
 
-# Wait for the network to be available and logged in
-while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock" || \
-  ! /opt/tailscale status --json --peers=false --self=false \
-    | jq --exit-status '.BackendState == "Running"' > /dev/null
-do
-  sleep 2
-done
-
 # Check if Tailscale HTTPS is enabled
 if ! /opt/tailscale status --self=true --peers=false --json \
   | jq -rce ".CertDomains[0]" > /dev/null;
