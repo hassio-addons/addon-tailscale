@@ -11,7 +11,7 @@ manages firewall rules for you, and works from anywhere you are.
 
 In order to use this add-on, you'll need a Tailscale account.
 
-It is free to use for personal & hobby projects, up to 20 clients/devices on a
+It is free to use for personal & hobby projects, up to 100 clients/devices on a
 single user account. Sign up using your Google, Microsoft or GitHub account at
 the following URL:
 
