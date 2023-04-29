@@ -126,22 +126,22 @@ Received files are stored in the `/share/taildrop` directory.
 
 When not set, this option is enabled by default.
 
-Tailscale can provide a TLS certificate for your Home Assistant device within
+Tailscale can provide a TLS certificate for your Home Assistant instance within
 your tailnet domain.
 
-This can prevent browsers to warn that HTTP URLs to your Home Assistant device
-look unencrypted (browsers are not aware of that connections between Tailscale
+This can prevent browsers from warning that HTTP URLs to your Home Assistant device
+look unencrypted (browsers are not aware of the connections between Tailscale
 nodes are secured with end-to-end encryption).
 
 More information: [Enabling HTTPS][tailscale_info_https]
 
-1. Configure Home Assistant to be accessible through HTTP connection (this is
+1. Configure Home Assistant to be accessible through an HTTP connection (this is
    the default). See [HTTP integration documentation][http_integration] for more
    information. If you still want to use another HTTPS connection to access Home
    Assistant, please use a reverse proxy add-on.
 
 1. Home Assistant, by default, blocks requests from reverse proxies, like the
-   Tailscale Proxy. In order to enable it, add the following lines to your
+   Tailscale Proxy. To enable it, add the following lines to your
    `configuration.yaml`, without changing anything:
 
    ```yaml
@@ -161,7 +161,7 @@ More information: [Enabling HTTPS][tailscale_info_https]
 
 1. Restart the add-on.
 
-**Note:** _You should not use any port number in the url that you used
+**Note:** _You should not use any port number in the URL that you used
 previously to access Home Assistant. Tailscale Proxy works on the default HTTPS
 port 443._
 

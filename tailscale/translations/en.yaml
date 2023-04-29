@@ -39,5 +39,5 @@ configuration:
     name: Tailscale Proxy
     description: >-
       This option allows you to enable Tailscale's Proxy feature to present your
-      Home Assistant device on your tailnet with a valid certificate.
+      Home Assistant instance on your tailnet with a valid certificate.
       When not set, this option is enabled by default.
