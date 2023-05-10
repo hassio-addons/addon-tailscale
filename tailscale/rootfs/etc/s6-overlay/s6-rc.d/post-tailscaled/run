@@ -122,3 +122,13 @@ if keyexpiry=$(/opt/tailscale status --self=true --peers=false --json | jq -rce 
 fi
 
 bashio::log.info "Tailscale is running"
+
+# Warn about userspace networking
+if ! bashio::config.has_value "userspace_networking" || \
+    bashio::config.true "userspace_networking";
+then
+  bashio::log.notice "The add-on uses userspace networking mode."
+  bashio::log.notice "If you need to access other clients on your tailnet from your Home Assistant instance,"
+  bashio::log.notice "disable userspace networking mode, that will create a \"tailscale0\" network interface on your host."
+  bashio::log.notice "Please check your configuration based on the add-on's Documentation under \"Option: userspace_networking\""
+fi
