@@ -28,12 +28,16 @@ however, it is nice to know where you need to go later on.
    [![Open this add-on in your Home Assistant instance.][addon-badge]][addon]
 
 1. Click the "Install" button to install the add-on.
+1. **See the "Option: `proxy`" section of this documentation for the necessary
+   configuration changes in Home Assistant!**
 1. Start the "Tailscale" add-on.
 1. Check the logs of the "Tailscale" add-on to see if everything went well.
 1. Open the Web UI of the "Tailscale" add-on to complete authentication and
    couple your Home Assistant instance with your Tailscale account.
    **Note:** Some browsers don't work with this step. It is recommended to
    complete this step on a desktop or laptop computer using the Chrome browser.
+1. Check the logs of the "Tailscale" add-on again, to see if everything went
+   well.
 1. Done!
 
 ## Configuration
