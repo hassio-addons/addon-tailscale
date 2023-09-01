@@ -17,7 +17,6 @@ function appendarray() {
 }
 
 # Default options
-options+=(--accept-routes)
 options+=(--hostname "$(bashio::info.hostname)")
 
 # Accept magicDNS by default when not set, or when explicitly enabled
@@ -27,6 +26,15 @@ then
   options+=(--accept-dns)
 else
   options+=(--accept-dns=false)
+fi
+
+# Accept routes by default when not set, or when explicitly enabled
+if ! bashio::config.has_value "accept_routes" || \
+  bashio::config.true "accept_routes";
+then
+  options+=(--accept-routes)
+else
+  options+=(--accept-routes=false)
 fi
 
 # Advertise as exit node by default when not set, or when explicitly enabled
