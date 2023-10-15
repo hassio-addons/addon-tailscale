@@ -92,7 +92,9 @@ When not set, this option is enabled by default.
 ### Option: `log_level`
 
 Optionally enable tailscaled debug messages in the add-on's log. Turn it on only
-in case you are troubleshooting, because Tailscale's daemon is quite chatty.
+in case you are troubleshooting, because Tailscale's daemon is quite chatty. If
+`log_level` is set to `info` or less severe level, the add-on also opts out of
+client log upload to log.tailscale.io.
 
 The `log_level` option controls the level of log output by the addon and can
 be changed to be more or less verbose, which might be useful when you are
