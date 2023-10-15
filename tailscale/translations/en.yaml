@@ -19,6 +19,13 @@ configuration:
       By setting a device on your network as an exit node, you can use it to
       route all your public internet traffic as needed, like a consumer VPN.
       When not set, this option is enabled by default.
+  advertise_routes:
+    name: Advertise subnet routes
+    description: >-
+      This option allows you to advertise routes to subnets (accessible on the network
+      your device is connected to) to other clients on your tailnet.
+      When not set, the add-on by default will advertise routes to your subnets on all
+      supported interfaces.
   funnel:
     name: Tailscale Funnel
     description: >-

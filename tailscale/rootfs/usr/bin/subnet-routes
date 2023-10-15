@@ -5,6 +5,7 @@
 # ==============================================================================
 declare interface
 declare -a addresses=()
+declare address
 declare -a routes=()
 declare ipinfo
 declare response
@@ -18,11 +19,18 @@ if bashio::cache.exists 'subnet-routes'; then
   readarray -t routes < <(bashio::cache.get 'subnet-routes')
   printf -v response "%s" "${routes[@]/%/$'\n'}"
 else
-  # Find interfaces and matching addresses from which we can extract routes to be advertised
-  for interface in $(bashio::network.interfaces); do
-    appendarray addresses < <(bashio::network.ipv4_address "${interface}")
-    appendarray addresses < <(bashio::network.ipv6_address "${interface}")
-  done
+  if bashio::config.exists "advertise_routes"; then
+    # Configuration exists, use configured values
+    for address in $(bashio::config "advertise_routes"); do
+      addresses+=("${address}")
+    done
+  else
+    # Find interfaces and matching addresses from which we can extract routes to be advertised
+    for interface in $(bashio::network.interfaces); do
+      appendarray addresses < <(bashio::network.ipv4_address "${interface}")
+      appendarray addresses < <(bashio::network.ipv6_address "${interface}")
+    done
+  fi
 
   # Extract routes to be advertised
   for address in "${addresses[@]}"; do

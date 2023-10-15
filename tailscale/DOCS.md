@@ -63,6 +63,9 @@ accept_dns: true
 accept_routes: true
 advertise_exit_node: true
 funnel: true
+advertise_routes:
+  - 192.168.1.0/24
+  - fd12:3456:abcd::/64
 log_level: info
 login_server: "https://controlplane.tailscale.com"
 proxy: true
@@ -104,6 +107,22 @@ route all your public internet traffic as needed, like a consumer VPN.
 More information: <https://tailscale.com/kb/1103/exit-nodes/>
 
 When not set, this option is enabled by default.
+
+### Option: `advertise_routes`
+
+This option allows you to advertise routes to subnets (accessible on the network
+your device is connected to) to other clients on your tailnet.
+
+By adding to the list the IP addresses and masks of the subnet routes, you can
+use it to make your devices on these subnets accessible within your tailnet.
+
+If you want to disable this option, specify an empty list in the configuration
+(`[]` in YAML).
+
+More information: [Subnet routers][tailscale_info_subnets]
+
+When not set, the add-on by default will advertise routes to your subnets on all
+supported interfaces.
 
 ### Option: `funnel`
 

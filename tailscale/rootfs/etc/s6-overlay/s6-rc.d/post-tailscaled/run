@@ -53,7 +53,7 @@ fi
 tags=$(bashio::config "tags//[] | join(\",\")" "")
 options+=(--advertise-tags="${tags}")
 
-# Find interfaces and matching addresses and extract routes to be advertised
+# Advertise subnet routes
 readarray -t routes < <(subnet-routes)
 IFS=","
 options+=(--advertise-routes="${routes[*]}")
