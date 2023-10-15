@@ -99,17 +99,17 @@ necessary configuration changes in Home Assistant!
 
 When not set, this option is enabled by default.
 
-With the Tailscale Funnel feature you can access your Home Assistant instance
+With the Tailscale Funnel feature, you can access your Home Assistant instance
 from the wider internet using your Tailscale domain (like
 `https://homeassistant.tail1234.ts.net`) even from devices **without installed
-Tailscale VPN client** (eg. general phones, tablets, laptops).
+Tailscale VPN client** (for example, on general phones, tablets, and laptops).
 
 **Client** &#8658; _Internet_ &#8658; **Tailscale Funnel** (TCP proxy) &#8658;
 _VPN_ &#8658; **Tailscale Proxy** (HTTPS proxy) &#8594; **HA** (HTTP web-server)
 
 Without the Tailscale Funnel feature, you will be able to access your Home
-Assistant instance only when your devices (eg. phones, tablets, laptops) are
-connected to your Tailscale VPN, there will be no Internet &#8658; VPN TCP
+Assistant instance only when your devices (for example, phones, tablets, and laptops)
+are connected to your Tailscale VPN, there will be no Internet &#8658; VPN TCP
 proxying for HTTPS communication.
 
 More information: [Tailscale Funnel][tailscale_info_funnel]
@@ -131,13 +131,10 @@ More information: [Tailscale Funnel][tailscale_info_funnel]
 
 1. Restart the add-on.
 
-**Note**: _After initial set up it can take up to 10 minutes for the domain to
-be publicly available. You can use the `dig` command (Linux/MacOS) to regularly
-check if an A-record is already present for your domain (`dig
-<machine-name>.<tailnet-name>.ts.net +short` should return an IP address once
-the record is published)._
+**Note**: _After initial setup, it can take up to 10 minutes for the domain to
+be publicly available._
 
-**Note:** _You should not use any port number in the url that you used
+**Note:** _You should not use any port number in the URL that you used
 previously to access Home Assistant. Tailscale Funnel works on the default HTTPS
 port 443._
 
