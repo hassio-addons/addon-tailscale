@@ -196,11 +196,11 @@ accessible within your tailnet.
 When not set, this option is enabled by default.
 
 If you need to access other clients on your tailnet from your Home Assistant
-instance, disable userspace networking mode, that will create a `tailscale0`
+instance, disable userspace networking mode, which will create a `tailscale0`
 network interface on your host.
 
 If you want to access other clients on your tailnet even from your local subnet,
-execute Step 2 and 3 as described on [Site-to-site
+execute steps 2 and 3 as described on [Site-to-site
 networking][tailscale_info_site_to_site].
 
 ### Option: `proxy`
