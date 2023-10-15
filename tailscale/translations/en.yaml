@@ -6,6 +6,12 @@ configuration:
       If you are experiencing trouble with MagicDNS on this device and wish to
       disable, you can do so using this option.
       When not set, this option is enabled by default.
+  accept_routes:
+    name: Accept Routes
+    description: >-
+      This option allows you to accept subnet routes advertised by other nodes
+      in your tailnet.
+      When not set, this option is enabled by default.
   advertise_exit_node:
     name: Advertise as an exit node
     description: >-

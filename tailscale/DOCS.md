@@ -60,6 +60,7 @@ device. See [Key expiry][tailscale_info_key_expiry] for more information.
 
 ```yaml
 accept_dns: true
+accept_routes: true
 advertise_exit_node: true
 funnel: true
 log_level: info
@@ -82,6 +83,15 @@ MagicDNS may cause issues if you run things like Pi-hole or AdGuard Home
 on the same machine as this add-on. In such cases disabling `accept_dns`
 will help. You can still leverage MagicDNS on other devices on your network,
 by adding `100.100.100.100` as a DNS server in your Pi-hole or AdGuard Home.
+
+### Option: `accept_routes`
+
+This option allows you to accept subnet routes advertised by other nodes in
+your tailnet.
+
+More information: <https://tailscale.com/kb/1019/subnets/>
+
+When not set, this option is enabled by default.
 
 ### Option: `advertise_exit_node`
 
