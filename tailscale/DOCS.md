@@ -203,6 +203,12 @@ If you want to access other clients on your tailnet even from your local subnet,
 execute steps 2 and 3 as described on [Site-to-site
 networking][tailscale_info_site_to_site].
 
+In case your local subnets collide with subnet routes within your tailnet, your
+local network access has priority, and these addresses won't be routed toward
+your tailnet. This will prevent your Home Assistant instance from losing network
+connection. This also means that using the same subnet on multiple nodes for load
+balancing and failover is impossible with the current add-on behavior.
+
 ### Option: `proxy`
 
 When not set, this option is enabled by default.

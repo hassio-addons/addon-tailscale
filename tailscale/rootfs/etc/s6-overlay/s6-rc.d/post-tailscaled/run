@@ -4,18 +4,13 @@
 # Home Assistant Community Add-on: Tailscale
 # Runs after the machine has been logged in into the Tailscale network
 # ==============================================================================
-declare -a addresses=()
 declare -a options
 declare -a routes=()
-declare ipinfo
+declare route
+declare -a colliding_routes=()
 declare login_server
 declare tags
 declare keyexpiry
-
-function appendarray() {
-  local -n array=${1}
-  readarray -t -O "${#array[@]}" array
-}
 
 # Default options
 options+=(--hostname "$(bashio::info.hostname)")
@@ -58,37 +53,8 @@ fi
 tags=$(bashio::config "tags//[] | join(\",\")" "")
 options+=(--advertise-tags="${tags}")
 
-# Find interfaces and matching addresses from which we can extract routes to be advertised
-for interface in $(bashio::network.interfaces); do
-  appendarray addresses < <(bashio::network.ipv4_address "${interface}")
-  appendarray addresses < <(bashio::network.ipv6_address "${interface}")
-done
-
-# Extract routes to be advertised
-for address in "${addresses[@]}"; do
-  if bashio::var.has_value "${address}"; then
-    # Skip local link addresses
-    if [[ "${address:0:6}" == "fe80::" ]] || [[ "${address:0:8}" == "169.254." ]];
-    then
-      continue
-    fi
-
-    # Skip if forwarding for the address family is disabled
-    if [[ "${address}" =~ .*:.* ]];
-    then
-      [[ $(</proc/sys/net/ipv6/conf/all/forwarding) -eq 0 ]] && continue
-    else
-      [[ $(</proc/sys/net/ipv4/ip_forward) -eq 0 ]] && continue
-    fi
-
-    ipinfo="$(/usr/bin/ipcalc --json "${address}")"
-    routes+=("$(bashio::jq "${ipinfo}" '.NETWORK + "/" + .PREFIX')")
-  fi
-done
-
-# Remove duplicate entries
-readarray -t routes < <(printf "%s\n" "${routes[@]}" | sort -u)
-
+# Find interfaces and matching addresses and extract routes to be advertised
+readarray -t routes < <(subnet-routes)
 IFS=","
 options+=(--advertise-routes="${routes[*]}")
 unset IFS
@@ -122,6 +88,25 @@ if keyexpiry=$(/opt/tailscale status --self=true --peers=false --json | jq -rce 
 fi
 
 bashio::log.info "Tailscale is running"
+
+# Notify about colliding subnet routes if non-userspace-networking is enabled
+if bashio::config.false "userspace_networking"; then
+  readarray -t colliding_routes < <( \
+    comm -1 -2 \
+      <(printf "%s" "${routes[@]/%/$'\n'}") \
+      <(/opt/tailscale status --json --peers=true --self=false \
+        | jq -rc '.Peer[] | select(has("PrimaryRoutes")) | .PrimaryRoutes[]' \
+        | sort -u))
+  if (( 0 < ${#colliding_routes[@]} )); then
+    bashio::log.warning "Currently the following subnets are both present as local subnets"
+    bashio::log.warning "and are also routed within your tailnet to other nodes!"
+    bashio::log.warning "Please reconfigure your subnet routing within your tailnet"
+    bashio::log.warning "to prevent current or future collisions."
+  fi
+  for route in "${colliding_routes[@]}"; do
+    bashio::log.warning "  ${route}"
+  done
+fi
 
 # Warn about userspace networking
 if ! bashio::config.has_value "userspace_networking" || \
