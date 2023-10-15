@@ -110,7 +110,7 @@ done
 if keyexpiry=$(/opt/tailscale status --self=true --peers=false --json | jq -rce '.Self.KeyExpiry'); then
   bashio::log.warning "The connection's key will expire on: ${keyexpiry}"
   bashio::log.warning "Consider disabling key expiry to avoid losing connection to your Home Assistant device."
-  bashio::log.warning "Please check your configuration based on the add-on's Documentation under \"Configuration\""
+  bashio::log.warning "Please check your configuration based on the add-on's documentation under \"Configuration\""
 fi
 
 bashio::log.info "Tailscale is running"
