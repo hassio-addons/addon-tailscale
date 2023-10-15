@@ -59,11 +59,11 @@ accept_dns: true
 advertise_exit_node: true
 log_level: info
 login_server: "https://controlplane.tailscale.com"
+proxy: true
 tags:
   - tag:example
   - tag:homeassistant
 taildrop: true
-proxy: true
 ```
 
 ### Option: `accept_dns`
@@ -120,23 +120,6 @@ the default (`https://controlplane.tailscale.com`). This is useful if you
 are running your own Tailscale control server, for example, a self-hosted
 [Headscale] instance.
 
-### Option: `tags`
-
-This option allows you to specify specific ACL tags for this Tailscale
-instance. They need to start with `tag:`.
-
-More information: <https://tailscale.com/kb/1068/acl-tags/>
-
-### Option: `taildrop`
-
-This add-on support [Tailscale's Taildrop][taildrop] feature, which allows
-you to send files to your Home Assistant instance from other Tailscale
-devices.
-
-When not set, this option is enabled by default.
-
-Received files are stored in the `/share/taildrop` directory.
-
 ### Option: `proxy`
 
 When not set, this option is enabled by default.
@@ -179,6 +162,23 @@ More information: [Enabling HTTPS][tailscale_info_https]
 **Note:** _You should not use any port number in the URL that you used
 previously to access Home Assistant. Tailscale Proxy works on the default HTTPS
 port 443._
+
+### Option: `tags`
+
+This option allows you to specify specific ACL tags for this Tailscale
+instance. They need to start with `tag:`.
+
+More information: <https://tailscale.com/kb/1068/acl-tags/>
+
+### Option: `taildrop`
+
+This add-on support [Tailscale's Taildrop][taildrop] feature, which allows
+you to send files to your Home Assistant instance from other Tailscale
+devices.
+
+When not set, this option is enabled by default.
+
+Received files are stored in the `/share/taildrop` directory.
 
 ## Changelog & Releases
 
