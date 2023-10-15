@@ -57,6 +57,7 @@ device. See [Key expiry][tailscale_info_key_expiry] for more information.
 ```yaml
 accept_dns: true
 advertise_exit_node: true
+funnel: true
 log_level: info
 login_server: "https://controlplane.tailscale.com"
 proxy: true
@@ -88,6 +89,57 @@ route all your public internet traffic as needed, like a consumer VPN.
 More information: <https://tailscale.com/kb/1103/exit-nodes/>
 
 When not set, this option is enabled by default.
+
+### Option: `funnel`
+
+This requires Tailscale Proxy to be enabled.
+
+**Important:** See also the "Option: `proxy`" section of this documentation for the
+necessary configuration changes in Home Assistant!
+
+When not set, this option is enabled by default.
+
+With the Tailscale Funnel feature, you can access your Home Assistant instance
+from the wider internet using your Tailscale domain (like
+`https://homeassistant.tail1234.ts.net`) even from devices **without installed
+Tailscale VPN client** (for example, on general phones, tablets, and laptops).
+
+**Client** &#8658; _Internet_ &#8658; **Tailscale Funnel** (TCP proxy) &#8658;
+_VPN_ &#8658; **Tailscale Proxy** (HTTPS proxy) &#8594; **HA** (HTTP web-server)
+
+Without the Tailscale Funnel feature, you will be able to access your Home
+Assistant instance only when your devices (for example, phones, tablets, and laptops)
+are connected to your Tailscale VPN, there will be no Internet &#8658; VPN TCP
+proxying for HTTPS communication.
+
+More information: [Tailscale Funnel][tailscale_info_funnel]
+
+1. Navigate to the [Access controls page][tailscale_acls] of the admin console,
+   and add the below policy entries to the policy file. See [Server role
+   accounts using ACL tags][tailscale_info_acls] for more information.
+
+   ```json
+   {
+     "nodeAttrs": [
+       {
+         "target": ["autogroup:members"],
+         "attr": ["funnel"]
+       }
+     ]
+   }
+   ```
+
+1. Restart the add-on.
+
+**Note**: _After initial setup, it can take up to 10 minutes for the domain to
+be publicly available._
+
+**Note:** _You should not use any port number in the URL that you used
+previously to access Home Assistant. Tailscale Funnel works on the default HTTPS
+port 443._
+
+**Note:** _If you encounter strange browser behaviour or strange error messages,
+try to clear all site related cookies, clear all browser cache, restart browser._
 
 ### Option: `log_level`
 
@@ -253,6 +305,9 @@ SOFTWARE.
 [releases]: https://github.com/hassio-addons/addon-tailscale/releases
 [semver]: https://semver.org/spec/v2.0.0.html
 [taildrop]: https://tailscale.com/taildrop/
+[tailscale_acls]: https://login.tailscale.com/admin/acls
 [tailscale_dns]: https://login.tailscale.com/admin/dns
+[tailscale_info_acls]: https://tailscale.com/kb/1068/acl-tags/
+[tailscale_info_funnel]: https://tailscale.com/kb/1223/tailscale-funnel/
 [tailscale_info_https]: https://tailscale.com/kb/1153/enabling-https/
 [tailscale_info_key_expiry]: https://tailscale.com/kb/1028/key-expiry/

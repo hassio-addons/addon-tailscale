@@ -29,6 +29,7 @@ map:
 schema:
   accept_dns: bool?
   advertise_exit_node: bool?
+  funnel: bool?
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
   login_server: url?
   proxy: bool?
