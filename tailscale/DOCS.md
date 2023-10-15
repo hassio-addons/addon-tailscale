@@ -275,7 +275,7 @@ port 443._
 ### Option: `snat_subnet_routes`
 
 This option allows subnet devices to see the traffic originating from the subnet
-router, and this simplifyies routing configuration.
+router, and this simplifies routing configuration.
 
 When not set, this option is enabled by default.
 

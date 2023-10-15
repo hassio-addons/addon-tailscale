@@ -54,7 +54,7 @@ configuration:
     name: Source NAT subnet routes
     description: >-
       This option allows subnet devices to see the traffic originating from the
-      subnet router, and this simplifyies routing configuration.
+      subnet router, and this simplifies routing configuration.
       To support advanced Site-to-site networking (eg. to traverse multiple
       networks), you can disable this functionality.
       When not set, this option is enabled by default.
