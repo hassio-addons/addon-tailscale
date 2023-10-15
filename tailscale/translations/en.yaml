@@ -54,3 +54,11 @@ configuration:
       This option allows you to enable Taildrop, a file sharing service
       that allows you to share files with other Tailscale nodes.
       When not set, this option is enabled by default.
+  userspace_networking:
+    name: Userspace networking mode
+    description: >-
+      This option allows you to enable userspace networking mode.
+      If you need to access other clients on your Tailnet from your Home
+      Assistant instance, disable userspace networking mode, which will create a
+      `tailscale0` network interface on your host.
+      When not set, this option is enabled by default.

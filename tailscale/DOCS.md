@@ -70,6 +70,7 @@ tags:
   - tag:example
   - tag:homeassistant
 taildrop: true
+userspace_networking: true
 ```
 
 ### Option: `accept_dns`
@@ -185,6 +186,22 @@ This option lets you specify you to specify a custom control server instead of
 the default (`https://controlplane.tailscale.com`). This is useful if you
 are running your own Tailscale control server, for example, a self-hosted
 [Headscale] instance.
+
+### Option: `userspace_networking`
+
+The add-on uses [userspace networking mode][tailscale_info_userspace_networking]
+to make your Home Assistant instance (and optionally the local subnets)
+accessible within your tailnet.
+
+When not set, this option is enabled by default.
+
+If you need to access other clients on your tailnet from your Home Assistant
+instance, disable userspace networking mode, which will create a `tailscale0`
+network interface on your host.
+
+If you want to access other clients on your tailnet even from your local subnet,
+execute steps 2 and 3 as described on [Site-to-site
+networking][tailscale_info_site_to_site].
 
 ### Option: `proxy`
 
@@ -325,3 +342,5 @@ SOFTWARE.
 [tailscale_info_funnel]: https://tailscale.com/kb/1223/tailscale-funnel/
 [tailscale_info_https]: https://tailscale.com/kb/1153/enabling-https/
 [tailscale_info_key_expiry]: https://tailscale.com/kb/1028/key-expiry/
+[tailscale_info_site_to_site]: https://tailscale.com/kb/1214/site-to-site/
+[tailscale_info_userspace_networking]: https://tailscale.com/kb/1112/userspace-networking/

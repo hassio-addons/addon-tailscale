@@ -16,6 +16,13 @@ if ! bashio::debug ; then
   options+=(--no-logs-no-support)
 fi
 
+# Use userspace networking by default when not set, or when explicitly enabled
+if ! bashio::config.has_value "userspace_networking" || \
+  bashio::config.true "userspace_networking";
+then
+  options+=(--tun=userspace-networking)
+fi
+
 # Run Tailscale
 if bashio::debug ; then
   exec /opt/tailscaled "${options[@]}"
