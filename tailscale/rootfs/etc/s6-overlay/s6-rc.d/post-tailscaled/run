@@ -49,6 +49,15 @@ then
   options+=(--login-server="${login_server}")
 fi
 
+# Support advanced site-to-site networking, disable source addresses NAT
+if ! bashio::config.has_value "snat_subnet_routes" || \
+  bashio::config.true "snat_subnet_routes";
+then
+  options+=(--snat-subnet-routes)
+else
+  options+=(--snat-subnet-routes=false)
+fi
+
 # Get configured tags
 tags=$(bashio::config "tags//[] | join(\",\")" "")
 options+=(--advertise-tags="${tags}")

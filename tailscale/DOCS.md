@@ -69,6 +69,7 @@ advertise_routes:
 log_level: info
 login_server: "https://controlplane.tailscale.com"
 proxy: true
+snat_subnet_routes: true
 tags:
   - tag:example
   - tag:homeassistant
@@ -270,6 +271,17 @@ More information: [Enabling HTTPS][tailscale_info_https]
 **Note:** _You should not use any port number in the URL that you used
 previously to access Home Assistant. Tailscale Proxy works on the default HTTPS
 port 443._
+
+### Option: `snat_subnet_routes`
+
+This option allows subnet devices to see the traffic originating from the subnet
+router, and this simplifies routing configuration.
+
+When not set, this option is enabled by default.
+
+To support advanced [Site-to-site networking][tailscale_info_site_to_site] (eg.
+to traverse multiple networks), you can disable this functionality. But do it
+only when you really understand why you need this.
 
 ### Option: `tags`
 

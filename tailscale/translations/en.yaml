@@ -50,6 +50,14 @@ configuration:
       This option allows you to enable Tailscale's Proxy feature to present your
       Home Assistant instance on your tailnet with a valid certificate.
       When not set, this option is enabled by default.
+  snat_subnet_routes:
+    name: Source NAT subnet routes
+    description: >-
+      This option allows subnet devices to see the traffic originating from the
+      subnet router, and this simplifies routing configuration.
+      To support advanced Site-to-site networking (eg. to traverse multiple
+      networks), you can disable this functionality.
+      When not set, this option is enabled by default.
   tags:
     name: Tags
     description: >-
