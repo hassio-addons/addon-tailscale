@@ -15,24 +15,29 @@ function appendarray() {
   readarray -t -O "${#array[@]}" array
 }
 
-if bashio::cache.exists 'subnet-routes'; then
-  readarray -t routes < <(bashio::cache.get 'subnet-routes')
+if ! [[ $1 =~ ^(local|advertised)$ ]]; then
+  echo "Usage: subnet-routes local|advertised" 1>&2
+  exit 1
+fi
+
+if bashio::cache.exists "subnet-routes-$1"; then
+  readarray -t routes < <(bashio::cache.get "subnet-routes-$1")
   printf -v response "%s" "${routes[@]/%/$'\n'}"
 else
-  if bashio::config.exists "advertise_routes"; then
+  if [[ "$1" == "advertised" ]] && bashio::config.exists "advertise_routes"; then
     # Configuration exists, use configured values
     for address in $(bashio::config "advertise_routes"); do
       addresses+=("${address}")
     done
   else
-    # Find interfaces and matching addresses from which we can extract routes to be advertised
+    # Find interfaces and matching addresses from which we can extract routes
     for interface in $(bashio::network.interfaces); do
       appendarray addresses < <(bashio::network.ipv4_address "${interface}")
       appendarray addresses < <(bashio::network.ipv6_address "${interface}")
     done
   fi
 
-  # Extract routes to be advertised
+  # Extract routes
   for address in "${addresses[@]}"; do
     if bashio::var.has_value "${address}"; then
       # Skip local link addresses
@@ -58,7 +63,7 @@ else
   readarray -t routes < <(printf "%s" "${routes[@]/%/$'\n'}" | sort -u)
 
   printf -v response "%s" "${routes[@]/%/$'\n'}"
-  bashio::cache.set 'subnet-routes' "${response}"
+  bashio::cache.set "subnet-routes-$1" "${response}"
 fi
 
 printf "%s" "${response}"

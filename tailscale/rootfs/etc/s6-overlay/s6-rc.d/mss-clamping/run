@@ -9,7 +9,7 @@ declare -a routes=()
 declare -a interfaces=()
 declare route family interface
 
-readarray -t routes < <(subnet-routes)
+readarray -t routes < <(subnet-routes advertised)
 
 # In case of non userspace networking, clamp the MSS to the MTU for all advertised subnet's interface
 # If user later enables subnet routing for site-to-site networking, these settings are already there

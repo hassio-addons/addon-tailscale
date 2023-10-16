@@ -33,10 +33,10 @@ if bashio::config.false "userspace_networking"; then
     bashio::log.info "Supervisor is ready"
   fi
 
-  readarray -t routes < <(subnet-routes)
+  readarray -t routes < <(subnet-routes local)
   if (( 0 < ${#routes[@]} )); then
-    bashio::log.info "Adding advertised local subnets to ip rules with higher priority than Tailscale's routing,"
-    bashio::log.info "to prevent routing advertised local subnets if the same subnet is routed within your tailnet."
+    bashio::log.info "Adding local subnets to ip rules with higher priority than Tailscale's routing,"
+    bashio::log.info "to prevent routing local subnets if the same subnet is routed within your tailnet."
   fi
   for route in "${routes[@]}"; do
     if [[ "${route}" =~ .*:.* ]]; then

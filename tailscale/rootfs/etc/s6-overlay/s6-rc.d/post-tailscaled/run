@@ -63,7 +63,7 @@ tags=$(bashio::config "tags//[] | join(\",\")" "")
 options+=(--advertise-tags="${tags}")
 
 # Advertise subnet routes
-readarray -t routes < <(subnet-routes)
+readarray -t routes < <(subnet-routes advertised)
 IFS=","
 options+=(--advertise-routes="${routes[*]}")
 unset IFS
@@ -102,7 +102,7 @@ bashio::log.info "Tailscale is running"
 if bashio::config.false "userspace_networking"; then
   readarray -t colliding_routes < <( \
     comm -1 -2 \
-      <(printf "%s" "${routes[@]/%/$'\n'}") \
+      <(subnet-routes local) \
       <(/opt/tailscale status --json --peers=true --self=false \
         | jq -rc '.Peer[] | select(has("PrimaryRoutes")) | .PrimaryRoutes[]' \
         | sort -u))
