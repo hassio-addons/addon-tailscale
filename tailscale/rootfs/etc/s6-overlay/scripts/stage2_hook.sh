@@ -21,7 +21,7 @@ then
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/mss-clamping
 fi
 
-# Disable taildrop service when it is has been explicitly disabled
+# Disable taildrop service when it has been explicitly disabled
 if bashio::config.false 'taildrop'; then
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/taildrop
 fi
