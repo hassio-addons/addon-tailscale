@@ -36,6 +36,7 @@ schema:
   login_server: url?
   proxy: bool?
   snat_subnet_routes: bool?
-  tags: ["match(^tag:[a-zA-Z0-9]-?[a-zA-Z0-9]+$)?"]
+  tags:
+    - "match(^tag:[a-zA-Z0-9]-?[a-zA-Z0-9]+$)?"
   taildrop: bool?
   userspace_networking: bool?
