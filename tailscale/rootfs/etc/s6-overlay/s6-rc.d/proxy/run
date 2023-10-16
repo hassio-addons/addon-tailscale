@@ -48,7 +48,7 @@ if bashio::config.true 'proxy'; then
     bashio::exit.nok
   fi
   bashio::log.info "Tailscale Proxy is enabled:"
-  bashio::log.info "  Your Home Assistant instance is available within your Tailnet VPN at"
+  bashio::log.info "  Your Home Assistant instance is available within your tailnet VPN at"
   bashio::log.info "  https://${domain}:${https_port}"
 
 fi

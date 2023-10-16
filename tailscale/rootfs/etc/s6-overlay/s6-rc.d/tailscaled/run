@@ -28,7 +28,7 @@ if bashio::debug ; then
   exec /opt/tailscaled "${options[@]}"
 else
   bashio::log.notice \
-    "Tailscale logs will be suppressed after 200 lines, set add-on's "\
+    "Tailscale logs will be suppressed after 200 lines, set add-on's" \
     "configuration option 'log_level' to 'debug' to see further logs"
 
   /opt/tailscaled "${options[@]}" 2>&1 \
