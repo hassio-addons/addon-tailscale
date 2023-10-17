@@ -1,0 +1,68 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Copies Tailscale Proxy certificates to /ssl folder
+# ==============================================================================
+
+readonly CERTS_FOLDER=/data/state/certs
+
+declare domain
+declare certfile keyfile
+declare cp_log
+
+# Check if Tailscale HTTPS is enabled
+if ! /opt/tailscale status --self=true --peers=false --json \
+  | jq -rce '.Self.CapMap | has("https")' > /dev/null;
+then
+  bashio::log.error "Tailscale's HTTPS support is disabled"
+  bashio::exit.nok
+fi
+
+domain=$(/opt/tailscale status --self=true --peers=false --json | jq -rc ".CertDomains[0]")
+certfile=$(bashio::config "lets_encrypt.certfile")
+keyfile=$(bashio::config "lets_encrypt.keyfile")
+
+# After tailscale serv is up, it will automatically update the files, we can catch the events
+# But if the update is already happened, inotifywait can't catch it
+# That's why inotifywait is running in non-quiet mode, and the event "Watches established."
+#   printed on stderr triggers an initial update of the files,
+#   and it updates the files on the first usage of the service also
+inotifywait --monitor "${CERTS_FOLDER}" --include='^.*?\.(crt|key)$' \
+    --event='close_write,moved_to' --format '%f' \
+  |& while IFS= read -r changed
+do
+  # Currently if the machine name is changed, tailscale changes the json status,
+  # but the proxy isn't restarted and do not change to the new domain, and won't create new certs for the new domain,
+  # restart of the add-on is required, and a restart will "update" the $domain variable
+  # # Check if domain has changed
+  # domain=$(/opt/tailscale status --self=true --peers=false --json | jq -rc ".CertDomains[0]")
+
+  if [[ "${changed}" == "Watches established." ]]; then
+    changed="[WATCHES_ESTABLISHED]"
+  fi
+
+  # Check if filename is the domain name (do not update on other certificate changes)
+  if [[ "${changed}" == "[WATCHES_ESTABLISHED]" || "${changed%.*}" == "${domain}" ]]; then
+    if [[ "${changed}" == "[WATCHES_ESTABLISHED]" || "${changed##*.}" == "crt" ]]; then
+      if ! cp_log=$(cp --force --update=older --preserve=mode,ownership,timestamps --verbose \
+          "${CERTS_FOLDER}/${domain}.crt" "/ssl/${certfile}");
+      then
+        bashio::log.error "Unable to copy certificate file '${CERTS_FOLDER}/${domain}.crt' to '/ssl/${certfile}'"
+        bashio::log.error "Check configuration and restart add-on"
+      elif [[ "${cp_log:0:7}" != "skipped" ]]; then
+        bashio::log.info "Updated certificate file '${domain}.crt' to '/ssl/${certfile}'"
+      fi
+    fi
+    if [[ "${changed}" == "[WATCHES_ESTABLISHED]" || "${changed##*.}" == "key" ]]; then
+      if ! cp_log=$(cp --force --update=older --preserve=mode,ownership,timestamps --verbose \
+          "${CERTS_FOLDER}/${domain}.key" "/ssl/${keyfile}");
+      then
+        bashio::log.error "Unable to copy key file '${CERTS_FOLDER}/${domain}.key' to '/ssl/${keyfile}'"
+        bashio::log.error "Check configuration and restart add-on"
+      elif [[ "${cp_log:0:7}" != "skipped" ]]; then
+        bashio::log.info "Updated key file '${domain}.key' to '/ssl/${keyfile}'"
+      fi
+    fi
+  fi
+done

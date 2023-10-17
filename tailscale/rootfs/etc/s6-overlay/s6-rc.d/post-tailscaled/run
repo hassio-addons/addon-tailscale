@@ -120,6 +120,15 @@ then
   done
 fi
 
+# Warn about invalid certificate service configuration (can't be checked by the UI)
+if (bashio::config.has_value "lets_encrypt.certfile" && ! bashio::config.has_value "lets_encrypt.keyfile") ||
+    (! bashio::config.has_value "lets_encrypt.certfile" && bashio::config.has_value "lets_encrypt.keyfile");
+then
+    bashio::log.warning \
+        "Both 'lets_encrypt' options ('lets_encrypt.certfile' and 'lets_encrypt.keyfile')" \
+        "has to be specified or omitted together."
+fi
+
 # Notify about userspace networking
 if ! bashio::config.has_value "userspace_networking" || \
     bashio::config.true "userspace_networking";

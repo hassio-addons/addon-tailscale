@@ -25,3 +25,11 @@ fi
 if bashio::config.false 'taildrop'; then
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/taildrop
 fi
+
+# Disable certificate service when it has not been configured
+if ! bashio::config.true 'proxy' || \
+    ! bashio::config.has_value "lets_encrypt.certfile" || \
+    ! bashio::config.has_value "lets_encrypt.keyfile";
+then
+    rm /etc/s6-overlay/s6-rc.d/user/contents.d/certificate
+fi

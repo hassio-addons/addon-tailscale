@@ -27,6 +27,7 @@ devices:
   - /dev/net/tun
 map:
   - share:rw
+  - ssl:rw
 schema:
   accept_dns: bool?
   accept_routes: bool?
@@ -34,6 +35,9 @@ schema:
   advertise_routes:
     - "match(^(((25[0-5]|(2[0-4]|1\\d|[1-9]?)\\d)\\.){3}(25[0-5]|(2[0-4]|1\\d|[1-9]?)\\d)\\/(3[0-2]|[12]?\\d)|[a-fA-F\\d.:]+:[a-fA-F\\d.:]+\\/(12[0-8]|(1[01]|[1-9]?)\\d))$)?"
   funnel: bool?
+  lets_encrypt:
+    certfile: str?
+    keyfile: str?
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
   login_server: url?
   proxy: bool?
