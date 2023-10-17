@@ -24,10 +24,6 @@ if bashio::var.true "$(bashio::core.ssl)"; then
 fi
 
 # Set up proxy
-# Note: Configuration is persistent between reboots, though configuring the same value won't cause duplicate entries,
-#       but will overwite previous entry if core.port has been changed
-# Note: If a tailnet node is renamed, there will be deprecated entries in status json under .Web.<different-domain:443>,
-#       those can't be removed, no command for that situation currently
 if ! /opt/tailscale serve https:443 / "http://127.0.0.1:$(bashio::core.port)"; then
   bashio::log.error "Unable to configure Tailscale Proxy"
   bashio::exit.nok
