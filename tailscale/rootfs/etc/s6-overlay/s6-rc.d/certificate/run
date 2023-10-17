@@ -20,8 +20,8 @@ then
 fi
 
 domain=$(/opt/tailscale status --self=true --peers=false --json | jq -rc ".CertDomains[0]")
-certfile=$(bashio::config "lets_encrypt.certfile")
-keyfile=$(bashio::config "lets_encrypt.keyfile")
+certfile=$(bashio::config "lets_encrypt_certfile")
+keyfile=$(bashio::config "lets_encrypt_keyfile")
 
 # After tailscale serv is up, it will automatically update the files, we can catch the events
 # But if the update is already happened, inotifywait can't catch it
