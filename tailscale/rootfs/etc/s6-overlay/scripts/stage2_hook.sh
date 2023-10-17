@@ -21,12 +21,12 @@ if bashio::config.false 'taildrop'; then
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/taildrop
 fi
 
-# Disable proxy service when it is has been explicitly disabled
-if bashio::config.false 'proxy'; then
+# Disable proxy service when it has not been explicitly enabled
+if ! bashio::config.true 'proxy'; then
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/proxy
 fi
 
-# Disable funnel service when it is has been explicitly disabled
-if bashio::config.false 'proxy' || bashio::config.false 'funnel'; then
+# Disable funnel service when it has not been explicitly enabled
+if ! bashio::config.true 'proxy' || ! bashio::config.true 'funnel'; then
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/funnel
 fi
