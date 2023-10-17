@@ -36,7 +36,7 @@ if bashio::config.true 'proxy'; then
   # Test Home Assistant's HTTP reverse proxy configuration
   if (( 200 != $(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$(bashio::core.port)" -H "X-Forwarded-For: 127.0.0.1") )); then
     bashio::log.error "Unable to connect to Home Assistant"
-    bashio::log.error "Please check your configuration based on the add-on's Documentation under \"Option: proxy\""
+    bashio::log.error "Please check your configuration based on the add-on's documentation under \"Option: proxy\""
     bashio::exit.nok
   fi
 
