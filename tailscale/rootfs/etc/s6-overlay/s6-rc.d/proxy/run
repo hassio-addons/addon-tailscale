@@ -11,8 +11,8 @@ declare domain
 if ! /opt/tailscale status --self=true --peers=false --json \
   | jq -rce '.Self.CapMap | has("https")' > /dev/null;
 then
-  bashio::log.notice "Tailscale's HTTPS support is disabled, therefore add-on's Tailscale Proxy functionality is disabled"
-  bashio::exit.ok
+  bashio::log.error "Tailscale's HTTPS support is disabled. Therefore, can't start the add-on's Tailscale Proxy functionality."
+  bashio::exit.nok
 fi
 
 domain=$(/opt/tailscale status --self=true --peers=false --json | jq -rc ".CertDomains[0]")
