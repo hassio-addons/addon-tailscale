@@ -11,7 +11,7 @@ declare domain
 if ! /opt/tailscale status --self=true --peers=false --json \
   | jq -rce '.Self.CapMap | has("https")' > /dev/null;
 then
-  bashio::log.error "Tailscale's HTTPS support is disabled. Therefore, can't start the add-on's Tailscale Funnel functionality."
+  bashio::log.error "Tailscale's HTTPS support is disabled"
   bashio::exit.nok
 fi
 
@@ -21,7 +21,7 @@ domain=$(/opt/tailscale status --self=true --peers=false --json | jq -rc ".CertD
 if ! /opt/tailscale status --self=true --peers=false --json \
   | jq -rce '.Self.CapMap | has("funnel")' > /dev/null;
 then
-  bashio::log.error "Tailscale's Funnel support is disabled. Therefore, can't start the add-on's Tailscale Funnel functionality."
+  bashio::log.error "Tailscale's Funnel support is disabled"
   bashio::exit.nok
 fi
 
