@@ -8,6 +8,7 @@ declare -a options
 declare -a routes=()
 declare route
 declare -a colliding_routes=()
+declare auth_key
 declare login_server
 declare tags
 declare keyexpiry
@@ -40,6 +41,13 @@ then
   options+=(--advertise-exit-node)
 else
   options+=(--advertise-exit-node=false)
+fi
+
+# Use configured auth-key
+if bashio::config.has_value "auth_key";
+then
+  auth_key=$(bashio::config "auth_key")
+  options+=(--auth-key="${auth_key}")
 fi
 
 # Get configured control server

@@ -26,6 +26,11 @@ configuration:
       your device is connected to) to other clients on your tailnet.
       When not set, the add-on by default will advertise routes to your subnets on all
       supported interfaces.
+  auth_key:
+    name: Pre-authentication key
+    description: >-
+      Pre-authentication keys let you register new nodes without needing to sign in
+      via a web browser.
   funnel:
     name: Tailscale Funnel
     description: >-
