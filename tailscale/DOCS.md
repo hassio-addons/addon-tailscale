@@ -147,20 +147,11 @@ proxying for HTTPS communication.
 
 More information: [Tailscale Funnel][tailscale_info_funnel]
 
-1. Navigate to the [Access controls page][tailscale_acls] of the admin console,
-   and add the below policy entries to the policy file. See [Server role
-   accounts using ACL tags][tailscale_info_acls] for more information.
+1. Navigate to the [Access controls page][tailscale_acls] of the admin console:
 
-   ```json
-   {
-     "nodeAttrs": [
-       {
-         "target": ["autogroup:members"],
-         "attr": ["funnel"]
-       }
-     ]
-   }
-   ```
+   - Add the required `funnel` node attribute to the tailnet policy file. See
+     [Tailnet policy file requirement][tailscale_info_funnel_policy_requirement]
+     for more information.
 
 1. Restart the add-on.
 
@@ -375,6 +366,7 @@ SOFTWARE.
 [tailscale_dns]: https://login.tailscale.com/admin/dns
 [tailscale_info_acls]: https://tailscale.com/kb/1068/acl-tags/
 [tailscale_info_funnel]: https://tailscale.com/kb/1223/tailscale-funnel/
+[tailscale_info_funnel_policy_requirement]: https://tailscale.com/kb/1223/tailscale-funnel/#tailnet-policy-file-requirement
 [tailscale_info_https]: https://tailscale.com/kb/1153/enabling-https/
 [tailscale_info_key_expiry]: https://tailscale.com/kb/1028/key-expiry/
 [tailscale_info_site_to_site]: https://tailscale.com/kb/1214/site-to-site/
