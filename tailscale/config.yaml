@@ -41,3 +41,7 @@ schema:
   tags: ["match(^tag:[a-zA-Z0-9]-?[a-zA-Z0-9]+$)?"]
   taildrop: bool?
   userspace_networking: bool?
+ports:
+  443/tcp: 443
+ports_description:
+  443/tcp: Tailscale Proxy and Funnel port

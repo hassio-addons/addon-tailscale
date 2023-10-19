@@ -5,31 +5,60 @@
 # Enables Tailscale Funnel feature
 # ==============================================================================
 
+declare already_configured_funnel_port
+declare https_port
 declare domain
 
-# Check if Tailscale HTTPS is enabled
-if ! /opt/tailscale status --self=true --peers=false --json \
-  | jq -rce '.Self.CapMap | has("https")' > /dev/null;
-then
-  bashio::log.error "Tailscale's HTTPS support is disabled"
-  bashio::exit.nok
-fi
+# Tailscale serve and funnel configuration is persistent between restarts
+# Disable previously configured tailscale funnel functionality with deleting the tailscale funnel configuration
+# There is no tailscale funnel reset command currently, we loop through previous config
+for already_configured_funnel_port in $( \
+  /opt/tailscale funnel status --json \
+  | jq -rc '.AllowFunnel // [] | keys[]' \
+  | sed -nr 's/^[^:]*:(\d*)$/\1/p');
+do
+  if ! /opt/tailscale funnel "${already_configured_funnel_port}" off; then
+    bashio::log.error "Unable to reset Tailscale Funnel settings"
+    bashio::exit.nok
+  fi
+done
 
-domain=$(/opt/tailscale status --self=true --peers=false --json | jq -rc ".CertDomains[0]")
+# Enable funnel service only when it has been explicitly enabled
+if bashio::config.true 'proxy' && bashio::config.true 'funnel'; then
 
-# Check if Funnel is available
-if ! /opt/tailscale status --self=true --peers=false --json \
-  | jq -rce '.Self.CapMap | has("funnel")' > /dev/null;
-then
-  bashio::log.error "Tailscale's Funnel support is disabled"
-  bashio::exit.nok
-fi
+  https_port=$(bashio::addon.port 443)
 
-# Set up funnel
-if ! /opt/tailscale funnel 443 on; then
-  bashio::log.error "Unable to configure Tailscale Funnel"
-  bashio::exit.nok
+  # Check if HTTPS port is configured properly
+  if ! bashio::var.has_value "${https_port}"; then
+    bashio::log.error "No HTTPS port is configured"
+    bashio::exit.nok
+  fi
+
+  # Check if Tailscale HTTPS is enabled
+  if ! /opt/tailscale status --self=true --peers=false --json \
+    | jq -rce '.Self.CapMap | has("https")' > /dev/null;
+  then
+    bashio::log.error "Tailscale's HTTPS support is disabled"
+    bashio::exit.nok
+  fi
+
+  domain=$(/opt/tailscale status --self=true --peers=false --json | jq -rc ".CertDomains[0]")
+
+  # Check if Funnel is available
+  if ! /opt/tailscale status --self=true --peers=false --json \
+    | jq -rce '.Self.CapMap | has("funnel")' > /dev/null;
+  then
+    bashio::log.error "Tailscale's Funnel support is disabled"
+    bashio::exit.nok
+  fi
+
+  # Set up funnel
+  if ! /opt/tailscale funnel "${https_port}" on; then
+    bashio::log.error "Unable to configure Tailscale Funnel"
+    bashio::exit.nok
+  fi
+  bashio::log.info "Tailscale Funnel is enabled:"
+  bashio::log.info "  Your Home Assistant instance is publicly available on the internet at"
+  bashio::log.info "  https://${domain}:${https_port}"
+
 fi
-bashio::log.info "Tailscale Funnel is enabled:"
-bashio::log.info "  Your Home Assistant instance is publicly available on the internet at"
-bashio::log.info "  https://${domain}"
