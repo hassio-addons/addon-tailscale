@@ -158,6 +158,10 @@ More information: [Tailscale Funnel][tailscale_info_funnel]
 **Note**: _After initial setup, it can take up to 10 minutes for the domain to
 be publicly available._
 
+**Note:** _You should not use any port number in the URL that you used
+previously to access Home Assistant. Tailscale Funnel works on the default HTTPS
+port 443._
+
 **Note:** _If you encounter strange browser behaviour or strange error messages,
 try to clear all site related cookies, clear all browser cache, restart browser._
 
@@ -252,6 +256,10 @@ More information: [Enabling HTTPS][tailscale_info_https]
    - Under HTTPS Certificates section, click Enable HTTPS.
 
 1. Restart the add-on.
+
+**Note:** _You should not use any port number in the URL that you used
+previously to access Home Assistant. Tailscale Proxy works on the default HTTPS
+port 443._
 
 ### Option: `snat_subnet_routes`
 

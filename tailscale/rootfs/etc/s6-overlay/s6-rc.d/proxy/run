@@ -5,50 +5,29 @@
 # Enables Tailscale Proxy feature
 # ==============================================================================
 
-declare https_port
 declare domain
 
-# Tailscale serve and funnel configuration is persistent between restarts
-# Disable previously configured tailscale serve functionality with deleting the tailscale serve configuration
-if ! /opt/tailscale serve reset; then
-  bashio::log.error "Unable to reset Tailscale Proxy settings"
+# Check if Tailscale HTTPS is enabled
+if ! /opt/tailscale status --self=true --peers=false --json \
+  | jq -rce '.Self.CapMap | has("https")' > /dev/null;
+then
+  bashio::log.error "Tailscale's HTTPS support is disabled"
   bashio::exit.nok
 fi
 
-# Enable proxy service only when it has been explicitly enabled
-if bashio::config.true 'proxy'; then
+domain=$(/opt/tailscale status --self=true --peers=false --json | jq -rc ".CertDomains[0]")
 
-  https_port=$(bashio::addon.port 443)
-
-  # Check if HTTPS port is configured properly
-  if ! bashio::var.has_value "${https_port}"; then
-    bashio::log.error "No HTTPS port is configured"
-    bashio::exit.nok
-  fi
-
-  # Check if Tailscale HTTPS is enabled
-  if ! /opt/tailscale status --self=true --peers=false --json \
-    | jq -rce '.Self.CapMap | has("https")' > /dev/null;
-  then
-    bashio::log.error "Tailscale's HTTPS support is disabled"
-    bashio::exit.nok
-  fi
-
-  domain=$(/opt/tailscale status --self=true --peers=false --json | jq -rc ".CertDomains[0]")
-
-  # Checking if SSL is used
-  if bashio::var.true "$(bashio::core.ssl)"; then
-    bashio::log.error "Tailscale's HTTPS support is enabled, but Home Assistant is not accessible through plain HTTP connection"
-    bashio::exit.nok
-  fi
-
-  # Set up proxy
-  if ! /opt/tailscale serve "https:${https_port}" / "http://127.0.0.1:$(bashio::core.port)"; then
-    bashio::log.error "Unable to configure Tailscale Proxy"
-    bashio::exit.nok
-  fi
-  bashio::log.info "Tailscale Proxy is enabled:"
-  bashio::log.info "  Your Home Assistant instance is available within your tailnet VPN at"
-  bashio::log.info "  https://${domain}:${https_port}"
-
+# Checking if SSL is used
+if bashio::var.true "$(bashio::core.ssl)"; then
+  bashio::log.error "Tailscale's HTTPS support is enabled, but Home Assistant is not accessible through plain HTTP connection"
+  bashio::exit.nok
 fi
+
+# Set up proxy
+if ! /opt/tailscale serve https:443 / "http://127.0.0.1:$(bashio::core.port)"; then
+  bashio::log.error "Unable to configure Tailscale Proxy"
+  bashio::exit.nok
+fi
+bashio::log.info "Tailscale Proxy is enabled:"
+bashio::log.info "  Your Home Assistant instance is available within your Tailnet VPN at"
+bashio::log.info "  https://${domain}"
