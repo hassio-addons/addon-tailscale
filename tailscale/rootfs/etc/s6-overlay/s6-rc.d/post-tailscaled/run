@@ -89,18 +89,6 @@ do
   sleep 2
 done
 
-# Note: Tailscale serve and funnel configuration is persistent between restarts,
-#       we have to disable them, then reenable them if they are required
-# Note: If a tailnet node is renamed, there will be deprecated entries in status json
-#       under .Web.<different-domain:443>,
-#       those can be removed only with reseting the serve configuration
-if ! /opt/tailscale serve reset || \
-  ! /opt/tailscale funnel 443 off;
-then
-  bashio::log.error "Unable to reset Tailscale Proxy and Tailscale Funnel settings"
-  bashio::exit.nok
-fi
-
 # Warn about key expiration
 if keyexpiry=$(/opt/tailscale status --self=true --peers=false --json | jq -rce '.Self.KeyExpiry'); then
   bashio::log.warning "The connection's key will expire on: ${keyexpiry}"
