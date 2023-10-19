@@ -6,6 +6,7 @@
 # ==============================================================================
 
 declare already_configured_funnel_port
+declare https_port
 declare domain
 
 # Tailscale serve and funnel configuration is persistent between restarts
@@ -24,6 +25,14 @@ done
 
 # Enable funnel service only when it has been explicitly enabled
 if bashio::config.true 'proxy' && bashio::config.true 'funnel'; then
+
+  https_port=$(bashio::addon.port 443)
+
+  # Check if HTTPS port is configured properly
+  if ! bashio::var.has_value "${https_port}"; then
+    bashio::log.error "No HTTPS port is configured"
+    bashio::exit.nok
+  fi
 
   # Check if Tailscale HTTPS is enabled
   if ! /opt/tailscale status --self=true --peers=false --json \
@@ -44,12 +53,12 @@ if bashio::config.true 'proxy' && bashio::config.true 'funnel'; then
   fi
 
   # Set up funnel
-  if ! /opt/tailscale funnel 443 on; then
+  if ! /opt/tailscale funnel "${https_port}" on; then
     bashio::log.error "Unable to configure Tailscale Funnel"
     bashio::exit.nok
   fi
   bashio::log.info "Tailscale Funnel is enabled:"
   bashio::log.info "  Your Home Assistant instance is publicly available on the internet at"
-  bashio::log.info "  https://${domain}"
+  bashio::log.info "  https://${domain}:${https_port}"
 
 fi

@@ -77,3 +77,8 @@ configuration:
       Assistant instance, disable userspace networking mode, which will create a
       `tailscale0` network interface on your host.
       When not set, this option is enabled by default.
+network:
+  443/tcp: >-
+    This option allows you to configure the port the Tailscale Proxy and Funnel
+    features are accessible on.
+    Only port number 443, 8443 and 10000 is allowed by Tailscale Funnel.

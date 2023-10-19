@@ -5,6 +5,7 @@
 # Enables Tailscale Proxy feature
 # ==============================================================================
 
+declare https_port
 declare domain
 
 # Tailscale serve and funnel configuration is persistent between restarts
@@ -16,6 +17,14 @@ fi
 
 # Enable proxy service only when it has been explicitly enabled
 if bashio::config.true 'proxy'; then
+
+  https_port=$(bashio::addon.port 443)
+
+  # Check if HTTPS port is configured properly
+  if ! bashio::var.has_value "${https_port}"; then
+    bashio::log.error "No HTTPS port is configured"
+    bashio::exit.nok
+  fi
 
   # Check if Tailscale HTTPS is enabled
   if ! /opt/tailscale status --self=true --peers=false --json \
@@ -34,12 +43,12 @@ if bashio::config.true 'proxy'; then
   fi
 
   # Set up proxy
-  if ! /opt/tailscale serve https:443 / "http://127.0.0.1:$(bashio::core.port)"; then
+  if ! /opt/tailscale serve "https:${https_port}" / "http://127.0.0.1:$(bashio::core.port)"; then
     bashio::log.error "Unable to configure Tailscale Proxy"
     bashio::exit.nok
   fi
   bashio::log.info "Tailscale Proxy is enabled:"
   bashio::log.info "  Your Home Assistant instance is available within your Tailnet VPN at"
-  bashio::log.info "  https://${domain}"
+  bashio::log.info "  https://${domain}:${https_port}"
 
 fi
