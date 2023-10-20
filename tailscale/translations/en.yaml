@@ -50,6 +50,11 @@ configuration:
       This option allows you to enable Tailscale's Proxy feature to present your
       Home Assistant instance on your tailnet with a valid certificate.
       When not set, this option is enabled by default.
+  proxy_target_port:
+    name: Proxy Target Port
+    description: >-
+      Allows you to specify an alternative port for the proxy setup. Useful when setting up a reverse proxy.
+      When not set, this option defaults to the Home Assistant core port.
   snat_subnet_routes:
     name: Source NAT subnet routes
     description: >-

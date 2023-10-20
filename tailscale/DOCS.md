@@ -69,6 +69,7 @@ advertise_routes:
 log_level: info
 login_server: "https://controlplane.tailscale.com"
 proxy: true
+proxy_target_port: 8123 
 snat_subnet_routes: true
 tags:
   - tag:example
@@ -271,6 +272,11 @@ More information: [Enabling HTTPS][tailscale_info_https]
 **Note:** _You should not use any port number in the URL that you used
 previously to access Home Assistant. Tailscale Proxy works on the default HTTPS
 port 443._
+
+### Option: `proxy_target_port`
+
+Allows you to specify an alternative port for the proxy setup. Useful when setting up a reverse proxy using, for example, the Nginx add-on.
+When not specified, this option will default to the Home Assistant core port.
 
 ### Option: `snat_subnet_routes`
 

@@ -6,6 +6,7 @@
 # ==============================================================================
 
 declare domain
+declare proxy_target_port
 
 # Check if Tailscale HTTPS is enabled
 if ! /opt/tailscale status --self=true --peers=false --json \
@@ -25,10 +26,18 @@ fi
 
 # Set up proxy
 # Note: Configuration is persistent between reboots, though configuring the same value won't cause duplicate entries,
-#       but will overwite previous entry if core.port has been changed
+#       but will overwrite the previous entry if core.port has been changed
 # Note: If a tailnet node is renamed, there will be deprecated entries in status json under .Web.<different-domain:443>,
 #       those can't be removed, no command for that situation currently
-if ! /opt/tailscale serve https:443 / "http://127.0.0.1:$(bashio::core.port)"; then
+
+# Check if proxy_target_port is configured in the add-on settings
+if bashio::config.has_value 'proxy_target_port'; then
+  proxy_target_port=$(bashio::config 'proxy_target_port')
+else
+  proxy_target_port=$(bashio::core.port)
+fi
+
+if ! /opt/tailscale serve https:443 / "http://127.0.0.1:${proxy_target_port}"; then
   bashio::log.error "Unable to configure Tailscale Proxy"
   bashio::exit.nok
 fi

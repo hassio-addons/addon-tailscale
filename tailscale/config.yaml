@@ -37,6 +37,7 @@ schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
   login_server: url?
   proxy: bool?
+  proxy_target_port: int?
   snat_subnet_routes: bool?
   tags: ["match(^tag:[a-zA-Z0-9]-?[a-zA-Z0-9]+$)?"]
   taildrop: bool?
