@@ -32,7 +32,7 @@ configuration:
       This option allows you to enable Tailscale's Funnel feature to present your
       Home Assistant instance on the wider internet using your Tailscale domain.
       This requires Tailscale Proxy to be enabled.
-      When not set, this option is enabled by default.
+      When not set, this option is disabled by default.
   log_level:
     name: Log level
     description: >-
@@ -49,7 +49,7 @@ configuration:
     description: >-
       This option allows you to enable Tailscale's Proxy feature to present your
       Home Assistant instance on your tailnet with a valid certificate.
-      When not set, this option is enabled by default.
+      When not set, this option is disabled by default.
   snat_subnet_routes:
     name: Source NAT subnet routes
     description: >-

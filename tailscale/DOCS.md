@@ -28,8 +28,6 @@ however, it is nice to know where you need to go later on.
    [![Open this add-on in your Home Assistant instance.][addon-badge]][addon]
 
 1. Click the "Install" button to install the add-on.
-1. **See the "Option: `proxy`" section of this documentation for the necessary
-   configuration changes in Home Assistant!**
 1. Start the "Tailscale" add-on.
 1. Check the logs of the "Tailscale" add-on to see if everything went well.
 1. Open the Web UI of the "Tailscale" add-on to complete authentication and
@@ -62,13 +60,13 @@ device. See [Key expiry][tailscale_info_key_expiry] for more information.
 accept_dns: true
 accept_routes: true
 advertise_exit_node: true
-funnel: true
+funnel: false
 advertise_routes:
   - 192.168.1.0/24
   - fd12:3456:abcd::/64
 log_level: info
 login_server: "https://controlplane.tailscale.com"
-proxy: true
+proxy: false
 snat_subnet_routes: true
 tags:
   - tag:example
@@ -132,7 +130,7 @@ This requires Tailscale Proxy to be enabled.
 **Important:** See also the "Option: `proxy`" section of this documentation for the
 necessary configuration changes in Home Assistant!
 
-When not set, this option is enabled by default.
+When not set, this option is disabled by default.
 
 With the Tailscale Funnel feature, you can access your Home Assistant instance
 from the wider internet using your Tailscale domain (like
@@ -149,20 +147,11 @@ proxying for HTTPS communication.
 
 More information: [Tailscale Funnel][tailscale_info_funnel]
 
-1. Navigate to the [Access controls page][tailscale_acls] of the admin console,
-   and add the below policy entries to the policy file. See [Server role
-   accounts using ACL tags][tailscale_info_acls] for more information.
+1. Navigate to the [Access controls page][tailscale_acls] of the admin console:
 
-   ```json
-   {
-     "nodeAttrs": [
-       {
-         "target": ["autogroup:members"],
-         "attr": ["funnel"]
-       }
-     ]
-   }
-   ```
+   - Add the required `funnel` node attribute to the tailnet policy file. See
+     [Tailnet policy file requirement][tailscale_info_funnel_policy_requirement]
+     for more information.
 
 1. Restart the add-on.
 
@@ -231,7 +220,7 @@ balancing and failover is impossible with the current add-on behavior.
 
 ### Option: `proxy`
 
-When not set, this option is enabled by default.
+When not set, this option is disabled by default.
 
 Tailscale can provide a TLS certificate for your Home Assistant instance within
 your tailnet domain.
@@ -377,6 +366,7 @@ SOFTWARE.
 [tailscale_dns]: https://login.tailscale.com/admin/dns
 [tailscale_info_acls]: https://tailscale.com/kb/1068/acl-tags/
 [tailscale_info_funnel]: https://tailscale.com/kb/1223/tailscale-funnel/
+[tailscale_info_funnel_policy_requirement]: https://tailscale.com/kb/1223/tailscale-funnel/#tailnet-policy-file-requirement
 [tailscale_info_https]: https://tailscale.com/kb/1153/enabling-https/
 [tailscale_info_key_expiry]: https://tailscale.com/kb/1028/key-expiry/
 [tailscale_info_site_to_site]: https://tailscale.com/kb/1214/site-to-site/
