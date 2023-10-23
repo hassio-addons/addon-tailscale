@@ -99,7 +99,7 @@ SOFTWARE.
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
-[armhf-shield]: https://img.shields.io/badge/armhf-yes-green.svg
+[armhf-shield]: https://img.shields.io/badge/armhf-no-red.svg
 [armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg
 [commits-shield]: https://img.shields.io/github/commit-activity/y/hassio-addons/addon-tailscale.svg
 [commits]: https://github.com/hassio-addons/addon-tailscale/commits/main
@@ -115,7 +115,7 @@ SOFTWARE.
 [github-actions]: https://github.com/hassio-addons/addon-tailscale/actions
 [github-sponsors-shield]: https://frenck.dev/wp-content/uploads/2019/12/github_sponsor.png
 [github-sponsors]: https://github.com/sponsors/frenck
-[i386-shield]: https://img.shields.io/badge/i386-yes-green.svg
+[i386-shield]: https://img.shields.io/badge/i386-no-red.svg
 [issue]: https://github.com/hassio-addons/addon-tailscale/issues
 [license-shield]: https://img.shields.io/github/license/hassio-addons/addon-tailscale.svg
 [maintenance-shield]: https://img.shields.io/maintenance/yes/2023.svg
