@@ -89,14 +89,14 @@ do
   sleep 2
 done
 
+bashio::log.info "Tailscale is running"
+
 # Warn about key expiration
 if keyexpiry=$(/opt/tailscale status --self=true --peers=false --json | jq -rce '.Self.KeyExpiry'); then
   bashio::log.warning "The connection's key will expire on: ${keyexpiry}"
   bashio::log.warning "Consider disabling key expiry to avoid losing connection to your Home Assistant device."
   bashio::log.warning "Please check your configuration based on the add-on's documentation under \"Configuration\""
 fi
-
-bashio::log.info "Tailscale is running"
 
 # Warn about colliding subnet routes if non-userspace networking and accepting routes are enabled
 if bashio::config.false "userspace_networking" && \
@@ -120,12 +120,12 @@ then
   done
 fi
 
-# Warn about userspace networking
+# Notify about userspace networking
 if ! bashio::config.has_value "userspace_networking" || \
     bashio::config.true "userspace_networking";
 then
   bashio::log.notice "The add-on uses userspace networking mode."
   bashio::log.notice "If you need to access other clients on your tailnet from your Home Assistant instance,"
   bashio::log.notice "disable userspace networking mode, that will create a \"tailscale0\" network interface on your host."
-  bashio::log.notice "Please check your configuration based on the add-on's Documentation under \"Option: userspace_networking\""
+  bashio::log.notice "Please check your configuration based on the add-on's documentation under \"Option: userspace_networking\""
 fi
