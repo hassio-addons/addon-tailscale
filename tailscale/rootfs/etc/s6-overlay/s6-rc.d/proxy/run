@@ -33,9 +33,9 @@ if bashio::config.true 'proxy'; then
     bashio::exit.nok
   fi
 
-  if [[ $(bashio::info.state) != "running" ]]; then
+  if (( 200 != $(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$(bashio::core.port)") )); then
     # Warn that we can't test Home Assistant's HTTP reverse proxy configuration
-    bashio::log.warning "Home Assistant is not running, unable to test the connection to Home Assistant as reverse proxy"
+    bashio::log.warning "Home Assistant is not accessible, unable to test the connection to Home Assistant as reverse proxy"
   else
     # Test Home Assistant's HTTP reverse proxy configuration
     if (( 200 != $(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$(bashio::core.port)" -H "X-Forwarded-For: 127.0.0.1") )); then
