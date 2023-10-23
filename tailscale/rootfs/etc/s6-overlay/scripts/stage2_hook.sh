@@ -5,14 +5,19 @@
 # S6 Overlay stage2 hook to customize services
 # ==============================================================================
 
-# Disable protect-subnets service when userspace-networking is enabled
+# Disable protect-subnets service when userspace-networking is enabled or accepting routes is disabled
+if ! bashio::config.has_value "userspace_networking" || \
+    bashio::config.true "userspace_networking" || \
+    bashio::config.false "accept_routes";
+then
+    rm /etc/s6-overlay/s6-rc.d/user/contents.d/protect-subnets
+    rm /etc/s6-overlay/s6-rc.d/post-tailscaled/dependencies.d/protect-subnets
+fi
+
 # Disable mss-clamping service when userspace-networking is enabled
 if ! bashio::config.has_value "userspace_networking" || \
     bashio::config.true "userspace_networking";
 then
-    rm /etc/s6-overlay/s6-rc.d/user/contents.d/protect-subnets
-    rm /etc/s6-overlay/s6-rc.d/post-tailscaled/dependencies.d/protect-subnets
-
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/mss-clamping
 fi
 
