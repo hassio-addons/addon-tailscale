@@ -98,11 +98,8 @@ if keyexpiry=$(/opt/tailscale status --self=true --peers=false --json | jq -rce 
   bashio::log.warning "Please check your configuration based on the add-on's documentation under \"Configuration\""
 fi
 
-# Warn about colliding subnet routes if non-userspace networking and accepting routes are enabled
-if bashio::config.false "userspace_networking" && \
-  (! bashio::config.has_value "accept_routes" || \
-    bashio::config.true "accept_routes");
-then
+# Notify about colliding subnet routes if non-userspace-networking is enabled
+if bashio::config.false "userspace_networking"; then
   readarray -t colliding_routes < <( \
     comm -1 -2 \
       <(subnet-routes local) \
