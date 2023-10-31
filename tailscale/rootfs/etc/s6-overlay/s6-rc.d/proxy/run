@@ -9,6 +9,7 @@ declare domain
 
 # Tailscale serve and funnel configuration is persistent between restarts
 # Disable previously configured tailscale serve functionality with deleting the tailscale serve configuration
+# Due to funnel config is based on serve config, this will reset funnel config also
 if ! /opt/tailscale serve reset; then
   bashio::log.error "Unable to reset Tailscale Proxy settings"
   bashio::exit.nok
