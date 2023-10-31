@@ -44,7 +44,7 @@ if bashio::config.true 'proxy' && bashio::config.true 'funnel'; then
   fi
 
   # Set up funnel
-  if ! /opt/tailscale funnel 443 on; then
+  if ! /opt/tailscale funnel --bg --https=443 --set-path=/ "http://127.0.0.1:$(bashio::core.port)"; then
     bashio::log.error "Unable to configure Tailscale Funnel"
     bashio::exit.nok
   fi
