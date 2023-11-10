@@ -28,6 +28,7 @@ map:
 schema:
   accept_dns: bool?
   accept_routes: bool?
+  advanced_config: bool?
   advertise_exit_node: bool?
   advertise_routes:
     - "match(^(((25[0-5]|(2[0-4]|1\\d|[1-9]?)\\d)\\.){3}(25[0-5]|(2[0-4]|1\\d|[1-9]?)\\d)\\/(3[0-2]|[12]?\\d)|[a-fA-F\\d.:]+:[a-fA-F\\d.:]+\\/(12[0-8]|(1[01]|[1-9]?)\\d))$)?"

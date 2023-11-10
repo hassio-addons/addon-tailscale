@@ -12,6 +12,13 @@ configuration:
       This option allows you to accept subnet routes advertised by other nodes
       in your tailnet.
       When not set, this option is enabled by default.
+  advanced_config:
+    name: Advanced (Tailscale Proxy and Funnel) config
+    description: >-
+      This option overrides the add-on's Tailscale Proxy and Tailscale Funnel
+      settings. The add-on will not change any proxy or funnel related tailscale
+      settings on startup.
+      When not set, this option is disabled by default.
   advertise_exit_node:
     name: Advertise as an exit node
     description: >-
