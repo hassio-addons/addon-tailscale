@@ -90,7 +90,7 @@ unset IFS
 # Wait for the network to be available and logged in
 while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock" || \
   ! /opt/tailscale status --json --peers=false --self=false \
-    | jq --exit-status '.BackendState == "Running" or .BackendState == "NeedsLogin"' > /dev/null;
+    | jq --exit-status '.BackendState == "Running" or .BackendState == "NeedsLogin" or .BackendState == "Stopped"' > /dev/null;
 do
   sleep 2
 done
