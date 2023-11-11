@@ -118,7 +118,7 @@ working properly.
 Recommended steps to configure:
 
 1. Login to this add-on's container with
-   `docker exec -it addon_09716aab_tailscale /bin/bash`
+   `docker exec -it addon_a0d7b954_tailscale /bin/bash`
 
 1. Fine tune your tailscale settings with manual `/opt/tailscale serve --bg ...` and
    `/opt/tailscale funnel --bg ...` commands.
