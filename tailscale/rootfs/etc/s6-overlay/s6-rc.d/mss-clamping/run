@@ -41,7 +41,7 @@ if (( 0 < ${#routes[@]} )); then
     readarray -t interfaces < <(printf "%s" "${interfaces[@]/%/$'\n'}" | sort -u)
 
     for interface in "${interfaces[@]}"; do
-      bashio::log.info "  Clamping the MSS for interface ${interface}"
+      bashio::log.info "  Clamping the MSS for interface ${interface} (IPv4)"
       if [[ "${interface}" == $(iptables -t mangle -S FORWARD \
         | { grep -E "^-A FORWARD -i tailscale\d -o ${interface}" || true ;} \
         | sed -nr 's/^.*?-o\s([A-Za-z0-9]+)\s.*$/\1/p') ]]
@@ -49,6 +49,15 @@ if (( 0 < ${#routes[@]} )); then
         bashio::log.notice "  MSS is already clamped for interface ${interface}"
       else
         iptables -t mangle -A FORWARD -i tailscale0 -o ${interface} -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+      fi
+      bashio::log.info "  Clamping the MSS for interface ${interface} (IPv6)"
+      if [[ "${interface}" == $(ip6tables -t mangle -S FORWARD \
+        | { grep -E "^-A FORWARD -i tailscale\d -o ${interface}" || true ;} \
+        | sed -nr 's/^.*?-o\s([A-Za-z0-9]+)\s.*$/\1/p') ]]
+      then
+        bashio::log.notice "  MSS is already clamped for interface ${interface}"
+      else
+        ip6tables -t mangle -A FORWARD -i tailscale0 -o ${interface} -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
       fi
     done
   fi
