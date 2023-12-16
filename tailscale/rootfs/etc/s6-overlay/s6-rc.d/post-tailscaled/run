@@ -91,8 +91,8 @@ done
 
 bashio::log.info "Tailscale is running"
 
-# Delete previously created persistent serve (proxy and funnel) configuration ONCE
-# After proxy and funnel services are longrun services, we do not modify the serve state permanently
+# Delete previously created persistent tailscale serve configuration ONCE
+# After add-on's serve (proxy and funnel) service is a longrun service, we do not modify the serve state permanently
 # This step can be removed in a later version with the file in the data folder also
 if ! bashio::fs.file_exists "/data/final_serve_reset_is_done"; then
   if ! /opt/tailscale serve reset; then
