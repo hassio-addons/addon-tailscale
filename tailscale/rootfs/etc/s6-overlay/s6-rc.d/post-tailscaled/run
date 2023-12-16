@@ -91,6 +91,17 @@ done
 
 bashio::log.info "Tailscale is running"
 
+# Delete previously created persistent serve (proxy and funnel) configuration ONCE
+# After proxy and funnel services are longrun services, we do not modify the serve state permanently
+# This step can be removed in a later version with the file in the data folder also
+if ! bashio::fs.file_exists "/data/final_serve_reset_is_done"; then
+  if ! /opt/tailscale serve reset; then
+    bashio::log.error "Unable to remove previous Tailscale Proxy and Funnel settings"
+    bashio::exit.nok
+  fi
+  touch "/data/final_serve_reset_is_done"
+fi
+
 # Warn about key expiration
 if keyexpiry=$(/opt/tailscale status --self=true --peers=false --json | jq -rce '.Self.KeyExpiry'); then
   bashio::log.warning "The connection's key will expire on: ${keyexpiry}"
