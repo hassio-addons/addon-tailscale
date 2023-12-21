@@ -22,12 +22,12 @@ if bashio::config.false "userspace_networking"; then
   # It is possible to get "ERROR: Got unexpected response from the API: System is not ready with state: setup"
   # So we wait a little
   while ! bashio::api.supervisor GET "/addons/self/options/config" false &> /dev/null; do
-    if (( wait_counter++ == 15 )); then
+    if (( wait_counter++ == 18 )); then
       bashio::log.error "Supervisor is unreachable"
       bashio::exit.nok
     fi
     bashio::log.info "Waiting for the supervisor to be ready..."
-    sleep 2
+    sleep 5
   done
   if (( wait_counter != 0 )); then
     bashio::log.info "Supervisor is ready"
