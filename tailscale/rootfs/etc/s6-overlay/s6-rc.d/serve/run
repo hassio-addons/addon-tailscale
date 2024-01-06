@@ -5,6 +5,8 @@
 # Enables Tailscale Proxy and Funnel feature
 # ==============================================================================
 
+declare wait_counter=0
+declare curl_result
 declare tailscale_command
 
 # Check if Tailscale HTTPS is enabled
@@ -21,9 +23,23 @@ if bashio::var.true "$(bashio::core.ssl)"; then
   bashio::exit.nok
 fi
 
-if (( 200 != $(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$(bashio::core.port)") )); then
+# Wait a bit for HA to be available during startup
+while (( 200 != (curl_result=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$(bashio::core.port)")) )); do
+  if (( wait_counter++ == 18 )); then
+    break
+  fi
+  bashio::log.info "Waiting for Home Assistant to be ready..."
+  sleep 5
+done
+if (( wait_counter != 0 && curl_result == 200)); then
+  bashio::log.info "Home Assistant is ready"
+fi
+
+if (( 200 != curl_result )); then
   # Warn that we can't test Home Assistant's HTTP reverse proxy configuration
-  bashio::log.warning "Home Assistant is not accessible, unable to test the connection to Home Assistant as reverse proxy"
+  # We emit only a warning to let the add-on start, maybe this is the only connection to access the device, better to start than not
+  # Though starting tailscale serve without HA won't fail, but will fill the logs with messages forever in each ~10s
+  bashio::log.warning "Home Assistant is not accessible currently, unable to test the connection to Home Assistant as reverse proxy"
 else
   # Test Home Assistant's HTTP reverse proxy configuration
   if (( 200 != $(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$(bashio::core.port)" -H "X-Forwarded-For: 127.0.0.1") )); then
