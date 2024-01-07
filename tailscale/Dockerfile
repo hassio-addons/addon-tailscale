@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:14.3.3
+ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:15.0.3
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
@@ -10,13 +10,13 @@ ARG BUILD_ARCH=amd64
 ARG TAILSCALE_VERSION="v1.56.1"
 RUN \
     apk add --no-cache \
-        ip6tables=1.8.9-r2 \
-        ipcalc=1.0.2-r0 \
-        iproute2=6.3.0-r0 \
-        iptables=1.8.9-r2 \
-        nginx=1.24.0-r7 \
-        coreutils=9.3-r1 \
-        networkmanager-common=1.42.8-r0 \
+        ip6tables=1.8.10-r3 \
+        ipcalc=1.0.3-r0 \
+        iproute2=6.6.0-r0 \
+        iptables=1.8.10-r3 \
+        nginx=1.24.0-r14 \
+        coreutils=9.4-r1 \
+        networkmanager-common=1.44.2-r1 \
     \
     && ln -sf /sbin/xtables-nft-multi /sbin/ip6tables \
     && ln -sf /sbin/xtables-nft-multi /sbin/iptables \
