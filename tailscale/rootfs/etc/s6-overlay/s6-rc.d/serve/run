@@ -1,0 +1,66 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Enables Tailscale Proxy and Funnel feature
+# ==============================================================================
+
+declare wait_counter=0
+declare curl_result
+declare tailscale_command
+
+# Check if Tailscale HTTPS is enabled
+if ! /opt/tailscale status --self=true --peers=false --json \
+  | jq -rce '.Self.CapMap | has("https")' > /dev/null;
+then
+  bashio::log.error "Tailscale's HTTPS support is disabled"
+  bashio::exit.nok
+fi
+
+# Checking if SSL is used
+if bashio::var.true "$(bashio::core.ssl)"; then
+  bashio::log.error "Tailscale's HTTPS support is enabled, but Home Assistant is not accessible through plain HTTP connection"
+  bashio::exit.nok
+fi
+
+# Wait a bit for HA to be available during startup
+while (( 200 != (curl_result=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$(bashio::core.port)")) )); do
+  if (( wait_counter++ == 18 )); then
+    break
+  fi
+  bashio::log.info "Waiting for Home Assistant to be ready..."
+  sleep 5
+done
+if (( wait_counter != 0 && curl_result == 200)); then
+  bashio::log.info "Home Assistant is ready"
+fi
+
+if (( 200 != curl_result )); then
+  # Warn that we can't test Home Assistant's HTTP reverse proxy configuration
+  # We emit only a warning to let the add-on start, maybe this is the only connection to access the device, better to start than not
+  # Though starting tailscale serve without HA won't fail, but will fill the logs with messages forever in each ~10s
+  bashio::log.warning "Home Assistant is not accessible currently, unable to test the connection to Home Assistant as reverse proxy"
+else
+  # Test Home Assistant's HTTP reverse proxy configuration
+  if (( 200 != $(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$(bashio::core.port)" -H "X-Forwarded-For: 127.0.0.1") )); then
+    bashio::log.error "Unable to connect to Home Assistant as reverse proxy"
+    bashio::log.error "Please check your configuration based on the add-on's documentation under \"Option: proxy\""
+    bashio::exit.nok
+  fi
+fi
+
+if ! bashio::config.true 'funnel'; then
+  tailscale_command=serve
+else
+  # Check if Funnel is available
+  if ! /opt/tailscale status --self=true --peers=false --json \
+    | jq -rce '.Self.CapMap | has("funnel")' > /dev/null;
+  then
+    bashio::log.error "Tailscale's Funnel support is disabled"
+    bashio::exit.nok
+  fi
+  tailscale_command=funnel
+fi
+
+# Set up serve
+exec /opt/tailscale ${tailscale_command} --https=443 --set-path=/ "http://127.0.0.1:$(bashio::core.port)"

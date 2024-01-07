@@ -25,3 +25,8 @@ fi
 if bashio::config.false 'taildrop'; then
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/taildrop
 fi
+
+# Disable serve service when proxy and/or funnel has not been explicitly enabled
+if ! bashio::config.true 'proxy'; then
+    rm /etc/s6-overlay/s6-rc.d/user/contents.d/serve
+fi
