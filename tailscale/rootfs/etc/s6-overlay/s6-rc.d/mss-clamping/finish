@@ -13,6 +13,14 @@ for interface in $( \
   | { grep -E '^-A FORWARD -i tailscale\d' || true ;} \
   | sed -nr 's/^.*?-o\s([A-Za-z0-9]+)\s.*$/\1/p')
 do
-  bashio::log.info "Removing the MSS clamping for interface ${interface}"
+  bashio::log.info "Removing the MSS clamping for interface ${interface} (IPv4)"
   iptables -t mangle -D FORWARD -i tailscale0 -o ${interface} -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+done
+for interface in $( \
+  ip6tables -t mangle -S FORWARD \
+  | { grep -E '^-A FORWARD -i tailscale\d' || true ;} \
+  | sed -nr 's/^.*?-o\s([A-Za-z0-9]+)\s.*$/\1/p')
+do
+  bashio::log.info "Removing the MSS clamping for interface ${interface} (IPv6)"
+  ip6tables -t mangle -D FORWARD -i tailscale0 -o ${interface} -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
 done
