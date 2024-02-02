@@ -14,8 +14,8 @@ declare response
 declare wait_counter=0
 
 if bashio::config.false "userspace_networking"; then
-  ipv4_multiple_tables_enabled=$(zcat /proc/config.gz | { grep -Ec '^CONFIG_IP_MULTIPLE_TABLES=y$' || true ;})
-  ipv6_multiple_tables_enabled=$(zcat /proc/config.gz | { grep -Ec '^CONFIG_IPV6_MULTIPLE_TABLES=y$' || true ;})
+  ipv4_multiple_tables_enabled=$(kernel-config | { grep -Ec '^CONFIG_IP_MULTIPLE_TABLES=y$' || true ;})
+  ipv6_multiple_tables_enabled=$(kernel-config | { grep -Ec '^CONFIG_IPV6_MULTIPLE_TABLES=y$' || true ;})
 
   # If it is called after network configuration is changed, we need to drop cached network info
   bashio::cache.flush_all
