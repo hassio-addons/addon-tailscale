@@ -18,7 +18,7 @@ if (( 0 < ${#routes[@]} )); then
   bashio::log.info "Clamping the MSS to the MTU for all advertised subnet's interface,"
   bashio::log.info "to support site-to-site networking better"
 
-  if (( 0 == $(zcat /proc/config.gz | { grep -Ec '^CONFIG_NETFILTER_XT_TARGET_TCPMSS=.$' || true ;}) )); then
+  if (( 0 == $(kernel-config | { grep -Ec '^CONFIG_NETFILTER_XT_TARGET_TCPMSS=.$' || true ;}) )); then
     bashio::log.warning "Altering the MSS is not supported due to missing kernel module,"
     bashio::log.warning "skip clamping the MSS to the MTU for all advertised subnet's interface"
   else
