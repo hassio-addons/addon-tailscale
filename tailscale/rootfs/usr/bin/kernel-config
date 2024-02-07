@@ -1,7 +1,0 @@
-#!/command/with-contenv bashio
-
-if bashio::fs.file_exists /proc/config.gz; then
-  zcat /proc/config.gz
-else
-  cat /boot/config-$(uname -r)
-fi
