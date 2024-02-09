@@ -7,16 +7,10 @@
 
 declare -a routes=()
 declare route family
-declare ipv4_multiple_tables_enabled
-declare ipv6_multiple_tables_enabled
-declare protected_routes=0
 declare response
 declare wait_counter=0
 
 if bashio::config.false "userspace_networking"; then
-  ipv4_multiple_tables_enabled=$(kernel-config | { grep -Ec '^CONFIG_IP_MULTIPLE_TABLES=y$' || true ;})
-  ipv6_multiple_tables_enabled=$(kernel-config | { grep -Ec '^CONFIG_IPV6_MULTIPLE_TABLES=y$' || true ;})
-
   # If it is called after network configuration is changed, we need to drop cached network info
   bashio::cache.flush_all
   # It is possible to get "ERROR: Got unexpected response from the API: System is not ready with state: setup"
@@ -40,16 +34,8 @@ if bashio::config.false "userspace_networking"; then
   fi
   for route in "${routes[@]}"; do
     if [[ "${route}" =~ .*:.* ]]; then
-      if (( 0 == ${ipv6_multiple_tables_enabled} )); then
-        bashio::log.warning "  IPv6 multiple routing tables are not enabled, skip adding route ${route} to ip rules"
-        continue
-      fi
       family="-6"
     else
-      if (( 0 == ${ipv4_multiple_tables_enabled} )); then
-        bashio::log.warning "  IPv4 multiple routing tables are not enabled, skip adding route ${route} to ip rules"
-        continue
-      fi
       family="-4"
     fi
     bashio::log.info "  Adding route ${route} to ip rules"
@@ -61,10 +47,5 @@ if bashio::config.false "userspace_networking"; then
         bashio::log.notice "  Route ${route} is already added to ip rules"
       fi
     fi
-    (( protected_routes+=1 ))
   done
-  if (( 0 < ${#routes[@]} && 0 == ${protected_routes} )); then
-    bashio::log.error "Can't protect any subnets"
-    bashio::exit.nok
-  fi
 fi

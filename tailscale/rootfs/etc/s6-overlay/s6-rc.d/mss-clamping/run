@@ -18,47 +18,48 @@ if (( 0 < ${#routes[@]} )); then
   bashio::log.info "Clamping the MSS to the MTU for all advertised subnet's interface,"
   bashio::log.info "to support site-to-site networking better"
 
-  if (( 0 == $(kernel-config | { grep -Ec '^CONFIG_NETFILTER_XT_TARGET_TCPMSS=.$' || true ;}) )); then
-    bashio::log.warning "Altering the MSS is not supported due to missing kernel module,"
-    bashio::log.warning "skip clamping the MSS to the MTU for all advertised subnet's interface"
-  else
-    # Find interfaces for subnet routes
-    for route in "${routes[@]}"; do
-      if [[ "${route}" =~ .*:.* ]]; then
-        family="-6"
-      else
-        family="-4"
-      fi
-      for interface in $( \
-        ip "${family}" -json route show to match "${route}" \
-        | jq --raw-output -c -M '.[].dev')
-      do
-        interfaces+=("${interface}")
-      done
+  # Find interfaces for subnet routes
+  for route in "${routes[@]}"; do
+    if [[ "${route}" =~ .*:.* ]]; then
+      family="-6"
+    else
+      family="-4"
+    fi
+    for interface in $( \
+      ip "${family}" -json route show to match "${route}" \
+      | jq --raw-output -c -M '.[].dev')
+    do
+      interfaces+=("${interface}")
     done
+  done
 
-    # Remove duplicate entries
-    readarray -t interfaces < <(printf "%s" "${interfaces[@]/%/$'\n'}" | sort -u)
+  # Remove duplicate entries
+  readarray -t interfaces < <(printf "%s" "${interfaces[@]/%/$'\n'}" | sort -u)
 
-    for interface in "${interfaces[@]}"; do
-      bashio::log.info "  Clamping the MSS for interface ${interface} (IPv4)"
-      if [[ "${interface}" == $(iptables -t mangle -S FORWARD \
-        | { grep -E "^-A FORWARD -i tailscale\d -o ${interface}" || true ;} \
-        | sed -nr 's/^.*?-o\s([A-Za-z0-9]+)\s.*$/\1/p') ]]
-      then
-        bashio::log.notice "  MSS is already clamped for interface ${interface} (IPv4)"
-      else
-        iptables -t mangle -A FORWARD -i tailscale0 -o ${interface} -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+  for interface in "${interfaces[@]}"; do
+    bashio::log.info "  Clamping the MSS for interface ${interface} (IPv4)"
+    if [[ "${interface}" == $(iptables -t mangle -S FORWARD \
+      | { grep -E "^-A FORWARD -i tailscale\d -o ${interface}" || true ;} \
+      | sed -nr 's/^.*?-o\s([A-Za-z0-9]+)\s.*$/\1/p') ]]
+    then
+      bashio::log.notice "  MSS is already clamped for interface ${interface} (IPv4)"
+    else
+      if ! iptables -t mangle -A FORWARD -i tailscale0 -o ${interface} -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu; then
+        bashio::log.warning "Altering the MSS for site-to-site networking is unsuccessful"
+        break
       fi
-      bashio::log.info "  Clamping the MSS for interface ${interface} (IPv6)"
-      if [[ "${interface}" == $(ip6tables -t mangle -S FORWARD \
-        | { grep -E "^-A FORWARD -i tailscale\d -o ${interface}" || true ;} \
-        | sed -nr 's/^.*?-o\s([A-Za-z0-9]+)\s.*$/\1/p') ]]
-      then
-        bashio::log.notice "  MSS is already clamped for interface ${interface} (IPv6)"
-      else
-        ip6tables -t mangle -A FORWARD -i tailscale0 -o ${interface} -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+    fi
+    bashio::log.info "  Clamping the MSS for interface ${interface} (IPv6)"
+    if [[ "${interface}" == $(ip6tables -t mangle -S FORWARD \
+      | { grep -E "^-A FORWARD -i tailscale\d -o ${interface}" || true ;} \
+      | sed -nr 's/^.*?-o\s([A-Za-z0-9]+)\s.*$/\1/p') ]]
+    then
+      bashio::log.notice "  MSS is already clamped for interface ${interface} (IPv6)"
+    else
+      if ! ip6tables -t mangle -A FORWARD -i tailscale0 -o ${interface} -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu; then
+        bashio::log.warning "Altering the MSS for site-to-site networking is unsuccessful"
+        break
       fi
-    done
-  fi
+    fi
+  done
 fi
