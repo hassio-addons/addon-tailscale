@@ -11,5 +11,9 @@ bashio::log.info 'Starting Tailscale web...'
 # Get random port
 options+=(--listen 127.0.0.1:25899)
 
+# Use readonly webui mode
+# Note: can be removed later, after most of the add-on config options are available through the webui
+options+=(--readonly)
+
 # Run Tailscale
 exec /opt/tailscale web "${options[@]}"
