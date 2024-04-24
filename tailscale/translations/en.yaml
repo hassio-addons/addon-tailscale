@@ -19,6 +19,16 @@ configuration:
       By setting a device on your network as an exit node, you can use it to
       route all your public internet traffic as needed, like a consumer VPN.
       When not set, this option is enabled by default.
+  advertise_connector:
+    name: Advertise as an app connector
+    description: >-
+      When you use an app connector, you specify which applications you wish to make
+      accessible over your tailnet, and the domains for those applications. Any traffic
+      for that application is then forced over the tailnet to a node running an app
+      connector before egressing to the target domains. This is useful for cases where
+      the application has an allowlist of IP addresses which can connect to it: the IP
+      address of the node running the app connector can be added to the allowlist, and
+      all nodes on the tailnet will use that IP address for their traffic egress.
   advertise_routes:
     name: Advertise subnet routes
     description: >-
