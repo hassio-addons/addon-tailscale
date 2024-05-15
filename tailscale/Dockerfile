@@ -7,7 +7,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Setup base
 ARG BUILD_ARCH=amd64
-ARG TAILSCALE_VERSION="v1.66.1"
+ARG TAILSCALE_VERSION="v1.66.3"
 RUN \
     apk add --no-cache \
         ipcalc=1.0.3-r0 \
