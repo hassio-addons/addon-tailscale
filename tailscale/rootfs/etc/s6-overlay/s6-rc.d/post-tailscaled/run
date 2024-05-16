@@ -55,6 +55,15 @@ then
   options+=(--login-server="${login_server}")
 fi
 
+# Support basic site-to-site networking, disable stateful filtering
+if ! bashio::config.has_value "stateful_filtering" || \
+  bashio::config.true "stateful_filtering";
+then
+  options+=(--stateful-filtering)
+else
+  options+=(--stateful-filtering=false)
+fi
+
 # Support advanced site-to-site networking, disable source addresses NAT
 if ! bashio::config.has_value "snat_subnet_routes" || \
   bashio::config.true "snat_subnet_routes";
@@ -135,6 +144,14 @@ then
   for route in "${colliding_routes[@]}"; do
     bashio::log.warning "  ${route}"
   done
+fi
+
+# Notify about unusual site-to-site networking configuration
+if (! bashio::config.has_value "stateful_filtering" || \
+    bashio::config.true "stateful_filtering") && \
+    bashio::config.false "snat_subnet_routes";
+then
+  bashio::log.notice "When snat_subnet_routes is disabled, consider disabling stateful_filtering also."
 fi
 
 # Notify about userspace networking
