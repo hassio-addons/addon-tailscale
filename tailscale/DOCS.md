@@ -268,9 +268,6 @@ steps 2 and 3 as described on [Site-to-site
 networking][tailscale_info_site_to_site]. But do it only when you really
 understand why you need this.
 
-**Note:** If `snat_subnet_routes` is disabled, consider disabling
-`stateful_filtering` also.
-
 ### Option: `stateful_filtering`
 
 This option enables stateful packet filtering on packet-forwarding nodes (exit
@@ -283,9 +280,6 @@ When not set, this option is enabled by default.
 To support basic [Site-to-site networking][tailscale_info_site_to_site], you can
 disable this functionality, and execute steps 2 and 3 as described on
 [Site-to-site networking][tailscale_info_site_to_site].
-
-**Note:** If `snat_subnet_routes` is disabled, consider disabling
-`stateful_filtering` also.
 
 ### Option: `tags`
 

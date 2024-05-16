@@ -146,14 +146,6 @@ then
   done
 fi
 
-# Notify about unusual site-to-site networking configuration
-if (! bashio::config.has_value "stateful_filtering" || \
-    bashio::config.true "stateful_filtering") && \
-    bashio::config.false "snat_subnet_routes";
-then
-  bashio::log.notice "When snat_subnet_routes is disabled, consider disabling stateful_filtering also."
-fi
-
 # Notify about userspace networking
 if ! bashio::config.has_value "userspace_networking" || \
     bashio::config.true "userspace_networking";
