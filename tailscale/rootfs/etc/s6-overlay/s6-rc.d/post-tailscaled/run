@@ -139,7 +139,7 @@ fi
 
 # Notify about userspace networking
 if ! bashio::config.has_value "userspace_networking" || \
-    bashio::config.true "userspace_networking";
+  bashio::config.true "userspace_networking";
 then
   bashio::log.notice "The add-on uses userspace networking mode."
   bashio::log.notice "If you need to access other clients on your tailnet from your Home Assistant instance,"
