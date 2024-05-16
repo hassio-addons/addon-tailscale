@@ -12,6 +12,12 @@ declare login_server
 declare tags
 declare keyexpiry
 
+# Linux optimizations for subnet routers and exit nodes
+# Based on: https://tailscale.com/kb/1320/performance-best-practices#linux-optimizations-for-subnet-routers-and-exit-nodes
+# Note: Changes made via ethtool are not persistent and will be lost after the machine shuts down.
+# Note: Executing it before "tailscale up" to avoid warning messages
+ethtool -K $(ip route show 0/0 | cut -f5 -d' ') rx-udp-gro-forwarding on rx-gro-list off
+
 # Default options
 options+=(--hostname "$(bashio::info.hostname)")
 
