@@ -48,6 +48,15 @@ else
   options+=(--advertise-exit-node=false)
 fi
 
+# Advertise app connector by default when not set, or when explicitly enabled
+if ! bashio::config.has_value "advertise_connector" || \
+  bashio::config.true "advertise_connector";
+then
+  options+=(--advertise-connector)
+else
+  options+=(--advertise-connector=false)
+fi
+
 # Get configured control server
 if bashio::config.has_value "login_server";
 then
