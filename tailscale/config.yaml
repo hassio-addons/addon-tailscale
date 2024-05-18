@@ -38,6 +38,7 @@ schema:
   proxy: bool?
   proxy_and_funnel_port: match(^(443|8443|10000)$)?
   snat_subnet_routes: bool?
+  stateful_filtering: bool?
   tags:
     - "match(^tag:[a-zA-Z][a-zA-Z0-9-]*$)?"
   taildrop: bool?
