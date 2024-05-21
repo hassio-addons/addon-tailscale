@@ -19,6 +19,7 @@ declare keyexpiry
 # Note: Executing it before "tailscale up" to avoid warning messages
 for interface in $( \
   { ip -4 route show 0/0; ip -6 route show ::/0; } \
+  | { grep -E '^default\svia\s\S+\sdev\s\S+' || true ;} \
   | cut -f5 -d' ' \
   | sort -u)
 do
