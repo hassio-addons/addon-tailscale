@@ -72,13 +72,13 @@ then
   options+=(--login-server="${login_server}")
 fi
 
-# Support basic site-to-site networking, disable stateful filtering
+# Enable stateful filtering (it's disabled by default from v1.66.4)
 if ! bashio::config.has_value "stateful_filtering" || \
-  bashio::config.true "stateful_filtering";
+  bashio::config.false "stateful_filtering";
 then
-  options+=(--stateful-filtering)
-else
   options+=(--stateful-filtering=false)
+else
+  options+=(--stateful-filtering)
 fi
 
 # Support advanced site-to-site networking, disable source addresses NAT
