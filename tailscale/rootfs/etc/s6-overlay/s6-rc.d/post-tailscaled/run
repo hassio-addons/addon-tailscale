@@ -113,7 +113,6 @@ bashio::log.info "Tailscale is running"
 # Linux optimizations for subnet routers and exit nodes
 # Based on: https://tailscale.com/kb/1320/performance-best-practices#linux-optimizations-for-subnet-routers-and-exit-nodes
 # Note: Changes made via ethtool are not persistent and will be lost after the machine shuts down
-# Note: Everything fails silently, we do a best effort only
 if interface=$( \
   curl -sf --unix-socket /var/run/tailscale/tailscaled.sock http://local-tailscaled.sock/localapi/v0/check-udp-gro-forwarding \
   | jq -rc '.Warning' \
