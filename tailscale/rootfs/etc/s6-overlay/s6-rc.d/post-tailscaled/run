@@ -120,8 +120,10 @@ if interface=$( \
   | sed -nr 's/^UDP GRO forwarding is suboptimally configured on (\S+),.*$/\1/p') \
   && bashio::var.has_value "${interface}";
 then
-  bashio::log.info "Allow UDP GRO for forwarding on ${interface}"
-  ethtool -K "${interface}" rx-udp-gro-forwarding on rx-gro-list off &> /dev/null || true
+  bashio::log.info "Enabling UDP GRO for forwarding on ${interface}"
+  if ! ethtool -K "${interface}" rx-udp-gro-forwarding on rx-gro-list off; then
+    bashio::log.warning "Enabling UDP GRO failed"
+  fi
 fi
 
 # Delete previously created persistent tailscale serve configuration ONCE
