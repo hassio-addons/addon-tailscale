@@ -42,4 +42,5 @@ schema:
   tags:
     - "match(^tag:[a-zA-Z][a-zA-Z0-9-]*$)?"
   taildrop: bool?
+  udp_port: port?
   userspace_networking: bool?

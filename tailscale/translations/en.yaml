@@ -90,6 +90,11 @@ configuration:
       This option allows you to enable Taildrop, a file sharing service
       that allows you to share files with other Tailscale nodes.
       When not set, this option is enabled by default.
+  udp_port:
+    name: UDP port
+    description: >-
+      UDP port to listen on for WireGuard and peer-to-peer traffic.
+      When not set, an automatically selected port is used by default.
   userspace_networking:
     name: Userspace networking mode
     description: >-

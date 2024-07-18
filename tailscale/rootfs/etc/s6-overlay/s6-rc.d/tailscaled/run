@@ -16,6 +16,12 @@ if ! bashio::debug ; then
   options+=(--no-logs-no-support)
 fi
 
+# Use configured UDP port
+if bashio::config.has_value "udp_port";
+then
+  options+=(--port=$(bashio::config "udp_port"))
+fi
+
 # Use userspace networking by default when not set, or when explicitly enabled
 if ! bashio::config.has_value "userspace_networking" || \
   bashio::config.true "userspace_networking";
