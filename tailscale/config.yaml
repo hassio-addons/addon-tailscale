@@ -25,6 +25,22 @@ devices:
   - /dev/net/tun
 map:
   - share:rw
+options:
+  accept_dns: true
+  accept_routes: true
+  advertise_exit_node: true
+  advertise_connector: true
+  advertise_routes:
+    - "match(^(((25[0-5]|(2[0-4]|1\\d|[1-9]?)\\d)\\.){3}(25[0-5]|(2[0-4]|1\\d|[1-9]?)\\d)\\/(3[0-2]|[12]?\\d)|[a-fA-F\\d.:]+:[a-fA-F\\d.:]+\\/(12[0-8]|(1[01]|[1-9]?)\\d))$)?"
+  funnel: false
+  log_level: "info"
+  login_server: "https://controlplane.tailscale.com"
+  proxy: false
+  proxy_and_funnel_port: 443
+  snat_subnet_routes: true
+  stateful_filtering: false
+  taildrop: true
+  userspace_networking: true
 schema:
   accept_dns: bool?
   accept_routes: bool?
