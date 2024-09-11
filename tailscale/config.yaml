@@ -25,6 +25,8 @@ devices:
   - /dev/net/tun
 map:
   - share:rw
+ports:
+  41641/udp: null
 schema:
   accept_dns: bool?
   accept_routes: bool?

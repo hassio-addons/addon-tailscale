@@ -5,6 +5,7 @@
 # Runs tailscale
 # ==============================================================================
 declare -a options
+declare udp_port
 
 bashio::log.info 'Starting Tailscale...'
 
@@ -14,6 +15,12 @@ options+=(--statedir=/data/state)
 # Opt out of client log upload to log.tailscale.io
 if ! bashio::debug ; then
   options+=(--no-logs-no-support)
+fi
+
+# Use configured UDP port
+udp_port=$(bashio::addon.port "41641/udp")
+if bashio::var.has_value "${udp_port}"; then
+  options+=(--port=${udp_port})
 fi
 
 # Use userspace networking by default when not set, or when explicitly enabled
