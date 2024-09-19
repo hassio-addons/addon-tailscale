@@ -5,6 +5,14 @@
 # Configures NGINX for use with the Tailscale web
 # ==============================================================================
 
+
+# Funnel protection is disabled by default
+funnel_protection=false
+if bashio::config.true "funnel_protection";
+then
+  funnel_protection=true
+fi
+
 # Generate Ingress configuration
 bashio::var.json \
     interface "$(bashio::addon.ip_address)" \
@@ -12,3 +20,10 @@ bashio::var.json \
     | tempio \
         -template /etc/nginx/templates/ingress.gtpl \
         -out /etc/nginx/servers/ingress.conf
+
+bashio::var.json \
+    port "$(bashio::core.port)" \
+    funnel_protection "^${funnel_protection}" \
+    | tempio \
+        -template /etc/nginx/templates/homeassistant.gtpl \
+        -out /etc/nginx/servers/homeassistant.conf
