@@ -7,7 +7,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Setup base
 ARG BUILD_ARCH=amd64
-ARG TAILSCALE_VERSION="v1.74.1"
+ARG TAILSCALE_VERSION="v1.76.0"
 RUN \
     apk add --no-cache \
         ethtool=6.7-r0 \
