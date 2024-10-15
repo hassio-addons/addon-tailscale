@@ -34,6 +34,14 @@ configuration:
       your device is connected to) to other clients on your tailnet.
       When not set, the add-on by default will advertise routes to your subnets on all
       supported interfaces.
+  dscp:
+    name: DSCP
+    description: >-
+      This option allows you to set DSCP value on all tailscaled originated network
+      traffic. This allows you to handle Tailscale's network traffic on your router
+      separately from other network traffic.
+      When not set, this option is disabled by default, ie. DSCP will be set to the
+      default 0.
   funnel:
     name: Tailscale Funnel
     description: >-

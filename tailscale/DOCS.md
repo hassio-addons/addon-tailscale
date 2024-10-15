@@ -69,6 +69,7 @@ advertise_connector: true
 advertise_routes:
   - 192.168.1.0/24
   - fd12:3456:abcd::/64
+dscp: 52
 funnel: false
 log_level: info
 login_server: "https://controlplane.tailscale.com"
@@ -146,6 +147,15 @@ More information: [Subnet routers][tailscale_info_subnets]
 
 When not set, the add-on by default will advertise routes to your subnets on all
 supported interfaces.
+
+### Option: `dscp`
+
+This option allows you to set DSCP value on all tailscaled originated network
+traffic. This allows you to handle Tailscale's network traffic on your router
+separately from other network traffic.
+
+When not set, this option is disabled by default, ie. DSCP will be set to the
+default 0.
 
 ### Option: `funnel`
 

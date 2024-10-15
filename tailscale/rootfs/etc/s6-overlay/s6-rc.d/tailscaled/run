@@ -4,8 +4,11 @@
 # Home Assistant Community Add-on: Tailscale
 # Runs tailscale
 # ==============================================================================
+readonly TAILSCALED_GID=51892
+
 declare -a options
 declare udp_port
+declare tailscaled_gid
 
 bashio::log.info 'Starting Tailscale...'
 
@@ -30,15 +33,43 @@ then
   options+=(--tun=userspace-networking)
 fi
 
+# Prepare DSCP setting
+if ! bashio::config.has_value "dscp" || \
+  bashio::config.equals "dscp" 0;
+then
+  tailscaled_gid=0
+else
+  tailscaled_gid=$TAILSCALED_GID
+
+  # It is not strictly necessary to create the group for the gid, s6-setuidgid can set any arbitrary value, but at least we can identify it with a name
+  # Until processes running with root user, they won't have restrictions
+  addgroup -g $tailscaled_gid -S tailscaled || true
+  adduser root tailscaled || true
+
+  bashio::log.info "Setting DSCP for tailscaled (IPv4)"
+  if iptables -t mangle -S OUTPUT | grep -E '^-A OUTPUT -m owner --gid-owner $tailscaled_gid -j DSCP --set-dscp'; then
+    bashio::log.notice "  DSCP is already set for tailscaled"
+  elif ! iptables -t mangle -A OUTPUT -m owner --gid-owner $tailscaled_gid -j DSCP --set-dscp $(bashio::config "dscp"); then
+    bashio::log.warning "  Setting DSCP for tailscaled is unsuccessful"
+  fi
+
+  bashio::log.info "Setting DSCP for tailscaled (IPv6)"
+  if ip6tables -t mangle -S OUTPUT | grep -E '^-A OUTPUT -m owner --gid-owner $tailscaled_gid -j DSCP --set-dscp'; then
+    bashio::log.notice "  DSCP is already set for tailscaled"
+  elif ! ip6tables -t mangle -A OUTPUT -m owner --gid-owner $tailscaled_gid -j DSCP --set-dscp $(bashio::config "dscp"); then
+    bashio::log.warning "  Setting DSCP for tailscaled is unsuccessful"
+  fi
+fi
+
 # Run Tailscale
 if bashio::debug ; then
-  exec /opt/tailscaled "${options[@]}"
+  exec s6-setuidgid 0:${tailscaled_gid} /opt/tailscaled "${options[@]}"
 else
   bashio::log.notice \
     "Tailscale logs will be suppressed after 200 lines, set add-on's" \
     "configuration option 'log_level' to 'debug' to see further logs"
 
-  /opt/tailscaled "${options[@]}" 2>&1 \
+  s6-setuidgid 0:${tailscaled_gid} /opt/tailscaled "${options[@]}" 2>&1 \
     | stdbuf -i0 -oL -eL \
       sed -n -e '1,200p' \
         -e "201c[further tailscaled logs suppressed, set add-on's configuration option 'log_level' to 'debug' to see further tailscaled logs]"

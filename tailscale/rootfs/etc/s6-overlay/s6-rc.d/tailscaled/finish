@@ -9,6 +9,26 @@ readonly exit_code_service="${1}"
 readonly exit_code_signal="${2}"
 readonly service="tailscaled"
 
+declare tailscaled_gid
+
+# Remove DSCP setting
+for tailscaled_gid in $( \
+  iptables -t mangle -S OUTPUT \
+    | { grep -E '^-A OUTPUT -m owner --gid-owner \d* -j DSCP --set-dscp' || true ;} \
+    | sed -nr 's/^.*?--gid-owner\s(\d+)\s.*$/\1/p')
+do
+  bashio::log.info "Removing DSCP setting for tailscaled (IPv4)"
+  iptables -t mangle -D OUTPUT -m owner --gid-owner $tailscaled_gid -j DSCP --set-dscp $(bashio::config "dscp")
+done
+for tailscaled_gid in $( \
+  ip6tables -t mangle -S OUTPUT \
+    | { grep -E '^-A OUTPUT -m owner --gid-owner \d* -j DSCP --set-dscp' || true ;} \
+    | sed -nr 's/^.*?--gid-owner\s(\d+)\s.*$/\1/p')
+do
+  bashio::log.info "Removing DSCP setting for tailscaled (IPv6)"
+  ip6tables -t mangle -D OUTPUT -m owner --gid-owner $tailscaled_gid -j DSCP --set-dscp $(bashio::config "dscp")
+done
+
 bashio::log.info \
   "Service ${service} exited with code ${exit_code_service}" \
   "(by signal ${exit_code_signal})"
