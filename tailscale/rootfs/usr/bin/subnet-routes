@@ -15,7 +15,7 @@ function appendarray() {
   readarray -t -O "${#array[@]}" array
 }
 
-if ! [[ $1 =~ ^(local|advertised)$ ]]; then
+if ! [[ "${1-}" =~ ^(local|advertised)$ ]]; then
   echo "Usage: subnet-routes local|advertised" 1>&2
   exit 1
 fi

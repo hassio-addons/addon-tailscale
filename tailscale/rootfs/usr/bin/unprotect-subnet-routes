@@ -8,7 +8,9 @@
 declare -a routes=()
 declare route family
 
-if bashio::config.false "userspace_networking"; then
+if bashio::config.false "userspace_networking" && \
+  (! bashio::config.has_value "accept_routes" || bashio::config.true "accept_routes")
+then
   readarray -t routes < <( \
     { ip -4 rule list; ip -6 rule list; } \
     | { grep -E '^5000:' || true ;} \
