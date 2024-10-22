@@ -39,24 +39,24 @@ if ! bashio::config.has_value "dscp" || \
 then
   tailscaled_gid=0
 else
-  tailscaled_gid=$TAILSCALED_GID
+  tailscaled_gid=${TAILSCALED_GID}
 
   # It is not strictly necessary to create the group for the gid, s6-setuidgid can set any arbitrary value, but at least we can identify it with a name
   # Until processes running with root user, they won't have restrictions
-  addgroup -g $tailscaled_gid -S tailscaled || true
+  addgroup -g ${TAILSCALED_GID} -S tailscaled || true
   adduser root tailscaled || true
 
   bashio::log.info "Setting DSCP for tailscaled (IPv4)"
-  if iptables -t mangle -S OUTPUT | grep -E '^-A OUTPUT -m owner --gid-owner $tailscaled_gid -j DSCP --set-dscp'; then
+  if iptables -t mangle -S OUTPUT | grep -E '^-A OUTPUT -m owner --gid-owner ${TAILSCALED_GID} -j DSCP --set-dscp'; then
     bashio::log.notice "  DSCP is already set for tailscaled"
-  elif ! iptables -t mangle -A OUTPUT -m owner --gid-owner $tailscaled_gid -j DSCP --set-dscp $(bashio::config "dscp"); then
+  elif ! iptables -t mangle -A OUTPUT -m owner --gid-owner ${TAILSCALED_GID} -j DSCP --set-dscp $(bashio::config "dscp"); then
     bashio::log.warning "  Setting DSCP for tailscaled is unsuccessful"
   fi
 
   bashio::log.info "Setting DSCP for tailscaled (IPv6)"
-  if ip6tables -t mangle -S OUTPUT | grep -E '^-A OUTPUT -m owner --gid-owner $tailscaled_gid -j DSCP --set-dscp'; then
+  if ip6tables -t mangle -S OUTPUT | grep -E '^-A OUTPUT -m owner --gid-owner ${TAILSCALED_GID} -j DSCP --set-dscp'; then
     bashio::log.notice "  DSCP is already set for tailscaled"
-  elif ! ip6tables -t mangle -A OUTPUT -m owner --gid-owner $tailscaled_gid -j DSCP --set-dscp $(bashio::config "dscp"); then
+  elif ! ip6tables -t mangle -A OUTPUT -m owner --gid-owner ${TAILSCALED_GID} -j DSCP --set-dscp $(bashio::config "dscp"); then
     bashio::log.warning "  Setting DSCP for tailscaled is unsuccessful"
   fi
 fi
