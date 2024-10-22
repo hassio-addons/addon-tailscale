@@ -47,7 +47,6 @@ else
   adduser root tailscaled || true
 
   bashio::log.info "Setting DSCP for tailscaled (IPv4)"
-
   if (( 0 < $( \
     iptables -t mangle -S OUTPUT \
     | { grep -Ec "^-A OUTPUT -m owner --gid-owner ${TAILSCALED_GID} -j DSCP --set-dscp" || true ;}) ))
