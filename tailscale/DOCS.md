@@ -202,6 +202,8 @@ NeedsLogin or NeedsMachineAuth.
 
 The Stopped status is deemed unhealthy by default.
 
+Note: If the network is down, the add-on will be restarted only once.
+
 Note: The add-on's health is checked by Home Assistant in each 30s, ie. the
 effective resolution of this option is 30s, not 1s.
 
