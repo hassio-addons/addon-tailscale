@@ -4,6 +4,7 @@
 # In case of non userspace networking,
 # add local subnets to ip rules with higher priority than Tailscale's routing
 # ==============================================================================
+readonly PROTECTION_RULE_PRIORITY=5000
 
 declare -a routes=()
 declare route family
@@ -47,7 +48,7 @@ then
         family="-4"
       fi
       bashio::log.info "  Adding route ${route} to ip rules"
-      if ! response=$(ip "${family}" rule add to "${route}" priority 5000 table main 2>&1); then
+      if ! response=$(ip "${family}" rule add to "${route}" priority ${PROTECTION_RULE_PRIORITY} table main 2>&1); then
         if [[ "${response}" != "RTNETLINK answers: File exists" ]]; then
           echo "${response}"
           bashio::exit.nok
