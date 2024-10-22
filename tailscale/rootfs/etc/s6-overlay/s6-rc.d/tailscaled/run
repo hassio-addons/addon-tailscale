@@ -47,14 +47,21 @@ else
   adduser root tailscaled || true
 
   bashio::log.info "Setting DSCP for tailscaled (IPv4)"
-  if iptables -t mangle -S OUTPUT | grep -E '^-A OUTPUT -m owner --gid-owner ${TAILSCALED_GID} -j DSCP --set-dscp'; then
+
+  if (( 0 < $( \
+    iptables -t mangle -S OUTPUT \
+    | { grep -Ec '^-A OUTPUT -m owner --gid-owner ${TAILSCALED_GID} -j DSCP --set-dscp' || true ;}) ))
+  then
     bashio::log.notice "  DSCP is already set for tailscaled"
   elif ! iptables -t mangle -A OUTPUT -m owner --gid-owner ${TAILSCALED_GID} -j DSCP --set-dscp $(bashio::config "dscp"); then
     bashio::log.warning "  Setting DSCP for tailscaled is unsuccessful"
   fi
 
   bashio::log.info "Setting DSCP for tailscaled (IPv6)"
-  if ip6tables -t mangle -S OUTPUT | grep -E '^-A OUTPUT -m owner --gid-owner ${TAILSCALED_GID} -j DSCP --set-dscp'; then
+  if (( 0 < $( \
+    ip6tables -t mangle -S OUTPUT \
+    | { grep -Ec '^-A OUTPUT -m owner --gid-owner ${TAILSCALED_GID} -j DSCP --set-dscp' || true ;}) ))
+  then
     bashio::log.notice "  DSCP is already set for tailscaled"
   elif ! ip6tables -t mangle -A OUTPUT -m owner --gid-owner ${TAILSCALED_GID} -j DSCP --set-dscp $(bashio::config "dscp"); then
     bashio::log.warning "  Setting DSCP for tailscaled is unsuccessful"
