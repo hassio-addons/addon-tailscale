@@ -194,6 +194,8 @@ try to clear all site related cookies, clear all browser cache, restart browser.
 
 This option allows you to set timeout in seconds for Tailscale to be offline.
 
+When not set, this option is disabled by default.
+
 Tailscale is quite resilient and can recover from nearly any network change. But
 in case it fails to recover and remains offline longer than healthcheck_timeout
 seconds, the add-on can be restarted. The check happens only when Tailscale is
@@ -202,12 +204,10 @@ NeedsLogin or NeedsMachineAuth.
 
 The Stopped status is deemed unhealthy by default.
 
-Note: If the network is down, the add-on will be restarted only once.
+**Note:** _If the network is down, the add-on will be restarted only once._
 
-Note: The add-on's health is checked by Home Assistant in each 30s, ie. the
-effective resolution of this option is 30s, not 1s.
-
-When not set, this option is disabled by default.
+**Note:** _The add-on's health is checked by Home Assistant in each 30s, ie. the
+effective resolution of this option is 30s, not 1s._
 
 ### Option: `log_level`
 
