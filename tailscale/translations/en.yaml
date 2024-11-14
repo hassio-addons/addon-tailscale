@@ -44,7 +44,14 @@ configuration:
   healthcheck_offline_timeout:
     name: Healthcheck offline timeout [s]
     description: >-
-      This option allows you to set timeout in seconds for Tailscale to be offline.
+      This option allows you to set timeout in seconds for Tailscale to be offline
+      after it was once online.
+      When not set, this option is disabled by default.
+  healthcheck_restart_timeout:
+    name: Healthcheck restart timeout [s]
+    description: >-
+      This option allows you to set timeout in seconds for Tailscale to be offline
+      after (re)start. Set it to several minutes or even hours.
       When not set, this option is disabled by default.
   log_level:
     name: Log level
