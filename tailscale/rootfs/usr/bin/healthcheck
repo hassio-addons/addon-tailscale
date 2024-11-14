@@ -45,7 +45,7 @@ then
   if ! bashio::var.equals "${LAST_REPORTED_HEALTH_STATE-}" 'UNHEALTHY'; then
     # Log it only once
     printf 'UNHEALTHY' > /var/run/s6/container_environment/LAST_REPORTED_HEALTH_STATE
-    bashio::log.fatal "Add-on health state is: Unhealthy"
+    bashio::log.fatal "Add-on is unhealthy"
   fi
   bashio::exit.nok
 else
@@ -53,6 +53,6 @@ else
   if ! bashio::var.equals "${LAST_REPORTED_HEALTH_STATE-}" 'HEALTHY'; then
     # Log it only once
     printf 'HEALTHY' > /var/run/s6/container_environment/LAST_REPORTED_HEALTH_STATE
-    bashio::log.info "Add-on health state is: Healthy"
+    bashio::log.info "Add-on is healthy"
   fi
 fi
