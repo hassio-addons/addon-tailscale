@@ -66,6 +66,7 @@ advertise_routes:
   - fd12:3456:abcd::/64
 funnel: false
 healthcheck_offline_timeout: 110
+healthcheck_restart_timeout: 3600
 log_level: info
 login_server: "https://controlplane.tailscale.com"
 proxy: false
@@ -192,19 +193,48 @@ try to clear all site related cookies, clear all browser cache, restart browser.
 
 ### Option: `healthcheck_offline_timeout`
 
-This option allows you to set timeout in seconds for Tailscale to be offline.
+This option allows you to set timeout in seconds for Tailscale to be offline
+after it was once online.
 
 When not set, this option is disabled by default.
 
 Tailscale is quite resilient and can recover from nearly any network change. But
 in case it fails to recover and remains offline longer than
 healthcheck_offline_timeout seconds, the add-on can be restarted. The check
-happens only when Tailscale is running, ie. it won't have any effect when
+happens only after Tailscale was once online, ie. it won't have any effect when
 Tailscale's status is eg. Starting, NeedsLogin or NeedsMachineAuth.
 
-The Stopped status is deemed unhealthy by default.
+**Note:** _The Stopped status is deemed unhealthy by default._
 
-**Note:** _If the network is down, the add-on will be restarted only once._
+**Note:** _If the network is down, and this option is set, the add-on will be
+restarted only once. To restart even after an unsuccessful (re)start, see option
+healthcheck_restart_timeout._
+
+**Note:** _The add-on's health is checked by Home Assistant in each 30s, ie. the
+effective resolution of this option is 30s, not 1s._
+
+### Option: `healthcheck_restart_timeout`
+
+This option allows you to set timeout in seconds for Tailscale to be offline
+after (re)start.
+
+The minimum value is 900, ie. 15 minutes, to always give you enough time to
+authenticate when you start the add-on for the very first time.
+
+When not set, this option is disabled by default.
+
+Tailscale is quite resilient and can recover from nearly any network change. But
+in case it fails to recover even after a (re)start and remains offline longer
+than healthcheck_restart_timeout seconds, the add-on can be restarted again. The
+check happens only when Tailscale is starting, ie. it won't have any effect
+after Tailscale is started and got online successfully.
+
+**Note:** _The Stopped status is deemed unhealthy by default._
+
+**Note:** _If the network is down after a (re)start, and this option is set, the
+add-on will be restarted regularly, so do not set this option too low, set it to
+several minutes or even hours. To restart when the network got down after it was
+up, see option healthcheck_offline_timeout._
 
 **Note:** _The add-on's health is checked by Home Assistant in each 30s, ie. the
 effective resolution of this option is 30s, not 1s._
