@@ -51,7 +51,8 @@ configuration:
     name: Healthcheck restart timeout [s]
     description: >-
       This option allows you to set timeout in seconds for Tailscale to be offline
-      after (re)start. Set it to several minutes or even hours.
+      after (re)start. The minimum value is 900, ie. 15 minutes. Set it to several
+      minutes or even hours.
       When not set, this option is disabled by default.
   log_level:
     name: Log level
