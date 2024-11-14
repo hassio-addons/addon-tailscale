@@ -16,7 +16,7 @@ declare backend_state is_self_online
 # LAST_REPORTED_HEALTH_STATE is in contenv at /var/run/s6/container_environment
 
 if bashio::config.has_value "healthcheck_restart_timeout" && \
-  ! bashio::var.has_value "${STARTED_TIMESTAMP-}
+  ! bashio::var.has_value "${STARTED_TIMESTAMP-}"
 then
   STARTED_TIMESTAMP=$(date +"%s")
   printf "${STARTED_TIMESTAMP}" > /var/run/s6/container_environment/STARTED_TIMESTAMP
