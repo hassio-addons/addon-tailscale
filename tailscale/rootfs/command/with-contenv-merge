@@ -1,0 +1,14 @@
+#!/command/execlineb -S0
+
+ifelse
+{
+  importas -D 0 S6_KEEP_ENV S6_KEEP_ENV
+  eltest 0${S6_KEEP_ENV} -eq 0
+}
+{
+  s6-envdir -Lfn -- /run/s6/container_environment
+  exec
+  $@
+}
+
+$@
