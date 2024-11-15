@@ -9,6 +9,9 @@
 # - optionally: if never gets online for more then healthcheck_restart_timeout seconds (configurable)
 #   This can handle internal TS bugs, like https://github.com/tailscale/tailscale/issues/12021 where TS fails to recover from rerouting traffic from normal WAN to failover WAN
 
+# Redirect healthchecks' output to the log
+exec &> /proc/1/fd/1
+
 declare status_json
 declare backend_state is_self_online
 # STARTED_TIMESTAMP is in contenv at /var/run/s6/container_environment
