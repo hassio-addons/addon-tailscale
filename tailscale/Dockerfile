@@ -35,8 +35,13 @@ RUN \
 # Copy root filesystem
 COPY rootfs /
 
-# S6 Overlay stage 2 hook
-ENV S6_STAGE2_HOOK=/etc/s6-overlay/scripts/stage2_hook.sh
+# Environment variables
+ENV \
+    # S6 Overlay stage 2 hook
+    S6_STAGE2_HOOK=/etc/s6-overlay/scripts/stage2_hook.sh \
+    # Add-on log format
+    LOG_FORMAT="{TIMESTAMP} {LEVEL}: {MESSAGE}" \
+    LOG_TIMESTAMP="%Y/%m/%d %H:%M:%S"
 
 # Build arguments
 ARG BUILD_ARCH
