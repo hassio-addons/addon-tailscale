@@ -45,17 +45,17 @@ if [[ "${backend_state}" == "Stopped" ]] || \
     (( $(date +"%s") - ${STARTED_TIMESTAMP} > $(bashio::config "healthcheck_restart_timeout") )) )
 then
   # Unhealthy
-  if ! bashio::var.equals "${LAST_REPORTED_HEALTH_STATE-}" 'UNHEALTHY'; then
-    # Log it only once
-    printf 'UNHEALTHY' > /var/run/s6/container_environment/LAST_REPORTED_HEALTH_STATE
-    bashio::log.fatal "Add-on is unhealthy"
+  if ! bashio::var.equals "${LAST_REPORTED_HEALTH_STATE-}" "UNHEALTHY"; then
+    printf "UNHEALTHY" > /var/run/s6/container_environment/LAST_REPORTED_HEALTH_STATE
   fi
+  # Log it always
+  bashio::log.fatal "Add-on is unhealthy"
   bashio::exit.nok
 else
   # Healthy
-  if ! bashio::var.equals "${LAST_REPORTED_HEALTH_STATE-}" 'HEALTHY'; then
+  if ! bashio::var.equals "${LAST_REPORTED_HEALTH_STATE-}" "HEALTHY"; then
+    printf "HEALTHY" > /var/run/s6/container_environment/LAST_REPORTED_HEALTH_STATE
     # Log it only once
-    printf 'HEALTHY' > /var/run/s6/container_environment/LAST_REPORTED_HEALTH_STATE
     bashio::log.info "Add-on is healthy"
   fi
 fi
