@@ -37,12 +37,12 @@ then
 fi
 
 if [[ "${backend_state}" == "Stopped" ]] || \
-  bashio::config.has_value "healthcheck_offline_timeout" && \
+  (bashio::config.has_value "healthcheck_offline_timeout" && \
     bashio::var.has_value "${LAST_ONLINE_TIMESTAMP-}" && \
-    (( $(date +"%s") - ${LAST_ONLINE_TIMESTAMP} > $(bashio::config "healthcheck_offline_timeout") )) || \
-  bashio::config.has_value "healthcheck_restart_timeout" && \
+    (( $(date +"%s") - ${LAST_ONLINE_TIMESTAMP} > $(bashio::config "healthcheck_offline_timeout") )) ) || \
+  (bashio::config.has_value "healthcheck_restart_timeout" && \
     ! bashio::var.has_value "${LAST_ONLINE_TIMESTAMP-}" && \
-    (( $(date +"%s") - ${STARTED_TIMESTAMP} > $(bashio::config "healthcheck_restart_timeout") ))
+    (( $(date +"%s") - ${STARTED_TIMESTAMP} > $(bashio::config "healthcheck_restart_timeout") )) )
 then
   # Unhealthy
   if ! bashio::var.equals "${LAST_REPORTED_HEALTH_STATE-}" 'UNHEALTHY'; then
