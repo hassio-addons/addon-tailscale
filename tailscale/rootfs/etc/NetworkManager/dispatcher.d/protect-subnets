@@ -8,6 +8,7 @@ case "${NM_DISPATCHER_ACTION}" in
     unprotect-subnet-routes
     if ! protect-subnet-routes; then
       # Better stop add-on than risking losing all network connections
+      bashio::log.error "Failed to protect subnet routes. Halting add-on to prevent network loss."
       echo -n 1 > /run/s6-linux-init-container-results/exitcode
       exec /run/s6/basedir/bin/halt
     fi
