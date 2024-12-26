@@ -295,10 +295,10 @@ When not set, this option is disabled by default.
 
 ### Option: `tags`
 
-This option allows you to specify specific ACL tags for this Tailscale
-instance. They need to start with `tag:`.
+This option allows you to specify specific tags for this Tailscale instance.
+They need to start with `tag:`.
 
-More information: [ACL tags][tailscale_info_acls]
+More information: [Tags][tailscale_info_tags]
 
 ### Option: `taildrop`
 
@@ -419,16 +419,16 @@ SOFTWARE.
 [reddit]: https://reddit.com/r/homeassistant
 [releases]: https://github.com/hassio-addons/addon-tailscale/releases
 [semver]: https://semver.org/spec/v2.0.0.html
-[taildrop]: https://tailscale.com/taildrop/
+[taildrop]: https://tailscale.com/taildrop
 [tailscale_acls]: https://login.tailscale.com/admin/acls
 [tailscale_dns]: https://login.tailscale.com/admin/dns
-[tailscale_info_acls]: https://tailscale.com/kb/1068/acl-tags/
-[tailscale_info_exit_nodes]: https://tailscale.com/kb/1103/exit-nodes/
+[tailscale_info_exit_nodes]: https://tailscale.com/kb/1103/exit-nodes
 [tailscale_info_app_connectors]: https://tailscale.com/kb/1281/app-connectors
-[tailscale_info_funnel]: https://tailscale.com/kb/1223/tailscale-funnel/
-[tailscale_info_funnel_policy_requirement]: https://tailscale.com/kb/1223/tailscale-funnel/#tailnet-policy-file-requirement
-[tailscale_info_https]: https://tailscale.com/kb/1153/enabling-https/
-[tailscale_info_key_expiry]: https://tailscale.com/kb/1028/key-expiry/
-[tailscale_info_site_to_site]: https://tailscale.com/kb/1214/site-to-site/
-[tailscale_info_subnets]: https://tailscale.com/kb/1019/subnets/
-[tailscale_info_userspace_networking]: https://tailscale.com/kb/1112/userspace-networking/
+[tailscale_info_funnel]: https://tailscale.com/kb/1223/funnel
+[tailscale_info_funnel_policy_requirement]: https://tailscale.com/kb/1223/funnel#requirements-and-limitations
+[tailscale_info_https]: https://tailscale.com/kb/1153/enabling-https
+[tailscale_info_key_expiry]: https://tailscale.com/kb/1028/key-expiry
+[tailscale_info_site_to_site]: https://tailscale.com/kb/1214/site-to-site
+[tailscale_info_subnets]: https://tailscale.com/kb/1019/subnets
+[tailscale_info_tags]: https://tailscale.com/kb/1068/tags
+[tailscale_info_userspace_networking]: https://tailscale.com/kb/1112/userspace-networking
