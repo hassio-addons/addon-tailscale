@@ -230,7 +230,8 @@ This can prevent browsers from warning that HTTP URLs to your Home Assistant ins
 look unencrypted (browsers are not aware of the connections between Tailscale
 nodes are secured with end-to-end encryption).
 
-More information: [Enabling HTTPS][tailscale_info_https]
+More information: [Enabling HTTPS][tailscale_info_https], [Tailscale
+Serve][tailscale_info_serve]
 
 1. Configure Home Assistant to be accessible through an HTTP connection (this is
    the default). See [HTTP integration documentation][http_integration] for more
@@ -443,6 +444,7 @@ SOFTWARE.
 [tailscale_info_funnel_policy_requirement]: https://tailscale.com/kb/1223/funnel#requirements-and-limitations
 [tailscale_info_https]: https://tailscale.com/kb/1153/enabling-https
 [tailscale_info_key_expiry]: https://tailscale.com/kb/1028/key-expiry
+[tailscale_info_serve]: https://tailscale.com/kb/1312/serve
 [tailscale_info_site_to_site]: https://tailscale.com/kb/1214/site-to-site
 [tailscale_info_subnets]: https://tailscale.com/kb/1019/subnets
 [tailscale_info_tags]: https://tailscale.com/kb/1068/tags
