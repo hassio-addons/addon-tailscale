@@ -148,47 +148,6 @@ More information: [Subnet routers][tailscale_info_subnets]
 When not set, the add-on by default will advertise routes to your subnets on all
 supported interfaces.
 
-### Option: `funnel`
-
-This requires Tailscale Proxy to be enabled.
-
-**Important:** See also the "Option: `proxy`" section of this documentation for the
-necessary configuration changes in Home Assistant!
-
-When not set, this option is disabled by default.
-
-With the Tailscale Funnel feature, you can access your Home Assistant instance
-from the wider internet using your Tailscale domain (like
-`https://homeassistant.tail1234.ts.net`) even from devices **without installed
-Tailscale VPN client** (for example, on general phones, tablets, and laptops).
-
-**Client** &#8658; _Internet_ &#8658; **Tailscale Funnel** (TCP proxy) &#8658;
-_VPN_ &#8658; **Tailscale Proxy** (HTTPS proxy) &#8594; **HA** (HTTP web-server)
-
-Without the Tailscale Funnel feature, you will be able to access your Home
-Assistant instance only when your devices (for example, phones, tablets, and laptops)
-are connected to your Tailscale VPN, there will be no Internet &#8658; VPN TCP
-proxying for HTTPS communication.
-
-More information: [Tailscale Funnel][tailscale_info_funnel]
-
-1. Navigate to the [Access controls page][tailscale_acls] of the admin console:
-   - Add the required `funnel` node attribute to the tailnet policy file. See
-     [Tailnet policy file requirement][tailscale_info_funnel_policy_requirement]
-     for more information.
-
-1. Restart the add-on.
-
-**Note**: _After initial setup, it can take up to 10 minutes for the domain to
-be publicly available._
-
-**Note:** _You should not use the port number in the URL that you used
-previously to access Home Assistant. Tailscale Funnel works on the default HTTPS
-port 443 (or the port configured in option `proxy_and_funnel_port`)._
-
-**Note:** _If you encounter strange browser behaviour or strange error messages,
-try to clear all site related cookies, clear all browser cache, restart browser._
-
 ### Option: `log_level`
 
 Optionally enable tailscaled debug messages in the add-on's log. Turn it on only
@@ -261,6 +220,48 @@ Serve][tailscale_info_serve]
 **Note:** _You should not use the port number in the URL that you used
 previously to access Home Assistant. Tailscale Proxy works on the default HTTPS
 port 443 (or the port configured in option `proxy_and_funnel_port`)._
+
+### Option: `funnel`
+
+This requires Tailscale Proxy to be enabled.
+
+**Important:** See also the "Option: `proxy`" section of this documentation for the
+necessary configuration changes in Home Assistant!
+
+When not set, this option is disabled by default.
+
+With the Tailscale Funnel feature, you can access your Home Assistant instance
+from the wider internet using your Tailscale domain (like
+`https://homeassistant.tail1234.ts.net`) even from devices **without installed
+Tailscale VPN client** (for example, on general phones, tablets, and laptops).
+
+**Client** &#8658; _Internet_ &#8658; **Tailscale Funnel** (TCP proxy) &#8658;
+_VPN_ &#8658; **Tailscale Proxy** (HTTPS proxy) &#8594; **HA** (HTTP web-server)
+
+Without the Tailscale Funnel feature, you will be able to access your Home
+Assistant instance only when your devices (for example, phones, tablets, and laptops)
+are connected to your Tailscale VPN, there will be no Internet &#8658; VPN TCP
+proxying for HTTPS communication.
+
+More information: [Tailscale Funnel][tailscale_info_funnel]
+
+1. Navigate to the [Access controls page][tailscale_acls] of the admin console:
+
+   - Add the required `funnel` node attribute to the tailnet policy file. See
+     [Tailnet policy file requirement][tailscale_info_funnel_policy_requirement]
+     for more information.
+
+1. Restart the add-on.
+
+**Note**: _After initial setup, it can take up to 10 minutes for the domain to
+be publicly available._
+
+**Note:** _You should not use the port number in the URL that you used
+previously to access Home Assistant. Tailscale Funnel works on the default HTTPS
+port 443 (or the port configured in option `proxy_and_funnel_port`)._
+
+**Note:** _If you encounter strange browser behaviour or strange error messages,
+try to clear all site related cookies, clear all browser cache, restart browser._
 
 ### Option: `proxy_and_funnel_port`
 
