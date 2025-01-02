@@ -46,7 +46,7 @@ configuration:
       Tailscale instance, for example, a self-host Headscale instance.
       By default, it uses the control server provided by Tailscale.
   share_homeassistant:
-    name: Share Home Assistant with
+    name: Share Home Assistant with Serve or Funnel
     description: >-
       This option allows you to enable Tailscale Serve or Funnel features to present
       your Home Assistant instance with a valid certificate on your tailnet or
