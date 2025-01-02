@@ -11,9 +11,9 @@ declare proxy funnel proxy_and_funnel_port
 # Upgrade configuration from 'proxy', 'funnel' and 'proxy_and_funnel_port' to 'share_homeassistant' and 'share_on_port'
 # This step can be removed in a later version
 options=$(bashio::addon.options)
-proxy=$(bashio::jq "${options}" '.proxy')
-funnel=$(bashio::jq "${options}" '.funnel')
-proxy_and_funnel_port=$(bashio::jq "${options}" '.proxy_and_funnel_port')
+proxy=$(bashio::jq "${options}" '.proxy // empty')
+funnel=$(bashio::jq "${options}" '.funnel // empty')
+proxy_and_funnel_port=$(bashio::jq "${options}" '.proxy_and_funnel_port // empty')
 # Ugrade to share_homeassistant
 if bashio::var.true "${proxy}"; then
     if bashio::var.true "${funnel}"; then
@@ -23,17 +23,17 @@ if bashio::var.true "${proxy}"; then
     fi
 fi
 # Ugrade to share_on_port
-if ! bashio::var.equals "${proxy_and_funnel_port}" 'null'; then
+if bashio::var.has_value "${proxy_and_funnel_port}"; then
     bashio::addon.option 'share_on_port' "${proxy_and_funnel_port}"
 fi
 # Remove previous options
-if ! bashio::var.equals "${proxy}" 'null'; then
+if bashio::var.has_value "${proxy}"; then
     bashio::addon.option 'proxy'
 fi
-if ! bashio::var.equals "${funnel}" 'null'; then
+if bashio::var.has_value "${funnel}"; then
     bashio::addon.option 'funnel'
 fi
-if ! bashio::var.equals "${proxy_and_funnel_port}" 'null'; then
+if bashio::var.has_value "${proxy_and_funnel_port}"; then
     bashio::addon.option 'proxy_and_funnel_port'
 fi
 
