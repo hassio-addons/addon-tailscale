@@ -49,7 +49,7 @@ else
 fi
 
 # Check if Funnel is available
-if bashio::config.has_value 'share_homeassistant' 'funnel'; then
+if bashio::config.equals 'share_homeassistant' 'funnel'; then
   if ! /opt/tailscale status --self=true --peers=false --json \
     | jq -rce '.Self.CapMap | has("funnel")' > /dev/null;
   then
