@@ -6,13 +6,15 @@
 # ==============================================================================
 
 declare options
-declare proxy, funnel, proxy_and_funnel_port
+declare proxy funnel proxy_and_funnel_port
 
 # Upgrade configuration from 'proxy', 'funnel' and 'proxy_and_funnel_port' to 'share_homeassistant' and 'share_on_port'
+# This step can be removed in a later version
 options=$(bashio::addon.options)
 proxy=$(bashio::jq "${options}" '.proxy')
 funnel=$(bashio::jq "${options}" '.funnel')
 proxy_and_funnel_port=$(bashio::jq "${options}" '.proxy_and_funnel_port')
+# Ugrade to share_homeassistant
 if bashio::var.true "${proxy}"; then
     if bashio::var.true "${funnel}"; then
         bashio::addon.option 'share_homeassistant' 'funnel'
@@ -20,12 +22,20 @@ if bashio::var.true "${proxy}"; then
         bashio::addon.option 'share_homeassistant' 'serve'
     fi
 fi
+# Ugrade to share_on_port
 if ! bashio::var.equals "${proxy_and_funnel_port}" 'null'; then
     bashio::addon.option 'share_on_port' "${proxy_and_funnel_port}"
 fi
-bashio::addon.option 'proxy'
-bashio::addon.option 'funnel'
-bashio::addon.option 'proxy_and_funnel_port'
+# Remove previous options
+if ! bashio::var.equals "${proxy}" 'null'; then
+    bashio::addon.option 'proxy'
+fi
+if ! bashio::var.equals "${funnel}" 'null'; then
+    bashio::addon.option 'funnel'
+fi
+if ! bashio::var.equals "${proxy_and_funnel_port}" 'null'; then
+    bashio::addon.option 'proxy_and_funnel_port'
+fi
 
 # Disable protect-subnets service when userspace-networking is enabled or accepting routes is disabled
 if ! bashio::config.has_value "userspace_networking" || \
