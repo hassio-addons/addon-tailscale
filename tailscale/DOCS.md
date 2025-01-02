@@ -64,11 +64,10 @@ advertise_connector: true
 advertise_routes:
   - 192.168.1.0/24
   - fd12:3456:abcd::/64
-funnel: false
 log_level: info
 login_server: "https://controlplane.tailscale.com"
-proxy: false
-proxy_and_funnel_port: 443
+share_homeassistant: disabled
+share_on_port: 443
 snat_subnet_routes: true
 stateful_filtering: false
 tags:
@@ -178,19 +177,36 @@ This option lets you to specify a custom control server instead of the default
 (`https://controlplane.tailscale.com`). This is useful if you are running your
 own Tailscale control server, for example, a self-hosted [Headscale] instance.
 
-### Option: `proxy`
+### Option: `share_homeassistant`
+
+This option allows you to enable Tailscale Serve or Funnel features to present
+your Home Assistant instance with a valid certificate on your tailnet or
+internet.
 
 When not set, this option is disabled by default.
 
 Tailscale can provide a TLS certificate for your Home Assistant instance within
 your tailnet domain.
 
-This can prevent browsers from warning that HTTP URLs to your Home Assistant instance
-look unencrypted (browsers are not aware of the connections between Tailscale
-nodes are secured with end-to-end encryption).
+This can prevent browsers from warning that HTTP URLs to your Home Assistant
+instance look unencrypted (browsers are not aware of the connections between
+Tailscale nodes are secured with end-to-end encryption).
+
+With the Tailscale Serve feature, you can access your Home Assistant instance
+with the provided certificate within your tailnet from devices already connected
+to your tailnet.
+
+With the Tailscale Funnel feature, you can access your Home Assistant instance
+with the provided certificate not only within your tailnet but even from the
+wider internet using your Tailscale domain (like
+`https://homeassistant.tail1234.ts.net`) from devices **without installed
+Tailscale VPN client** (for example, on general phones, tablets, and laptops).
+
+**Client** &#8658; _Internet_ &#8658; **Tailscale Funnel** (TCP proxy) &#8658;
+_VPN_ &#8658; **Tailscale Serve** (HTTPS proxy) &#8594; **HA** (HTTP web-server)
 
 More information: [Enabling HTTPS][tailscale_info_https], [Tailscale
-Serve][tailscale_info_serve]
+Serve][tailscale_info_serve], [Tailscale Funnel][tailscale_info_funnel]
 
 1. Configure Home Assistant to be accessible through an HTTP connection (this is
    the default). See [HTTP integration documentation][http_integration] for more
@@ -198,7 +214,7 @@ Serve][tailscale_info_serve]
    Assistant, please use a reverse proxy add-on.
 
 1. Home Assistant, by default, blocks requests from reverse proxies, like the
-   Tailscale Proxy. To enable it, add the following lines to your
+   Tailscale Serve. To enable it, add the following lines to your
    `configuration.yaml`, without changing anything:
 
    ```yaml
@@ -215,37 +231,8 @@ Serve][tailscale_info_serve]
 
    - Under HTTPS Certificates section, click Enable HTTPS.
 
-1. Restart the add-on.
-
-**Note:** _You should not use the port number in the URL that you used
-previously to access Home Assistant. Tailscale Proxy works on the default HTTPS
-port 443 (or the port configured in option `proxy_and_funnel_port`)._
-
-### Option: `funnel`
-
-This requires Tailscale Proxy to be enabled.
-
-**Important:** See also the "Option: `proxy`" section of this documentation for the
-necessary configuration changes in Home Assistant!
-
-When not set, this option is disabled by default.
-
-With the Tailscale Funnel feature, you can access your Home Assistant instance
-from the wider internet using your Tailscale domain (like
-`https://homeassistant.tail1234.ts.net`) even from devices **without installed
-Tailscale VPN client** (for example, on general phones, tablets, and laptops).
-
-**Client** &#8658; _Internet_ &#8658; **Tailscale Funnel** (TCP proxy) &#8658;
-_VPN_ &#8658; **Tailscale Proxy** (HTTPS proxy) &#8594; **HA** (HTTP web-server)
-
-Without the Tailscale Funnel feature, you will be able to access your Home
-Assistant instance only when your devices (for example, phones, tablets, and laptops)
-are connected to your Tailscale VPN, there will be no Internet &#8658; VPN TCP
-proxying for HTTPS communication.
-
-More information: [Tailscale Funnel][tailscale_info_funnel]
-
-1. Navigate to the [Access controls page][tailscale_acls] of the admin console:
+1. Optionally, if you want to use Tailscale Funnel, navigate to the [Access
+   controls page][tailscale_acls] of the admin console:
 
    - Add the required `funnel` node attribute to the tailnet policy file. See
      [Tailnet policy file requirement][tailscale_info_funnel_policy_requirement]
@@ -257,17 +244,16 @@ More information: [Tailscale Funnel][tailscale_info_funnel]
 be publicly available._
 
 **Note:** _You should not use the port number in the URL that you used
-previously to access Home Assistant. Tailscale Funnel works on the default HTTPS
-port 443 (or the port configured in option `proxy_and_funnel_port`)._
+previously to access Home Assistant. Tailscale Serve and Funnel works on the
+default HTTPS port 443 (or the port configured in option `share_on_port`)._
 
 **Note:** _If you encounter strange browser behaviour or strange error messages,
 try to clear all site related cookies, clear all browser cache, restart browser._
 
-### Option: `proxy_and_funnel_port`
+### Option: `share_on_port`
 
-This option allows you to configure the port the Tailscale Proxy and Funnel
-features are accessible on the tailnet (in case of Tailscale Proxy is enabled)
-and optionally on the internet (in case of Tailscale Funnel is also enabled).
+This option allows you to configure the port the Tailscale Serve and Funnel
+features are accessible on the tailnet and internet.
 
 Only port number 443, 8443 and 10000 is allowed by Tailscale.
 

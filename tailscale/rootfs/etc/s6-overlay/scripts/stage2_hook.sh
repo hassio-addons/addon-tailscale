@@ -5,6 +5,28 @@
 # S6 Overlay stage2 hook to customize services
 # ==============================================================================
 
+declare options
+declare proxy, funnel, proxy_and_funnel_port
+
+# Upgrade configuration from 'proxy', 'funnel' and 'proxy_and_funnel_port' to 'share_homeassistant' and 'share_on_port'
+options=$(bashio::addon.options)
+proxy=$(bashio::jq "${options}" '.proxy')
+funnel=$(bashio::jq "${options}" '.funnel')
+proxy_and_funnel_port=$(bashio::jq "${options}" '.proxy_and_funnel_port')
+if bashio::var.true "${proxy}"; then
+    if bashio::var.true "${funnel}"; then
+        bashio::addon.option 'share_homeassistant' 'funnel'
+    else
+        bashio::addon.option 'share_homeassistant' 'serve'
+    fi
+fi
+if ! bashio::var.equals "${proxy_and_funnel_port}" 'null'; then
+    bashio::addon.option 'share_on_port' "${proxy_and_funnel_port}"
+fi
+bashio::addon.option 'proxy'
+bashio::addon.option 'funnel'
+bashio::addon.option 'proxy_and_funnel_port'
+
 # Disable protect-subnets service when userspace-networking is enabled or accepting routes is disabled
 if ! bashio::config.has_value "userspace_networking" || \
     bashio::config.true "userspace_networking" || \
@@ -32,7 +54,9 @@ if bashio::config.false 'taildrop'; then
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/taildrop
 fi
 
-# Disable serve service when proxy and/or funnel has not been explicitly enabled
-if ! bashio::config.true 'proxy'; then
-    rm /etc/s6-overlay/s6-rc.d/user/contents.d/serve
+# Disable share-homeassistant service when share_homeassistant has not been explicitly enabled
+if ! bashio::config.has_value 'share_homeassistant' || \
+    bashio::config.equals 'share_homeassistant' 'disabled'
+then
+    rm /etc/s6-overlay/s6-rc.d/user/contents.d/share-homeassistant
 fi
