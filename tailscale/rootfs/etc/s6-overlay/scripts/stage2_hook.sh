@@ -7,6 +7,7 @@
 
 declare options
 declare proxy funnel proxy_and_funnel_port
+declare share_homeassistant share_on_port
 
 # Upgrade configuration from 'proxy', 'funnel' and 'proxy_and_funnel_port' to 'share_homeassistant' and 'share_on_port'
 # This step can be removed in a later version
@@ -14,17 +15,29 @@ options=$(bashio::addon.options)
 proxy=$(bashio::jq "${options}" '.proxy // empty')
 funnel=$(bashio::jq "${options}" '.funnel // empty')
 proxy_and_funnel_port=$(bashio::jq "${options}" '.proxy_and_funnel_port // empty')
+share_homeassistant=$(bashio::jq "${options}" '.share_homeassistant // empty')
+share_on_port=$(bashio::jq "${options}" '.share_on_port // empty')
 # Ugrade to share_homeassistant
 if bashio::var.true "${proxy}"; then
-    if bashio::var.true "${funnel}"; then
-        bashio::addon.option 'share_homeassistant' 'funnel'
+    if bashio::var.has_value "${share_homeassistant}"; then
+        bashio::log.warning "The proxy and funnel options are already migrated to share_homeassistant option, do not configure deprecated options, proxy and funnel options are dropped."
     else
-        bashio::addon.option 'share_homeassistant' 'serve'
+        if bashio::var.true "${funnel}"; then
+            bashio::addon.option 'share_homeassistant' 'funnel'
+        else
+            bashio::addon.option 'share_homeassistant' 'serve'
+        fi
     fi
 fi
 # Ugrade to share_on_port
 if bashio::var.has_value "${proxy_and_funnel_port}"; then
-    bashio::addon.option 'share_on_port' "${proxy_and_funnel_port}"
+    if bashio::var.has_value "${share_on_port}"; then
+        bashio::log.warning "The proxy_and_funnel_port option is already migrated to share_on_port option, do not configure deprecated options, proxy_and_funnel_port option is dropped."
+    else
+        if ! bashio::addon.option 'share_on_port' "${proxy_and_funnel_port}"; then
+            bashio::log.warning "The proxy_and_funnel_port option value '${proxy_and_funnel_port}' is invalid, proxy_and_funnel_port option is dropped."
+        fi
+    fi
 fi
 # Remove previous options
 if bashio::var.has_value "${proxy}"; then
