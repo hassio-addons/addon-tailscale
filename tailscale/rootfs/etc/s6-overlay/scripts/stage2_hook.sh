@@ -34,7 +34,7 @@ if bashio::var.has_value "${proxy_and_funnel_port}"; then
     if bashio::var.has_value "${share_on_port}"; then
         bashio::log.warning "The proxy_and_funnel_port option is already migrated to share_on_port option, do not configure deprecated options, proxy_and_funnel_port option is dropped."
     else
-        if ! bashio::addon.option 'share_on_port' "${proxy_and_funnel_port}"; then
+        if ! bashio::addon.option 'share_on_port' "^${proxy_and_funnel_port}"; then
             bashio::log.warning "The proxy_and_funnel_port option value '${proxy_and_funnel_port}' is invalid, proxy_and_funnel_port option is dropped."
         fi
     fi
