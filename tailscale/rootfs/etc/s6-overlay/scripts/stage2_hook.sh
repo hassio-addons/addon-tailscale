@@ -9,6 +9,15 @@ declare options
 declare proxy funnel proxy_and_funnel_port
 declare share_homeassistant share_on_port
 
+# This is to execute potentially failing supervisor api functions within conditions,
+# where set -e is not propagated inside the function and bashio relies on set -e for api error handling
+function try {
+    set +e
+    (set -e; $@)
+    declare -gx TRY_ERROR=$?
+    set -e
+}
+
 # Upgrade configuration from 'proxy', 'funnel' and 'proxy_and_funnel_port' to 'share_homeassistant' and 'share_on_port'
 # This step can be removed in a later version
 options=$(bashio::addon.options)
@@ -34,7 +43,8 @@ if bashio::var.has_value "${proxy_and_funnel_port}"; then
     if bashio::var.has_value "${share_on_port}"; then
         bashio::log.warning "The proxy_and_funnel_port option is already migrated to share_on_port option, do not configure deprecated options, proxy_and_funnel_port option is dropped."
     else
-        if ! bashio::addon.option 'share_on_port' "^${proxy_and_funnel_port}"; then
+        try bashio::addon.option 'share_on_port' "^${proxy_and_funnel_port}"
+        if (($TRY_ERROR)); then
             bashio::log.warning "The proxy_and_funnel_port option value '${proxy_and_funnel_port}' is invalid, proxy_and_funnel_port option is dropped."
         fi
     fi
