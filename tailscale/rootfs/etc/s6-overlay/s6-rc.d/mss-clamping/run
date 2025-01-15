@@ -15,8 +15,9 @@ readarray -t routes < <(subnet-routes advertised)
 # If user later enables subnet routing for site-to-site networking, these settings are already there
 # Source: https://tailscale.com/kb/1214/site-to-site/ Step 1 / Point 4
 if (( 0 < ${#routes[@]} )); then
-  bashio::log.info "Clamping the MSS to the MTU for all advertised subnet's interface,"
-  bashio::log.info "to support site-to-site networking better"
+  bashio::log.info \
+    "Clamping the MSS to the MTU for all advertised subnet's interface," \
+    "to support site-to-site networking better"
 
   # Find interfaces for subnet routes
   for route in "${routes[@]}"; do
