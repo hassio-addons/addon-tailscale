@@ -5,9 +5,11 @@
 # Runs the dnsmasq daemon
 # ==============================================================================
 
+readonly DNSMASQ_PORT=25798
+
 bashio::log.info "Starting dnsmasq..."
 # This is a dummy DNS to suppress tailscaled warnings about not configured upstream on each DNS query
 # It answers REFUSED for everything
 touch /etc/dnsmasq.conf
-echo "nameserver 127.0.0.1:25798" > /etc/resolv.dnsmasq.conf
-exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --listen-address=127.0.0.1 --port=25798 --local-service=host
+echo "nameserver 127.0.0.1:${DNSMASQ_PORT}" > /etc/resolv.dnsmasq.conf
+exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --listen-address=127.0.0.1 --port=${DNSMASQ_PORT} --local-service=host
