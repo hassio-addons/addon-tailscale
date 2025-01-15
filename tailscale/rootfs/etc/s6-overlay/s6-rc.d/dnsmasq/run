@@ -8,6 +8,7 @@
 readonly DNSMASQ_ADDRESS=127.52.52.52
 
 bashio::log.info "Starting dnsmasq..."
+
 # This is a dummy DNS to suppress tailscaled warnings about not configured upstream on each DNS query
 # It answers REFUSED for everything
 # It must run on port 53 to be able to specify it in a resolv.conf
