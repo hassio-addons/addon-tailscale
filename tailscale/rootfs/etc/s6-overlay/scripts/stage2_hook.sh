@@ -18,9 +18,11 @@ function try {
     set -e
 }
 
+# Load add-on options, even deprecated one to upgrade
+options=$(bashio::addon.options)
+
 # Upgrade configuration from 'proxy', 'funnel' and 'proxy_and_funnel_port' to 'share_homeassistant' and 'share_on_port'
 # This step can be removed in a later version
-options=$(bashio::addon.options)
 proxy=$(bashio::jq "${options}" '.proxy // empty')
 funnel=$(bashio::jq "${options}" '.funnel // empty')
 proxy_and_funnel_port=$(bashio::jq "${options}" '.proxy_and_funnel_port // empty')
