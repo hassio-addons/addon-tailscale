@@ -13,4 +13,4 @@ bashio::log.info "Starting dnsmasq..."
 # It answers REFUSED for everything
 # It must run on port 53 to be able to specify it in a resolv.conf
 echo "nameserver ${DNSMASQ_ADDRESS}" > /etc/resolv.dnsmasq.conf
-exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --listen-address=${DNSMASQ_ADDRESS} --port=53 --local-service=host
+exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --listen-address=${DNSMASQ_ADDRESS} --port=53 --bind-interfaces
