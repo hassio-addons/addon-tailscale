@@ -1,0 +1,90 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Forward incoming tailnet connections to the host's primary interface
+# ==============================================================================
+
+readonly FORWARDING_IPTABLES_COMMENT="fwd ts to host"
+
+declare from_address_ipv4 from_address_ipv6
+declare to_address_ipv4 to_address_ipv6
+
+# Return address without prefix, or error if not forwardable
+function get_forwardable_address() {
+  local address=${1}
+  local ipinfo
+
+  if ! bashio::var.has_value "${address}"; then
+    return 1
+  fi
+
+  # Check if forwarding for the address family is enabled
+  if [[ "${address}" =~ .*:.* ]]; then
+    if [[ $(</proc/sys/net/ipv6/conf/all/forwarding) -eq 0 ]]; then
+      return 1
+    fi
+  else
+    if [[ $(</proc/sys/net/ipv4/ip_forward) -eq 0 ]]; then
+      return 1
+    fi
+  fi
+
+  if ! ipinfo="$(/usr/bin/ipcalc --json "${address}")"; then
+    return 1
+  fi
+
+  bashio::jq "${ipinfo}" '.ADDRESS'
+}
+
+# Tailscale's IP addresses
+from_address_ipv4=$(/opt/tailscale ip -4)
+from_address_ipv6=$(/opt/tailscale ip -6)
+
+# Host's IP addresses
+if ! bashio::var.equals "$(bashio::network.ipv4_method)" "disabled"; then
+  for address in "$(bashio::network.ipv4_address)"; do
+    if to_address_ipv4=$(get_forwardable_address "${address}"); then
+      break
+    fi
+  done
+fi
+if ! bashio::var.equals "$(bashio::network.ipv6_method)" "disabled"; then
+  for address in "$(bashio::network.ipv6_address)"; do
+    if to_address_ipv6=$(get_forwardable_address "${address}"); then
+      break
+    fi
+  done
+fi
+
+# In case of non userspace networking and if enabled, forward incoming tailnet connections to the host's primary interface
+if bashio::var.has_value "${from_address_ipv4}" && bashio::var.has_value "${to_address_ipv4-}"; then
+    bashio::log.info \
+      "Forwarding incoming tailnet connections directed to ${from_address_ipv4} to the host's ${to_address_ipv4} address (IPv4)"
+    if iptables -t nat -S PREROUTING \
+      | grep -Eq "^-A PREROUTING -d ${from_address_ipv4}/32 -m comment --comment \"${FORWARDING_IPTABLES_COMMENT}\" -j DNAT --to-destination ${to_address_ipv4}$"
+    then
+      bashio::log.notice "Forwarding is already set"
+    else
+      # Difference compared to Tailscale's docker image: using only -A append, less intrusive than -I insert
+      # The comment is to search the entry for removal, it is too siple to match by it's structure
+      if ! iptables -t nat -A PREROUTING -d ${from_address_ipv4} -m comment --comment "${FORWARDING_IPTABLES_COMMENT}" -j DNAT --to-destination ${to_address_ipv4}; then
+        bashio::log.warning "Setting up forwarding is unsuccessful"
+      fi
+    fi
+fi
+if bashio::var.has_value "${from_address_ipv6}" && bashio::var.has_value "${to_address_ipv6-}"; then
+    bashio::log.info \
+      "Forwarding incoming tailnet connections directed to ${from_address_ipv6} to the host's ${to_address_ipv6} address (IPv6)"
+    if ip6tables -t nat -S PREROUTING \
+      | grep -Eq "^-A PREROUTING -d ${from_address_ipv6}/128 -m comment --comment \"${FORWARDING_IPTABLES_COMMENT}\" -j DNAT --to-destination ${to_address_ipv6}$"
+    then
+      bashio::log.notice "Forwarding is already set"
+    else
+      # Difference compared to Tailscale's docker image: using only -A append, less intrusive than -I insert
+      # The comment is to search the entry for removal, it is too siple to match by it's structure
+      if ! ip6tables -t nat -A PREROUTING -d ${from_address_ipv6} -m comment --comment "${FORWARDING_IPTABLES_COMMENT}" -j DNAT --to-destination ${to_address_ipv6}; then
+        bashio::log.warning "Setting up forwarding is unsuccessful"
+      fi
+    fi
+fi

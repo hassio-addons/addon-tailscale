@@ -1,0 +1,35 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Remove forwarding
+# ==============================================================================
+
+readonly FORWARDING_IPTABLES_COMMENT="fwd ts to host"
+
+declare addresses
+declare from_address to_address
+
+# In case of non userspace networking and if enabled, remove the forwarding from tailnet to host
+for addresses in $( \
+  iptables -t nat -S PREROUTING \
+  | { grep -E "^-A PREROUTING -d \S+ -m comment --comment \"${FORWARDING_IPTABLES_COMMENT}\" -j DNAT --to-destination \S+$" || true ;} \
+  | sed -nr 's/^.*?-d\s(\S+)\s.*?--to-destination\s(\S+)$/\1#\2/p')
+do
+  IFS='#' read -r from_address to_address <<<${addresses}
+  bashio::log.info "Removing the forwarding from ${from_address} to ${to_address} (IPv4)"
+  if ! iptables -t nat -D PREROUTING -d ${from_address} -m comment --comment "${FORWARDING_IPTABLES_COMMENT}" -j DNAT --to-destination ${to_address}; then
+    bashio::log.warning "Removing forwarding is unsuccessful"
+  fi
+done
+for addresses in $( \
+  ip6tables -t nat -S PREROUTING \
+  | { grep -E "^-A PREROUTING -d \S+ -m comment --comment \"${FORWARDING_IPTABLES_COMMENT}\" -j DNAT --to-destination \S+$" || true ;} \
+  | sed -nr 's/^.*?-d\s(\S+)\s.*?--to-destination\s(\S+)$/\1#\2/p')
+do
+  IFS='#' read -r from_address to_address <<<${addresses}
+  bashio::log.info "Removing the forwarding from ${from_address} to ${to_address} (IPv6)"
+  if ! ip6tables -t nat -D PREROUTING -d ${from_address} -m comment --comment "${FORWARDING_IPTABLES_COMMENT}" -j DNAT --to-destination ${to_address}; then
+    bashio::log.warning "Removing forwarding is unsuccessful"
+  fi
+done
