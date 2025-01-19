@@ -5,7 +5,6 @@
 # Remove the MSS clamping
 # ==============================================================================
 
-readonly TAILSCALE_INTERFACE="tailscale0"
 readonly CLAMPING_IPTABLES_OPTIONS="-p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu"
 
 declare interface
@@ -13,17 +12,21 @@ declare interface
 # In case of non userspace networking, remove the MSS clamping for all advertised subnet's interface
 for interface in $( \
   iptables -t mangle -S FORWARD \
-  | { grep -E "^-A FORWARD -i tailscale\d -o \S+ ${CLAMPING_IPTABLES_OPTIONS}$" || true ;} \
+  | { grep -E "^-A FORWARD -o tailscale\d ${CLAMPING_IPTABLES_OPTIONS}$" || true ;} \
   | sed -nr 's/^.*?-o\s(\S+)\s.*$/\1/p')
 do
   bashio::log.info "Removing the MSS clamping for interface ${interface} (IPv4)"
-  iptables -t mangle -D FORWARD -i ${TAILSCALE_INTERFACE} -o ${interface} ${CLAMPING_IPTABLES_OPTIONS}
+  if ! iptables -t mangle -D FORWARD -o ${interface} ${CLAMPING_IPTABLES_OPTIONS}; then
+    bashio::log.warning "Removing clamping is unsuccessful"
+  fi
 done
 for interface in $( \
   ip6tables -t mangle -S FORWARD \
-  | { grep -E "^-A FORWARD -i tailscale\d -o \S+ ${CLAMPING_IPTABLES_OPTIONS}$" || true ;} \
+  | { grep -E "^-A FORWARD -o tailscale\d ${CLAMPING_IPTABLES_OPTIONS}$" || true ;} \
   | sed -nr 's/^.*?-o\s(\S+)\s.*$/\1/p')
 do
   bashio::log.info "Removing the MSS clamping for interface ${interface} (IPv6)"
-  ip6tables -t mangle -D FORWARD -i ${TAILSCALE_INTERFACE} -o ${interface} ${CLAMPING_IPTABLES_OPTIONS}
+  if ! ip6tables -t mangle -D FORWARD -o ${interface} ${CLAMPING_IPTABLES_OPTIONS}; then
+    bashio::log.warning "Removing clamping is unsuccessful"
+  fi
 done
