@@ -281,9 +281,8 @@ When not set, this option is enabled by default.
 
 To support advanced [Site-to-site networking][tailscale_info_site_to_site] (eg.
 to traverse multiple networks), you can disable this functionality, and follow
-steps on [Site-to-site networking][tailscale_info_site_to_site] (Note: "IP
-address forwarding" and "Clamp the MSS to the MTU" is already done by the
-add-on). But do it only when you really understand why you need this.
+steps from step 3 on [Site-to-site networking][tailscale_info_site_to_site]. But
+do it only when you really understand why you need this.
 
 ### Option: `stateful_filtering`
 
@@ -326,9 +325,8 @@ with their tailnet IP, but with their tailnet name, you have to configure Home
 Assistant's DNS options also.
 
 If you want to access other clients on your tailnet even from your local subnet,
-follow steps on [Site-to-site networking][tailscale_info_site_to_site] (Note:
-"IP address forwarding" and "Clamp the MSS to the MTU" is already done by the
-add-on).
+follow steps from step 3 on [Site-to-site
+networking][tailscale_info_site_to_site].
 
 In case your local subnets collide with subnet routes within your tailnet, your
 local network access has priority, and these addresses won't be routed toward
