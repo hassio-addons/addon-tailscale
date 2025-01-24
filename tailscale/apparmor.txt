@@ -27,12 +27,21 @@ profile tailscale flags=(attach_disconnected,mediate_deleted) {
   # Access to options.json and other files within your addon
   /data/** rw,
 
-  # Mount
-  network,
-  capability,
+  # General - based on complain
+  capability net_bind_service,
+  capability dac_override,
+  capability fsetid,
   capability setgid,
   capability setuid,
   capability chown,
-  capability net_bind_service,
-  mount,
+  capability kill,
+
+  # General - based on Config.yaml
+  capability net_admin,
+  capability net_raw,
+
+  # Mount for MagicDNS fix
+  capability sys_admin,
+  mount options=(rw, rprivate) -> /, # unshare -m
+  mount options=(rw, bind) /etc/resolv.for-tailscaled.conf -> /etc/resolv.conf, # mount --bind
 }
