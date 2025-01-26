@@ -480,7 +480,7 @@ device.
   add-on. This will prevent your local Tailscale DNS to accept DNS settings of
   your tailnet that are configured on the the admin console above. This will
   prevent the Tailscale DNS to redirect queries from your device back to your
-  device, causing an infinite loop.
+  device, causing a loop.
 
 - Under **Settings** -> **System** -> **Network** configure your DNS as the only
   DNS server (eg. IPv4: 127.0.0.1, IPv6: ::1).
@@ -492,10 +492,11 @@ device.
 your normal DNS servers (eg. 192.168.1.1 or 1.1.1.1) at the second or lower
 positions.
 
-**Note:** Do not configure Tailscale's DNS in Home Assistant, because when
-`accept_dns` option is disabled, Tailscale's DNS resolves only tailnet addresses
-and logs a warning for each DNS query that doesn't query this domain, and in
-Home Assistant you can't specify domains for a DNS.
+**Note:** Do not configure Tailscale's DNS in Home Assistant's network
+configuration, because when `accept_dns` option is disabled, Tailscale's DNS
+resolves only tailnet addresses and logs a warning for each DNS query that
+doesn't query this domain, and in Home Assistant you can't specify domains for a
+DNS.
 
 ## Changelog & Releases
 
