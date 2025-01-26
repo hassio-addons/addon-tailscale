@@ -147,10 +147,6 @@ More information: [Subnet routers][tailscale_info_subnets]
 When not set, the add-on by default will advertise routes to your subnets on all
 supported interfaces.
 
-**Note:** If you only want to access your local subnet from other clients on
-your tailnet, but you don't want to access other clients on your tailnet from
-your local subnet, you don't need to disable the `userspace_networking` option.
-
 ### Option: `funnel`
 
 This requires Tailscale Proxy to be enabled.
@@ -283,15 +279,15 @@ router, and this simplifies routing configuration.
 
 When not set, this option is enabled by default.
 
-To support advanced [Site-to-site networking][tailscale_info_site_to_site] (eg.
+To support advanced [Site-to-site networking][tailscale_info_site_to_site] (e.g.
 to traverse multiple networks), you can disable this functionality, and follow
-steps on [Site-to-site networking][tailscale_info_site_to_site] (Note: "IP
-address forwarding" and "Clamp the MSS to the MTU" is already done by the
-add-on).
+steps in the [Site-to-site networking][tailscale_info_site_to_site] guide (Note:
+The add-on already handles "IP address forwarding" and "Clamp the MSS to the
+MTU" for you).
 
-**Note:** Disable this option only when you really understand why you need this.
-If you are not interested in the real source IP address, you don't need to
-disable this option.
+**Note:** Only disable this option if you fully understand the implications.
+Keep it enabled if preserving the real source IP address is not critical for
+your use case.
 
 ### Option: `stateful_filtering`
 
@@ -334,9 +330,9 @@ with their tailnet IP, but with their tailnet name, you have to configure Home
 Assistant's DNS options also.
 
 If you want to access other clients on your tailnet even from your local subnet,
-follow steps on [Site-to-site networking][tailscale_info_site_to_site] (Note:
-"IP address forwarding" and "Clamp the MSS to the MTU" is already done by the
-add-on).
+follow steps in the [Site-to-site networking][tailscale_info_site_to_site] guide
+(Note: The add-on already handles "IP address forwarding" and "Clamp the MSS to
+the MTU" for you).
 
 **Note:** In case your local subnets collide with subnet routes within your
 tailnet, your local network access has priority, and these addresses won't be
@@ -345,12 +341,12 @@ losing network connection. This also means that using the same subnet on
 multiple nodes for load balancing and failover is impossible with the current
 add-on behavior.
 
-**Note:** If you only want to access your local subnet from other clients on
-your tailnet, but you don't want to access other clients on your tailnet from
-your local subnet, you don't need to disable the `userspace_networking` option.
+**Note:** The `userspace_networking` option can remain enabled if you only need
+one-way access from tailnet clients to your local subnet, without requiring
+access from your local subnet to other tailnet clients.
 
 **Note:** If you implement Site-to-site networking, but you are not interested
-in the real source IP address, ie. subnet devices can see the traffic
+in the real source IP address, i.e. subnet devices can see the traffic
 originating from the subnet router, you don't need to disable the
 `snat_subnet_routes` option, this can simplify routing configuration.
 
