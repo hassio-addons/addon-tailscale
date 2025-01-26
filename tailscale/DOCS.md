@@ -165,8 +165,8 @@ have to enable subnet routing just to access services on the host from the
 tailnet.
 
 **Note:** Without forwarding, services running only on the interfaces managed by
-Home Assistant (ie. not on all interfaces), are not accessible directly from the
-tailnet when userspace networking is disabled.
+Home Assistant (i.e. not on all interfaces), are not accessible directly from
+the tailnet when userspace networking is disabled.
 
 **Note:** Tailscale's serve and funnel features have priority over this plain
 port forwarding, those connections won't be forwarded directly to the host.

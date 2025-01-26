@@ -6,30 +6,36 @@
 # ==============================================================================
 
 declare from_address_ipv4 from_address_ipv6
-declare to_address
-
-# Tailscale's IP addresses
-from_address_ipv4=$(/opt/tailscale ip -4)
-from_address_ipv6=$(/opt/tailscale ip -6)
 
 # In case of non userspace networking and if enabled, remove the forwarding from tailnet to host
-for to_address in $( \
-  iptables -t nat -S PREROUTING \
-  | { grep -E "^-A PREROUTING -d ${from_address_ipv4}/32 -j DNAT --to-destination \S+$" || true ;} \
-  | sed -nr 's/^.*?--to-destination\s(\S+)$/\1/p')
-do
-  bashio::log.info "Removing the forwarding from ${from_address_ipv4} to ${to_address} (IPv4)"
-  if ! iptables -t nat -D PREROUTING -d ${from_address_ipv4} -j DNAT --to-destination ${to_address}; then
-    bashio::log.warning "Removing forwarding is unsuccessful"
+function remove_forwarding() {
+  local cmd="$1"
+  local ip_version="$2"
+  local from_address="$3"
+  local from_address_bits="$4"
+  local to_address
+
+  if bashio::var.has_value "${from_address}"; then
+    for to_address in $( \
+      ${cmd} -t nat -S PREROUTING \
+      | { grep -E "^-A PREROUTING -d ${from_address}/${from_address_bits} -j DNAT --to-destination \S+$" || true ;} \
+      | sed -nr 's/^.*?--to-destination\s(\S+)$/\1/p')
+    do
+      bashio::log.info "Removing the forwarding from ${from_address} to ${to_address} (${ip_version})"
+      if ! ${cmd} -t nat -D PREROUTING -d ${from_address} -j DNAT --to-destination ${to_address}; then
+        bashio::log.warning "Removing forwarding is unsuccessful (${ip_version})"
+      fi
+    done
   fi
-done
-for to_address in $( \
-  ip6tables -t nat -S PREROUTING \
-  | { grep -E "^-A PREROUTING -d ${from_address_ipv6}/128 -j DNAT --to-destination \S+$" || true ;} \
-  | sed -nr 's/^.*?--to-destination\s(\S+)$/\1/p')
-do
-  bashio::log.info "Removing the forwarding from ${from_address_ipv6} to ${to_address} (IPv6)"
-  if ! ip6tables -t nat -D PREROUTING -d ${from_address_ipv6} -j DNAT --to-destination ${to_address}; then
-    bashio::log.warning "Removing forwarding is unsuccessful"
-  fi
-done
+}
+
+# Tailscale's IP addresses
+if ! from_address_ipv4=$(/opt/tailscale ip -4); then
+    bashio::log.warning "Failed to retrieve Tailscale's IPv4 address"
+fi
+if ! from_address_ipv6=$(/opt/tailscale ip -6); then
+    bashio::log.warning "Failed to retrieve Tailscale's IPv6 address"
+fi
+
+remove_forwarding "iptables" "IPv4" "${from_address_ipv4}" "32"
+remove_forwarding "ip6tables" "IPv6" "${from_address_ipv6}" "128"
