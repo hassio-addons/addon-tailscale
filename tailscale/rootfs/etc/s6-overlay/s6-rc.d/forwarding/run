@@ -36,8 +36,7 @@ function get_forwardable_address() {
   bashio::jq "${ipinfo}" '.ADDRESS'
 }
 
-
-# Host's IP addresses
+# Host's IP addresses, it never fails, but can return empty
 function get_host_address() {
   local ip_version="$1"
 
