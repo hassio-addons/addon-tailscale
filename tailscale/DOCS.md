@@ -413,7 +413,7 @@ configuration from the [DNS page][tailscale_dns] of the admin panel. Tailscale's
 DNS is always functional when `userspace_networking` option is disabled.
 
 **Note:** The reason that Tailscale's "magical" local DNS configuration
-manipulation is permanently disabled in the add-on, is that Tailscale's DNS when
+manipulation is permanently disabled in the add-on, is that when Tailscale's DNS
 can't resolve a query, instead of returning an error and letting the operating
 system call the next DNS, calls itself the originally configured DNS. But that
 DNS is Home Assistant's DNS, where we configure, to call Tailscale's DNS... This
@@ -446,10 +446,10 @@ the add-on is started and Tailscale's DNS is available.
 
 ### Using Tailscale DNS to resolve everything
 
-On the [DNS page][tailscale_dns] of the admin console you already enabled
+On the [DNS page][tailscale_dns] of the admin console, you already enabled
 "Override local DNS", and configured "Global nameservers".
 
-**Important:** In this scenario your Home Assistant device's tailnet IP (and
+**Important:** In this scenario, your Home Assistant device's tailnet IP (and
 especially LAN IP) **is NOT configured** as global nameserver on the admin
 console.
 
@@ -462,18 +462,18 @@ lower positions.
 
 In this configuration Home Assistant (as any other general device on the
 tailnet) will always try to resolve addresses with Tailscale's DNS and
-Tailscale's DNS will resolve non-tailnet addresses also. Whether you have your
+Tailscale's DNS will also resolve non-tailnet addresses. Whether you have your
 own DNS (like AdGuard) _on another tailnet device_, is irrelevant for this
 configuration.
 
 ### Using Tailscale DNS to resolve everything and you have your own DNS (like AdGuard) _on this device_ also
 
-On the [DNS page][tailscale_dns] of the admin console you already enabled
+On the [DNS page][tailscale_dns] of the admin console, you already enabled
 "Override local DNS", and configured "Global nameservers".
 
-**Important:** In this scenario your Home Assistant device's tailnet IP (not LAN
-IP) **is configured** as global nameserver on the admin console because you want
-to redirect all DNS queries within your tailnet to the DNS running on this
+**Important:** In this scenario, your Home Assistant device's tailnet IP (not
+LAN IP) **is configured** as global nameserver on the admin console because you
+want to redirect all DNS queries within your tailnet to the DNS running on this
 device.
 
 - In the add-on's configuration disable `accept_dns` option and restart the
