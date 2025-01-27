@@ -189,7 +189,7 @@ Tailscale can provide a TLS certificate for your Home Assistant instance within
 your tailnet domain.
 
 This can prevent browsers from warning that HTTP URLs to your Home Assistant
-instance look unencrypted (browsers are not aware of the connections between
+instance look unencrypted (browsers are not aware that the connections between
 Tailscale nodes are secured with end-to-end encryption).
 
 With the Tailscale Serve feature, you can access your Home Assistant instance
