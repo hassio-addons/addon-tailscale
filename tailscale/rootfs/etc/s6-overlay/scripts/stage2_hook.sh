@@ -5,6 +5,15 @@
 # S6 Overlay stage2 hook to customize services
 # ==============================================================================
 
+# Disable dnsmasq service when userspace-networking is enabled or accepting dns is disabled
+if ! bashio::config.has_value "userspace_networking" || \
+    bashio::config.true "userspace_networking" || \
+    bashio::config.false "accept_dns";
+then
+    rm /etc/s6-overlay/s6-rc.d/user/contents.d/dnsmasq
+    rm /etc/s6-overlay/s6-rc.d/tailscaled/dependencies.d/dnsmasq
+fi
+
 # Disable protect-subnets service when userspace-networking is enabled or accepting routes is disabled
 if ! bashio::config.has_value "userspace_networking" || \
     bashio::config.true "userspace_networking" || \
