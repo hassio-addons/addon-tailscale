@@ -371,8 +371,9 @@ times unhealthy in a row, the add-on will be restarted.
 
 The add-on's health is set unhealthy:
 
-- once it was online and gets offline for longer than 5 minutes
-- after a (re)start can't get online for longer than 1 hour
+- Once it was online and gets offline for longer than 5 minutes.
+
+- After a (re)start can't get online for longer than 1 hour.
 
 ## Changelog & Releases
 
