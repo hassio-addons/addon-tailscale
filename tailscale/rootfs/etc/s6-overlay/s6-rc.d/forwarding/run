@@ -78,10 +78,10 @@ function setup_forwarding() {
 
 # Tailscale's IP addresses
 if ! from_address_ipv4=$(/opt/tailscale ip -4); then
-    bashio::log.warning "Failed to retrieve Tailscale's IPv4 address"
+  bashio::log.warning "Failed to retrieve Tailscale's IPv4 address"
 fi
 if ! from_address_ipv6=$(/opt/tailscale ip -6); then
-    bashio::log.warning "Failed to retrieve Tailscale's IPv6 address"
+  bashio::log.warning "Failed to retrieve Tailscale's IPv6 address"
 fi
 
 # Host's IP addresses
