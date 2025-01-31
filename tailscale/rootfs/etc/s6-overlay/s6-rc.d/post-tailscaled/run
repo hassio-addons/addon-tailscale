@@ -155,10 +155,12 @@ then
         | jq -rc '.Peer[] | select(has("PrimaryRoutes")) | .PrimaryRoutes[]' \
         | sort -u))
   if (( 0 < ${#colliding_routes[@]} )); then
-    bashio::log.warning "Currently the following subnets are both present as local subnets"
-    bashio::log.warning "and are also routed within your tailnet to other nodes!"
-    bashio::log.warning "Please reconfigure your subnet routing within your tailnet"
-    bashio::log.warning "to prevent current or future collisions."
+    bashio::log.warning \
+      "Currently the following subnets are both present as local subnets" \
+      "and are also routed within your tailnet to other nodes!"
+    bashio::log.warning \
+      "Please reconfigure your subnet routing within your tailnet" \
+      "to prevent current or future collisions."
   fi
   for route in "${colliding_routes[@]}"; do
     bashio::log.warning "  ${route}"
@@ -169,8 +171,11 @@ fi
 if ! bashio::config.has_value "userspace_networking" || \
   bashio::config.true "userspace_networking";
 then
-  bashio::log.notice "The add-on uses userspace networking mode."
-  bashio::log.notice "If you need to access other clients on your tailnet from your Home Assistant instance,"
-  bashio::log.notice "disable userspace networking mode, that will create a \"tailscale0\" network interface on your host."
-  bashio::log.notice "Please check your configuration based on the add-on's documentation under \"Option: userspace_networking\""
+  bashio::log.notice \
+    "The add-on uses userspace networking mode."
+  bashio::log.notice \
+    "If you need to access other clients on your tailnet from your Home Assistant instance," \
+    "disable userspace networking mode, that will create a \"tailscale0\" network interface on your host."
+  bashio::log.notice \
+    "Please check your configuration based on the add-on's documentation under \"Option: userspace_networking\""
 fi
