@@ -7,10 +7,38 @@
 
 readonly DNSMASQ_ADDRESS=127.52.52.52
 
+declare hostname
+declare -a addresses=()
+declare host_record=
+
 bashio::log.info "Starting dnsmasq..."
 
-# This is a dummy DNS to suppress tailscaled warnings about not configured upstream on each DNS query
-# It answers REFUSED for everything
+# Resolve login_server
+if bashio::config.has_value "login_server"; then
+  # We have to be able to resolve this address
+  if ! hostname=$(awk -F[/:] '{print $4}' <<<$(bashio::config "login_server")) || \
+    ! bashio::var.has_value "${hostname}"
+  then
+    bashio::log.error "Determining host name from '$(bashio::config "login_server")' has failed"
+    bashio::exit.nok
+  fi
+  if ! readarray -t addresses < <(dig ${hostname} A ${hostname} AAAA +short) || \
+    (( 0 == ${#addresses[@]} ))
+  then
+    bashio::log.error "Resolving '${hostname}' has failed"
+    bashio::exit.nok
+  fi
+else
+  # This is a best effort, if we fail, let tailscale use it's derp servers as fallback bootstrap DNS servers
+  hostname="controlplane.tailscale.com"
+  readarray -t addresses < <(dig ${hostname} A ${hostname} AAAA +short) || true
+fi
+if (( 0 < ${#addresses[@]} )); then
+  host_record="--host-record=${hostname}$(printf ",%s" "${addresses[@]}"),0"
+fi
+
+# This is a dummy DNS to provide bootstrap DNS resolution for the login_server option, otherwise answers REFUSED for everything
+# It is also required to suppress tailscaled warnings about not configured upstream on each DNS query
 # It must run on port 53 to be able to specify it in a resolv.conf
 echo "nameserver ${DNSMASQ_ADDRESS}" > /etc/resolv.dnsmasq.conf
-exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --listen-address=${DNSMASQ_ADDRESS} --port=53 --bind-interfaces
+exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --listen-address=${DNSMASQ_ADDRESS} --port=53 --bind-interfaces ${host_record}
