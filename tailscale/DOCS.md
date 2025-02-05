@@ -84,6 +84,25 @@ userspace_networking: true
 > change them through the Web UI, because all the changes made there would be
 > lost when the add-on is restarted.
 
+> [!CAUTION]
+> Due to limitations in Home Assistant's UI, **do not use** the "Show unused
+> optional configuration options" switch on the Configuration tab!
+
+> [!CAUTION]
+> When you want to change the default behaviour of any of these optional
+> configuration options, **add them to the YAML add-on configuration manually**,
+> by using the "Edit in YAML" in the ... menu on the right and save them! Use
+> the UI to edit them only after you added them manually!
+
+> [!WARNING]
+> Home Assistant's UI will show you all the optional configuration options
+> turned off instead of grayed out, and you will falsely believe that those are
+> the values that will be stored, so you will enable options, that by default
+> are already enabled when unused, and you will let options be disabled, that
+> you originally wanted to disable, but the **UI will not add these disabled
+> optional configuration options** to the YAML add-on configuration, and at the
+> end nothing will change in the add-on's functionality after a restart!
+
 ### Option: `accept_dns`
 
 If you are experiencing trouble with MagicDNS on this device and wish to
