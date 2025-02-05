@@ -390,7 +390,7 @@ described in Tailscale's online documentation or read in forums.
 **Important:** Tailscale's MagicDNS consists of 2 parts, the DNS server
 mentioned above, and the "magical" local DNS configuration manipulation to let
 the device use this DNS. This manipulation interferes with Home Assistant's DNS,
-and completely disabled in this add-on. You have to configure Tailscale's DNS
+and is completely disabled in this add-on. You have to configure Tailscale's DNS
 address in Home Assistant's network configuration manually to let Home Assistant
 (and any add-on, even this Tailscale add-on) to use Tailscale's DNS.
 
