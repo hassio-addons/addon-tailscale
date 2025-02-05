@@ -498,6 +498,9 @@ resolves only tailnet addresses and logs a warning for each DNS query that
 doesn't query this domain, and in Home Assistant you can't specify domains for a
 DNS.
 
+In this configuration Home Assistant (as any other general device on the
+tailnet) will always try to resolve addresses with your DNS.
+
 ## Changelog & Releases
 
 This repository keeps a change log using [GitHub's releases][releases]
