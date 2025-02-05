@@ -240,15 +240,15 @@ Serve][tailscale_info_serve], [Tailscale Funnel][tailscale_info_funnel]
 
 1. Restart the add-on.
 
-**Note**: _After initial setup, it can take up to 10 minutes for the domain to
-be publicly available._
+**Note**: After initial setup, it can take up to 10 minutes for the domain to
+be publicly available.
 
-**Note:** _You should not use the port number in the URL that you used
+**Note:** You should not use the port number in the URL that you used
 previously to access Home Assistant. Tailscale Serve and Funnel works on the
-default HTTPS port 443 (or the port configured in option `share_on_port`)._
+default HTTPS port 443 (or the port configured in option `share_on_port`).
 
-**Note:** _If you encounter strange browser behaviour or strange error messages,
-try to clear all site related cookies, clear all browser cache, restart browser._
+**Note:** If you encounter strange browser behaviour or strange error messages,
+try to clear all site related cookies, clear all browser cache, restart browser.
 
 ### Option: `share_on_port`
 
