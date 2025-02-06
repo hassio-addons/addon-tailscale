@@ -432,13 +432,14 @@ Tailscale's DNS, if Tailscale's DNS can't resolve it (because it is not in the
 tailnet), Home Assistant will use DNS servers specified at the second or lower
 positions.
 
-- On the [DNS page][tailscale_dns] of the admin console check, that "Override
-  local DNS" is disabled, and no "Global nameservers" are configured.
+1. On the [DNS page][tailscale_dns] of the admin console check, that "Override
+   local DNS" is disabled, and no "Global nameservers" are configured.
 
-- Under **Settings** -> **System** -> **Network** configure Tailscale's DNS as
-  the first DNS server (IPv4: 100.100.100.100, IPv6: fd7a:115c:a1e0::53).
+1. Under **Settings** -> **System** -> **Network** configure Tailscale's DNS as
+   the first DNS server (IPv4: 100.100.100.100, IPv6: fd7a:115c:a1e0::53).
 
-- Move your normal DNS servers (e.g. 192.168.1.1 or 1.1.1.1) to lower positions.
+1. Move your normal DNS servers (e.g. 192.168.1.1 or 1.1.1.1) to lower
+   positions.
 
 **Note:** If the Tailscale add-on is not started and Tailscale's DNS is not
 available, Home Assistant's DNS will resolve the public IP of devices where
@@ -453,15 +454,15 @@ Tailscale's DNS will also resolve non-tailnet addresses. Whether you have your
 own DNS (like AdGuard) _on another tailnet device_, is irrelevant for this
 configuration.
 
-- On the [DNS page][tailscale_dns] of the admin console, you already enabled
-  "Override local DNS", and configured "Global nameservers".
+1. On the [DNS page][tailscale_dns] of the admin console, you already enabled
+   "Override local DNS", and configured "Global nameservers".
 
-- **Important:** In this scenario, your Home Assistant device's tailnet IP (and
-  especially LAN IP) **is NOT configured** as global nameserver on the admin
-  console.
+   **Important:** In this scenario, your Home Assistant device's tailnet IP (and
+   especially LAN IP) **is NOT configured** as global nameserver on the admin
+   console.
 
-- Under **Settings** -> **System** -> **Network** configure Tailscale's DNS as
-  the only DNS server (IPv4: 100.100.100.100, IPv6: fd7a:115c:a1e0::53).
+1. Under **Settings** -> **System** -> **Network** configure Tailscale's DNS as
+   the only DNS server (IPv4: 100.100.100.100, IPv6: fd7a:115c:a1e0::53).
 
 **Note:** As a backup, if the Tailscale add-on fails to start up, you can
 configure your normal DNS servers (e.g. 192.168.1.1 or 1.1.1.1) at the second or
@@ -472,25 +473,25 @@ lower positions.
 In this configuration Home Assistant (as any other general device on the
 tailnet) will always try to resolve addresses with your own DNS.
 
-- On the [DNS page][tailscale_dns] of the admin console, you already enabled
-  "Override local DNS", and configured "Global nameservers".
+1. On the [DNS page][tailscale_dns] of the admin console, you already enabled
+   "Override local DNS", and configured "Global nameservers".
 
-- **Important:** In this scenario, your Home Assistant device's tailnet IP (not
-  LAN IP) **is configured** as global nameserver on the admin console because
-  you want to redirect all DNS queries within your tailnet to the DNS running on
-  this device.
+   **Important:** In this scenario, your Home Assistant device's tailnet IP (not
+   LAN IP) **is configured** as global nameserver on the admin console because
+   you want to redirect all DNS queries within your tailnet to the DNS running
+   on this device.
 
-- In the add-on's configuration, disable `accept_dns` option and restart the
-  add-on. This will prevent your local Tailscale DNS to accept DNS settings of
-  your tailnet that are configured on the admin console above. This will prevent
-  the Tailscale DNS to redirect queries from your device back to your device,
-  causing a loop.
+1. In the add-on's configuration, disable `accept_dns` option and restart the
+   add-on. This will prevent your local Tailscale DNS to accept DNS settings of
+   your tailnet that are configured on the admin console above. This will
+   prevent the Tailscale DNS to redirect queries from your device back to your
+   device, causing a loop.
 
-- Under **Settings** -> **System** -> **Network** configure your DNS as the only
-  DNS server (e.g. IPv4: 127.0.0.1, IPv6: ::1).
+1. Under **Settings** -> **System** -> **Network** configure your DNS as the
+   only DNS server (e.g. IPv4: 127.0.0.1, IPv6: ::1).
 
-- In your DNS, configure Tailscale DNS for your tailnet domain as upstream DNS
-  server (e.g. in case of AdGuard `[/tail1234.ts.net/]100.100.100.100`).
+1. In your DNS, configure Tailscale DNS for your tailnet domain as upstream DNS
+   server (e.g. in case of AdGuard `[/tail1234.ts.net/]100.100.100.100`).
 
 **Note:** As a backup, if the DNS add-on fails to start up, you can configure
 your normal DNS servers (e.g. 192.168.1.1 or 1.1.1.1) at the second or lower
