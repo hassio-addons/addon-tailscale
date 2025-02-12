@@ -14,6 +14,14 @@ then
     rm /etc/s6-overlay/s6-rc.d/post-tailscaled/dependencies.d/protect-subnets
 fi
 
+# Disable forwarding service when userspace-networking is enabled or forwarding to host is disabled
+if ! bashio::config.has_value "userspace_networking" || \
+    bashio::config.true "userspace_networking" || \
+    bashio::config.false "forward_to_host";
+then
+    rm /etc/s6-overlay/s6-rc.d/user/contents.d/forwarding
+fi
+
 # Disable mss-clamping service when userspace-networking is enabled
 if ! bashio::config.has_value "userspace_networking" || \
     bashio::config.true "userspace_networking";
