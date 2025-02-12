@@ -280,10 +280,15 @@ router, and this simplifies routing configuration.
 
 When not set, this option is enabled by default.
 
-To support advanced [Site-to-site networking][tailscale_info_site_to_site] (eg.
+To support advanced [Site-to-site networking][tailscale_info_site_to_site] (e.g.
 to traverse multiple networks), you can disable this functionality, and follow
-steps from step 3 on [Site-to-site networking][tailscale_info_site_to_site]. But
-do it only when you really understand why you need this.
+steps in the [Site-to-site networking][tailscale_info_site_to_site] guide (Note:
+The add-on already handles "IP address forwarding" and "Clamp the MSS to the
+MTU" for you).
+
+**Note:** Only disable this option if you fully understand the implications.
+Keep it enabled if preserving the real source IP address is not critical for
+your use case.
 
 ### Option: `stateful_filtering`
 
@@ -326,14 +331,25 @@ with their tailnet IP, but with their tailnet name, you have to configure Home
 Assistant's DNS options also.
 
 If you want to access other clients on your tailnet even from your local subnet,
-follow steps from step 3 on [Site-to-site
-networking][tailscale_info_site_to_site].
+follow steps in the [Site-to-site networking][tailscale_info_site_to_site] guide
+(Note: The add-on already handles "IP address forwarding" and "Clamp the MSS to
+the MTU" for you).
 
-In case your local subnets collide with subnet routes within your tailnet, your
-local network access has priority, and these addresses won't be routed toward
-your tailnet. This will prevent your Home Assistant instance from losing network
-connection. This also means that using the same subnet on multiple nodes for load
-balancing and failover is impossible with the current add-on behavior.
+**Note:** In case your local subnets collide with subnet routes within your
+tailnet, your local network access has priority, and these addresses won't be
+routed toward your tailnet. This will prevent your Home Assistant instance from
+losing network connection. This also means that using the same subnet on
+multiple nodes for load balancing and failover is impossible with the current
+add-on behavior.
+
+**Note:** The `userspace_networking` option can remain enabled if you only need
+one-way access from tailnet clients to your local subnet, without requiring
+access from your local subnet to other tailnet clients.
+
+**Note:** If you implement Site-to-site networking, but you are not interested
+in the real source IP address, i.e. subnet devices can see the traffic
+originating from the subnet router, you don't need to disable the
+`snat_subnet_routes` option, this can simplify routing configuration.
 
 ## Network
 
