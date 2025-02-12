@@ -31,15 +31,17 @@ then
   fi
 
   readarray -t routes < <(subnet-routes local)
-  bashio::log.info "Adding local subnets to ip rules with higher priority than Tailscale's routing,"
-  bashio::log.info "to prevent routing local subnets if the same subnet is routed within your tailnet."
+  bashio::log.info \
+    "Adding local subnets to ip rules with higher priority than Tailscale's routing," \
+    "to prevent routing local subnets if the same subnet is routed within your tailnet."
   if (( 0 == ${#routes[@]} )); then
     # Do not remove this warning, usually this is superfluous,
     # but I've run into situation where Supervisor needed a restart to return valid interface address data
     # (that seems to be a hard to reproduce bug, better have some log in the future than not).
     # See: https://github.com/home-assistant/supervisor/issues/5361
-    bashio::log.warning "  There are no local subnets to protect!"
-    bashio::log.warning "  Maybe this is a temporary situation due to configuration change underway."
+    bashio::log.warning \
+      "  There are no local subnets to protect!" \
+      "Maybe this is a temporary situation due to configuration change underway."
   else
     for route in "${routes[@]}"; do
       if [[ "${route}" =~ .*:.* ]]; then
