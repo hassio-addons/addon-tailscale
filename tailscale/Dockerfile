@@ -35,6 +35,9 @@ RUN \
 # Copy root filesystem
 COPY rootfs /
 
+HEALTHCHECK \
+    CMD healthcheck
+
 # S6 Overlay stage 2 hook
 ENV S6_STAGE2_HOOK=/etc/s6-overlay/scripts/stage2_hook.sh
 
