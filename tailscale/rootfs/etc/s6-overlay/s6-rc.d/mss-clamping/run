@@ -5,61 +5,28 @@
 # Clamp the MSS to the MTU
 # ==============================================================================
 
-declare -a routes=()
-declare -a interfaces=()
-declare route family interface
+readonly TAILSCALE_INTERFACE="tailscale0"
+readonly CLAMPING_IPTABLES_OPTIONS="-p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu"
 
-readarray -t routes < <(subnet-routes advertised)
+# In case of non userspace networking, clamp the MSS to the MTU for tailscale's interface
+# If user later enables subnet routing for site-to-site networking, this config is already there
+# Source: https://tailscale.com/kb/1214/site-to-site/
+function setup_clamping() {
+  local cmd="$1"
+  local ip_version="$2"
 
-# In case of non userspace networking, clamp the MSS to the MTU for all advertised subnet's interface
-# If user later enables subnet routing for site-to-site networking, these settings are already there
-# Source: https://tailscale.com/kb/1214/site-to-site/ Step 1 / Point 4
-if (( 0 < ${#routes[@]} )); then
-  bashio::log.info "Clamping the MSS to the MTU for all advertised subnet's interface,"
-  bashio::log.info "to support site-to-site networking better"
-
-  # Find interfaces for subnet routes
-  for route in "${routes[@]}"; do
-    if [[ "${route}" =~ .*:.* ]]; then
-      family="-6"
-    else
-      family="-4"
+  bashio::log.info "Clamping the MSS to the MTU for interface ${TAILSCALE_INTERFACE}," \
+    "to support site-to-site networking better (${ip_version})"
+  if ${cmd} -t mangle -S FORWARD \
+    | grep -Eq "^-A FORWARD -o tailscale\d ${CLAMPING_IPTABLES_OPTIONS}$"
+  then
+    bashio::log.notice "Clamping is already set (${ip_version})"
+  else
+    if ! ${cmd} -t mangle -A FORWARD -o ${TAILSCALE_INTERFACE} ${CLAMPING_IPTABLES_OPTIONS}; then
+      bashio::log.warning "Setting up clamping is unsuccessful (${ip_version})"
     fi
-    for interface in $( \
-      ip "${family}" -json route show to match "${route}" \
-      | jq --raw-output -c -M '.[].dev')
-    do
-      interfaces+=("${interface}")
-    done
-  done
+  fi
+}
 
-  # Remove duplicate entries
-  readarray -t interfaces < <(printf "%s" "${interfaces[@]/%/$'\n'}" | sort -u)
-
-  for interface in "${interfaces[@]}"; do
-    bashio::log.info "  Clamping the MSS for interface ${interface} (IPv4)"
-    if [[ "${interface}" == $(iptables -t mangle -S FORWARD \
-      | { grep -E "^-A FORWARD -i tailscale\d -o ${interface}" || true ;} \
-      | sed -nr 's/^.*?-o\s([A-Za-z0-9]+)\s.*$/\1/p') ]]
-    then
-      bashio::log.notice "  MSS is already clamped for interface ${interface} (IPv4)"
-    else
-      if ! iptables -t mangle -A FORWARD -i tailscale0 -o ${interface} -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu; then
-        bashio::log.warning "Altering the MSS for site-to-site networking is unsuccessful"
-        break
-      fi
-    fi
-    bashio::log.info "  Clamping the MSS for interface ${interface} (IPv6)"
-    if [[ "${interface}" == $(ip6tables -t mangle -S FORWARD \
-      | { grep -E "^-A FORWARD -i tailscale\d -o ${interface}" || true ;} \
-      | sed -nr 's/^.*?-o\s([A-Za-z0-9]+)\s.*$/\1/p') ]]
-    then
-      bashio::log.notice "  MSS is already clamped for interface ${interface} (IPv6)"
-    else
-      if ! ip6tables -t mangle -A FORWARD -i tailscale0 -o ${interface} -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu; then
-        bashio::log.warning "Altering the MSS for site-to-site networking is unsuccessful"
-        break
-      fi
-    fi
-  done
-fi
+setup_clamping "iptables" "IPv4"
+setup_clamping "ip6tables" "IPv6"
