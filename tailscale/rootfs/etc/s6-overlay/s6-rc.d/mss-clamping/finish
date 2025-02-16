@@ -5,22 +5,25 @@
 # Remove the MSS clamping
 # ==============================================================================
 
-declare interface
+readonly CLAMPING_IPTABLES_OPTIONS="-p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu"
 
 # In case of non userspace networking, remove the MSS clamping for all advertised subnet's interface
-for interface in $( \
-  iptables -t mangle -S FORWARD \
-  | { grep -E '^-A FORWARD -i tailscale\d' || true ;} \
-  | sed -nr 's/^.*?-o\s([A-Za-z0-9]+)\s.*$/\1/p')
-do
-  bashio::log.info "Removing the MSS clamping for interface ${interface} (IPv4)"
-  iptables -t mangle -D FORWARD -i tailscale0 -o ${interface} -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
-done
-for interface in $( \
-  ip6tables -t mangle -S FORWARD \
-  | { grep -E '^-A FORWARD -i tailscale\d' || true ;} \
-  | sed -nr 's/^.*?-o\s([A-Za-z0-9]+)\s.*$/\1/p')
-do
-  bashio::log.info "Removing the MSS clamping for interface ${interface} (IPv6)"
-  ip6tables -t mangle -D FORWARD -i tailscale0 -o ${interface} -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
-done
+function remove_clamping() {
+  local cmd="$1"
+  local ip_version="$2"
+  local interface
+
+  for interface in $( \
+    ${cmd} -t mangle -S FORWARD \
+    | { grep -E "^-A FORWARD -o tailscale\d ${CLAMPING_IPTABLES_OPTIONS}$" || true ;} \
+    | sed -nr 's/^.*?-o\s(\S+)\s.*$/\1/p')
+  do
+    bashio::log.info "Removing the MSS clamping for interface ${interface} (${ip_version})"
+    if ! ${cmd} -t mangle -D FORWARD -o ${interface} ${CLAMPING_IPTABLES_OPTIONS}; then
+      bashio::log.warning "Removing clamping is unsuccessful (${ip_version})"
+    fi
+  done
+}
+
+remove_clamping "iptables" "IPv4"
+remove_clamping "ip6tables" "IPv6"
