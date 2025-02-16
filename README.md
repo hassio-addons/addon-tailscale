@@ -77,7 +77,7 @@ our [GitHub Repository][repository].
 
 MIT License
 
-Copyright (c) 2021-2024 Franck Nijhof
+Copyright (c) 2021-2025 Franck Nijhof
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -118,7 +118,7 @@ SOFTWARE.
 [i386-shield]: https://img.shields.io/badge/i386-no-red.svg
 [issue]: https://github.com/hassio-addons/addon-tailscale/issues
 [license-shield]: https://img.shields.io/github/license/hassio-addons/addon-tailscale.svg
-[maintenance-shield]: https://img.shields.io/maintenance/yes/2024.svg
+[maintenance-shield]: https://img.shields.io/maintenance/yes/2025.svg
 [patreon-shield]: https://frenck.dev/wp-content/uploads/2019/12/patreon.png
 [patreon]: https://www.patreon.com/frenck
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-experimental-yellow.svg
