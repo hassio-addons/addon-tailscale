@@ -7,7 +7,6 @@
 # - .BackendState == "Stopped"
 # - if once was online but gets offline for more then HEALTHCHECK_OFFLINE_TIMEOUT seconds
 # - if never gets online for more then HEALTHCHECK_RESTART_TIMEOUT seconds
-#   This can handle internal TS bugs, like https://github.com/tailscale/tailscale/issues/12021 where TS fails to recover from rerouting traffic from normal WAN to failover WAN
 
 # Redirect healthchecks' output to the log
 exec &> /proc/1/fd/1
@@ -19,7 +18,6 @@ declare status_json
 declare backend_state is_self_online
 # STARTED_TIMESTAMP is in contenv at /var/run/s6/container_environment
 # LAST_ONLINE_TIMESTAMP is in contenv at /var/run/s6/container_environment
-# LAST_REPORTED_HEALTH_STATE is in contenv at /var/run/s6/container_environment
 
 if ! bashio::var.has_value "${STARTED_TIMESTAMP-}"
 then
@@ -44,17 +42,5 @@ if [[ "${backend_state}" == "Stopped" ]] || \
     (( $(date +"%s") - ${STARTED_TIMESTAMP} > ${HEALTHCHECK_RESTART_TIMEOUT} )) )
 then
   # Unhealthy
-  if ! bashio::var.equals "${LAST_REPORTED_HEALTH_STATE-}" "UNHEALTHY"; then
-    printf "UNHEALTHY" > /var/run/s6/container_environment/LAST_REPORTED_HEALTH_STATE
-  fi
-  # Log it always
-  bashio::log.fatal "Add-on is unhealthy"
   bashio::exit.nok
-else
-  # Healthy
-  if ! bashio::var.equals "${LAST_REPORTED_HEALTH_STATE-}" "HEALTHY"; then
-    printf "HEALTHY" > /var/run/s6/container_environment/LAST_REPORTED_HEALTH_STATE
-    # Log it only once
-    bashio::log.info "Add-on is healthy"
-  fi
 fi
