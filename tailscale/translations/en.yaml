@@ -34,12 +34,6 @@ configuration:
       your device is connected to) to other clients on your tailnet.
       When not set, the add-on by default will advertise routes to your subnets on all
       supported interfaces.
-  forward_to_host:
-    name: Forward to host
-    description: >-
-      Forward incoming tailnet connections to the host's primary interface when
-      userspace networking is disabled.
-      When not set, this option is enabled by default.
   funnel:
     name: Tailscale Funnel
     description: >-

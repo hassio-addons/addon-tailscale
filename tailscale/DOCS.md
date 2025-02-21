@@ -64,7 +64,6 @@ advertise_connector: true
 advertise_routes:
   - 192.168.1.0/24
   - fd12:3456:abcd::/64
-forward_to_host: true
 funnel: false
 log_level: info
 login_server: "https://controlplane.tailscale.com"
@@ -148,31 +147,6 @@ More information: [Subnet routers][tailscale_info_subnets]
 
 When not set, the add-on by default will advertise routes to your subnets on all
 supported interfaces.
-
-### Option: `forward_to_host`
-
-Forward incoming tailnet connections to the host's primary interface when
-userspace networking is disabled.
-
-When not set, this option is enabled by default.
-
-When userspace networking is enabled, Tailscale automatically forwards incoming
-tailnet connections to localhost.
-
-When userspace networking is disabled, the add-on can forward incoming tailnet
-connections to Home Assistant's primary host interface. This means you don't
-have to enable subnet routing just to access services on the host from the
-tailnet.
-
-**Note:** Without forwarding, services running only on the interfaces managed by
-Home Assistant (i.e. not on all interfaces), are inaccessible from the tailnet
-when userspace networking is disabled.
-
-**Note:** Tailscale's serve and funnel features have priority over this plain
-port forwarding, those connections won't be forwarded directly to the host.
-
-**Note:** Hairpinning is not implemented, do not test forwarding by accessing
-the host, from itself, through the tailscale0 interface.
 
 ### Option: `funnel`
 

@@ -7,7 +7,7 @@
 
 declare from_address_ipv4 from_address_ipv6
 
-# In case of non userspace networking and if enabled, remove the forwarding from tailnet to host
+# In case of non userspace networking, remove the forwarding from tailnet to host
 function remove_forwarding() {
   local cmd="$1"
   local ip_version="$2"

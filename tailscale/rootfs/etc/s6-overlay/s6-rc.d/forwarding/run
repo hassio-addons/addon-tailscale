@@ -51,7 +51,7 @@ function get_host_address() {
   fi
 }
 
-# In case of non userspace networking and if enabled, forward incoming tailnet connections to the host's primary interface
+# In case of non userspace networking, forward incoming tailnet connections to the host's primary interface
 function setup_forwarding() {
   local cmd="$1"
   local ip_version="$2"
