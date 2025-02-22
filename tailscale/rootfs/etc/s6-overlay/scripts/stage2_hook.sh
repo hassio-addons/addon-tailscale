@@ -57,12 +57,15 @@ if bashio::var.has_value "${proxy_and_funnel_port}"; then
 fi
 # Remove previous options
 if bashio::var.has_value "${proxy}"; then
+    bashio::log.info 'Removing deprecated proxy option'
     bashio::addon.option 'proxy'
 fi
 if bashio::var.has_value "${funnel}"; then
+    bashio::log.info 'Removing deprecated funnel option'
     bashio::addon.option 'funnel'
 fi
 if bashio::var.has_value "${proxy_and_funnel_port}"; then
+    bashio::log.info 'Removing deprecated proxy_and_funnel_port option'
     bashio::addon.option 'proxy_and_funnel_port'
 fi
 
