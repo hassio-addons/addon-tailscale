@@ -378,62 +378,15 @@ When not set, an automatically selected port is used by default.
 
 ## DNS
 
-**When `userspace_networking` option is disabled**, Tailscale provides a DNS (at
+When `userspace_networking` option is disabled, Tailscale provides a DNS (at
 100.100.100.100) to be able to address other clients on your tailnet not only
 with their tailnet IP, but with their tailnet name.
-
-To let DNS resolution work correctly, you have to configure both Tailscale and
-Home Assistant properly. Because the Tailscale client runs in a Home Assistant
-add-on, configuration has some specialties compared to the general rules
-described in Tailscale's online documentation or read in forums.
-
-**Important:** Tailscale's MagicDNS consists of 2 parts, the DNS server
-mentioned above, and the "magical" local DNS configuration manipulation to let
-the device use this DNS. This manipulation interferes with Home Assistant's DNS,
-and is completely disabled in this add-on. You have to configure Tailscale's DNS
-address in Home Assistant's network configuration manually to let Home Assistant
-(and any add-on, even this Tailscale add-on) to use Tailscale's DNS.
-
-**Important:** The only difference of this configuration compared to the general
-Tailscale experience, is that you always have to use the fully qualified domain
-name instead of only the device name, i.e. `ping
-some-tailnet-device.tail1234.ts.net` works, but `ping some-tailnet-device` does
-not work.
-
-**Note:** Disabling MagicDNS globally on the [DNS page][tailscale_dns] of the
-admin console disables the "magical" local DNS configuration manipulation
-(already permanently disabled in the add-on), but do not disable Tailscale's
-DNS. Tailscale's DNS is always functional when `userspace_networking` option is
-disabled.
-
-**Note:** Disabling `accept_dns` option disables the "magical" local DNS
-configuration manipulation (already permanently disabled in the add-on), but do
-not disable Tailscale's DNS, in this case Tailscale's DNS only rejects DNS
-configuration from the [DNS page][tailscale_dns] of the admin panel. Tailscale's
-DNS is always functional when `userspace_networking` option is disabled.
-
-**Note:** The reason that Tailscale's "magical" local DNS configuration
-manipulation is permanently disabled in the add-on, is that when Tailscale's DNS
-can't resolve a query, instead of returning an error and letting the operating
-system call the next DNS, calls itself the originally configured DNS. But that
-DNS is Home Assistant's DNS, where we configure, to call Tailscale's DNS... This
-is a loop, that had to be cut in the add-on.
 
 More information: [What is 100.100.100.100][tailscale_info_quad100], [DNS in
 Tailscale][tailscale_info_dns], [MagicDNS][tailscale_info_magicdns], [Access a
 Pi-hole from anywhere][tailscale_info_pi_hole]
 
-Below we describe some typical scenarios for DNS configuration.
-
-### Using Tailscale DNS to resolve only tailnet devices
-
-In this configuration Home Assistant will first try to resolve addresses with
-Tailscale's DNS, if Tailscale's DNS can't resolve it (because it is not in the
-tailnet), Home Assistant will use DNS servers specified at the second or lower
-positions.
-
-1. On the [DNS page][tailscale_dns] of the admin console check, that "Override
-   local DNS" is disabled, and no "Global nameservers" are configured.
+1. Check that `userspace_networking` option is disabled.
 
 1. Under **Settings** -> **System** -> **Network** configure Tailscale's DNS as
    the first DNS server (IPv4: 100.100.100.100, IPv6: fd7a:115c:a1e0::53).
@@ -441,67 +394,21 @@ positions.
 1. Move your normal DNS servers (e.g. 192.168.1.1 or 1.1.1.1) to lower
    positions.
 
-**Note:** If the Tailscale add-on is not started and Tailscale's DNS is not
-available, Home Assistant's DNS will resolve the public IP of devices where
-funnel is enabled. These values remain in the DNS cache for some time even after
-the add-on is started and Tailscale's DNS is available.
+**Note:** The only difference compared to the general Tailscale experience, is
+that you always have to use the fully qualified domain name instead of only the
+device name, i.e. `ping some-tailnet-device.tail1234.ts.net` works, but `ping
+some-tailnet-device` does not work.
 
-### Using Tailscale DNS to resolve everything
+**Note:** If you are running your own DNS (like AdGuard) on this Home Assistant
+device also, and this device is configured as global nameserver on the [DNS
+page][tailscale_dns] of the admin console, then:
 
-In this configuration Home Assistant (as any other general device on the
-tailnet) will always try to resolve addresses with Tailscale's DNS and
-Tailscale's DNS will also resolve non-tailnet addresses. Whether you have your
-own DNS (like AdGuard) _on another tailnet device_, is irrelevant for this
-configuration.
+1. Disable `accept_dns` option to prevent the Tailscale DNS to redirect queries
+   from your device back to your device, causing a loop.
 
-1. On the [DNS page][tailscale_dns] of the admin console, you already enabled
-   "Override local DNS", and configured "Global nameservers".
-
-   **Important:** In this scenario, your Home Assistant device's tailnet IP (and
-   especially LAN IP) **is NOT configured** as global nameserver on the admin
-   console.
-
-1. Under **Settings** -> **System** -> **Network** configure Tailscale's DNS as
-   the only DNS server (IPv4: 100.100.100.100, IPv6: fd7a:115c:a1e0::53).
-
-**Note:** As a backup, if the Tailscale add-on fails to start up, you can
-configure your normal DNS servers (e.g. 192.168.1.1 or 1.1.1.1) at the second or
-lower positions.
-
-### Using Tailscale DNS to resolve everything, and you have your own DNS (like AdGuard) _on this device_ also
-
-In this configuration Home Assistant (as any other general device on the
-tailnet) will always try to resolve addresses with your own DNS.
-
-1. On the [DNS page][tailscale_dns] of the admin console, you already enabled
-   "Override local DNS", and configured "Global nameservers".
-
-   **Important:** In this scenario, your Home Assistant device's tailnet IP (not
-   LAN IP) **is configured** as global nameserver on the admin console because
-   you want to redirect all DNS queries within your tailnet to the DNS running
-   on this device.
-
-1. In the add-on's configuration, disable `accept_dns` option and restart the
-   add-on. This will prevent your local Tailscale DNS to accept DNS settings of
-   your tailnet that are configured on the admin console above. This will
-   prevent the Tailscale DNS to redirect queries from your device back to your
-   device, causing a loop.
-
-1. Under **Settings** -> **System** -> **Network** configure your DNS as the
-   only DNS server (e.g. IPv4: 127.0.0.1, IPv6: ::1).
-
-1. In your DNS, configure Tailscale DNS for your tailnet domain as upstream DNS
-   server (e.g. in case of AdGuard `[/tail1234.ts.net/]100.100.100.100`).
-
-**Note:** As a backup, if the DNS add-on fails to start up, you can configure
-your normal DNS servers (e.g. 192.168.1.1 or 1.1.1.1) at the second or lower
-positions.
-
-**Note:** Do not configure Tailscale's DNS in Home Assistant's network
-configuration because when `accept_dns` option is disabled, Tailscale's DNS
-resolves only tailnet addresses and logs a warning for each DNS query that
-doesn't query this domain, and in Home Assistant you can't specify domains for a
-DNS.
+1. Configure your DNS for Home Assistant, and in your DNS configure Tailscale
+   DNS for your tailnet domain as upstream DNS server (e.g. in case of AdGuard
+   `[/tail1234.ts.net/]100.100.100.100`).
 
 ## Changelog & Releases
 
