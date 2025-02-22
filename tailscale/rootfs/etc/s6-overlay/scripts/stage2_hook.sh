@@ -23,11 +23,11 @@ options=$(bashio::addon.options)
 
 # Upgrade configuration from 'proxy', 'funnel' and 'proxy_and_funnel_port' to 'share_homeassistant' and 'share_on_port'
 # This step can be removed in a later version
-proxy=$(bashio::jq "${options}" '.proxy // empty')
-funnel=$(bashio::jq "${options}" '.funnel // empty')
-proxy_and_funnel_port=$(bashio::jq "${options}" '.proxy_and_funnel_port // empty')
-share_homeassistant=$(bashio::jq "${options}" '.share_homeassistant // empty')
-share_on_port=$(bashio::jq "${options}" '.share_on_port // empty')
+proxy=$(bashio::jq "${options}" '.proxy | select(.!=null)')
+funnel=$(bashio::jq "${options}" '.funnel | select(.!=null)')
+proxy_and_funnel_port=$(bashio::jq "${options}" '.proxy_and_funnel_port | select(.!=null)')
+share_homeassistant=$(bashio::jq "${options}" '.share_homeassistant | select(.!=null)')
+share_on_port=$(bashio::jq "${options}" '.share_on_port | select(.!=null)')
 # Upgrade to share_homeassistant
 if bashio::var.true "${proxy}"; then
     if bashio::var.has_value "${share_homeassistant}"; then
