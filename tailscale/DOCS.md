@@ -86,7 +86,7 @@ userspace_networking: true
 
 ### Option: `accept_dns`
 
-This option allows you to accept DNS settings of your tailnet that are
+This option allows you to accept the DNS settings of your tailnet that are
 configured on the [DNS page][tailscale_dns] of the admin console.
 
 For more information, see the "DNS" section of this documentation.
@@ -378,7 +378,7 @@ When not set, an automatically selected port is used by default.
 
 ## DNS
 
-When `userspace_networking` option is disabled, Tailscale provides a DNS (at
+When the `userspace_networking` option is disabled, Tailscale provides a DNS (at
 100.100.100.100) to be able to address other clients on your tailnet not only
 with their tailnet IP, but with their tailnet name.
 
@@ -386,7 +386,7 @@ More information: [What is 100.100.100.100][tailscale_info_quad100], [DNS in
 Tailscale][tailscale_info_dns], [MagicDNS][tailscale_info_magicdns], [Access a
 Pi-hole from anywhere][tailscale_info_pi_hole]
 
-1. Check that `userspace_networking` option is disabled.
+1. Check that the `userspace_networking` option is disabled.
 
 1. Under **Settings** -> **System** -> **Network** configure Tailscale's DNS as
    the first DNS server (IPv4: 100.100.100.100, IPv6: fd7a:115c:a1e0::53).
@@ -403,8 +403,8 @@ some-tailnet-device` does not work.
 device also, and this device is configured as global nameserver on the [DNS
 page][tailscale_dns] of the admin console, then:
 
-1. Disable `accept_dns` option to prevent the Tailscale DNS to redirect queries
-   from your device back to your device, causing a loop.
+1. Disable the `accept_dns` option to prevent the Tailscale DNS to redirect
+   queries from your device back to your device, causing a loop.
 
 1. Configure your DNS for Home Assistant, and in your DNS configure Tailscale
    DNS for your tailnet domain as upstream DNS server (e.g. in case of AdGuard
