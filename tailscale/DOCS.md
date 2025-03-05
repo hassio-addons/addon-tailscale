@@ -87,7 +87,8 @@ userspace_networking: true
 ### Option: `accept_dns`
 
 This option allows you to accept the DNS settings of your tailnet that are
-configured on the [DNS page][tailscale_dns] of the admin console.
+configured on the [DNS page][tailscale_dns] of the admin console. When disabled,
+Tailscale's DNS resolves only tailnet addresses
 
 For more information, see the "DNS" section of this documentation.
 
