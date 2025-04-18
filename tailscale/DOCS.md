@@ -86,15 +86,13 @@ userspace_networking: true
 
 ### Option: `accept_dns`
 
-If you are experiencing trouble with MagicDNS on this device and wish to
-disable, you can do so using this option.
+This option allows you to accept the DNS settings of your tailnet that are
+configured on the [DNS page][tailscale_dns] of the admin console. When disabled,
+Tailscale's DNS resolves only tailnet addresses
+
+For more information, see the "DNS" section of this documentation.
 
 When not set, this option is enabled by default.
-
-MagicDNS may cause issues if you run things like Pi-hole or AdGuard Home
-on the same machine as this add-on. In such cases disabling `accept_dns`
-will help. You can still leverage MagicDNS on other devices on your network,
-by adding `100.100.100.100` as a DNS server in your Pi-hole or AdGuard Home.
 
 ### Option: `accept_routes`
 
@@ -326,9 +324,10 @@ When not set, this option is enabled by default.
 
 If you need to access other clients on your tailnet from your Home Assistant
 instance, disable userspace networking mode, which will create a `tailscale0`
-network interface on your host. To be able to address those clients not only
-with their tailnet IP, but with their tailnet name, you have to configure Home
-Assistant's DNS options also.
+network interface on your host.
+
+To be able to address other clients on your tailnet not only with their tailnet
+IP, but with their tailnet name, see the "DNS" section of this documentation.
 
 If you want to access other clients on your tailnet even from your local subnet,
 follow steps in the [Site-to-site networking][tailscale_info_site_to_site] guide
@@ -363,6 +362,40 @@ CGNAT networks). You can test connections with `tailscale ping
 <hostname-or-ip>`.
 
 When not set, an automatically selected port is used by default.
+
+## DNS
+
+When the `userspace_networking` option is disabled, Tailscale provides a DNS (at
+100.100.100.100) to be able to address other clients on your tailnet not only
+with their tailnet IP, but with their tailnet name.
+
+More information: [What is 100.100.100.100][tailscale_info_quad100], [DNS in
+Tailscale][tailscale_info_dns], [MagicDNS][tailscale_info_magicdns], [Access a
+Pi-hole from anywhere][tailscale_info_pi_hole]
+
+1. Check that the `userspace_networking` option is disabled.
+
+1. Under **Settings** -> **System** -> **Network** configure Tailscale's DNS as
+   the first DNS server (IPv4: 100.100.100.100, IPv6: fd7a:115c:a1e0::53).
+
+1. Move your normal DNS servers (e.g. 192.168.1.1 or 1.1.1.1) to lower
+   positions.
+
+**Note:** The only difference compared to the general Tailscale experience, is
+that you always have to use the fully qualified domain name instead of only the
+device name, i.e. `ping some-tailnet-device.tail1234.ts.net` works, but `ping
+some-tailnet-device` does not work.
+
+**Note:** If you are running your own DNS (like AdGuard) on this Home Assistant
+device also, and this device is configured as global nameserver on the [DNS
+page][tailscale_dns] of the admin console, then:
+
+1. Disable the `accept_dns` option to prevent the Tailscale DNS to redirect
+   queries from your device back to your device, causing a loop.
+
+1. Configure your DNS for Home Assistant, and in your DNS configure Tailscale
+   DNS for your tailnet domain as upstream DNS server (e.g. in case of AdGuard
+   `[/tail1234.ts.net/]100.100.100.100`).
 
 ## Changelog & Releases
 
@@ -439,12 +472,16 @@ SOFTWARE.
 [taildrop]: https://tailscale.com/taildrop
 [tailscale_acls]: https://login.tailscale.com/admin/acls
 [tailscale_dns]: https://login.tailscale.com/admin/dns
+[tailscale_info_dns]: https://tailscale.com/kb/1054/dns
 [tailscale_info_exit_nodes]: https://tailscale.com/kb/1103/exit-nodes
 [tailscale_info_app_connectors]: https://tailscale.com/kb/1281/app-connectors
 [tailscale_info_funnel]: https://tailscale.com/kb/1223/funnel
 [tailscale_info_funnel_policy_requirement]: https://tailscale.com/kb/1223/funnel#requirements-and-limitations
 [tailscale_info_https]: https://tailscale.com/kb/1153/enabling-https
 [tailscale_info_key_expiry]: https://tailscale.com/kb/1028/key-expiry
+[tailscale_info_magicdns]: https://tailscale.com/kb/1081/magicdns
+[tailscale_info_pi_hole]: https://tailscale.com/kb/1114/pi-hole
+[tailscale_info_quad100]: https://tailscale.com/kb/1381/what-is-quad100
 [tailscale_info_site_to_site]: https://tailscale.com/kb/1214/site-to-site
 [tailscale_info_subnets]: https://tailscale.com/kb/1019/subnets
 [tailscale_info_tags]: https://tailscale.com/kb/1068/tags
