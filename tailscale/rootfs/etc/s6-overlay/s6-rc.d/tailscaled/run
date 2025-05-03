@@ -50,6 +50,7 @@ if ! bashio::fs.file_exists "/etc/resolv.dnsmasq.conf"; then
   fi
 else
   # Using fake resolv.conf
+  bashio::log.info "Using dnsmasq as upstream DNS server"
   mv /etc/resolv.dnsmasq.conf /etc/resolv.for-tailscaled.conf
   if bashio::debug ; then
     exec unshare -m bash -c "mount --bind /etc/resolv.for-tailscaled.conf /etc/resolv.conf; exec /opt/tailscaled $(printf "\"%s\" " "${options[@]}")"
