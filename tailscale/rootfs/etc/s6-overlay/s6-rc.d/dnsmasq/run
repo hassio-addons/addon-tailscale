@@ -37,8 +37,11 @@ if (( 0 < ${#addresses[@]} )); then
   host_record="--host-record=${hostname}$(printf ",%s" "${addresses[@]}"),0"
 fi
 
+# We need to delay the starting of the dependent services until the conf file is written
+echo "nameserver ${DNSMASQ_ADDRESS}" > /etc/resolv.dnsmasq.conf
+echo "" >&3
+
 # This is a dummy DNS to provide bootstrap DNS resolution for the login_server option, otherwise answers REFUSED for everything
 # It is also required to suppress tailscaled warnings about not configured upstream on each DNS query
 # It must run on port 53 to be able to specify it in a resolv.conf
-echo "nameserver ${DNSMASQ_ADDRESS}" > /etc/resolv.dnsmasq.conf
 exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --listen-address=${DNSMASQ_ADDRESS} --port=53 --bind-interfaces ${host_record}
