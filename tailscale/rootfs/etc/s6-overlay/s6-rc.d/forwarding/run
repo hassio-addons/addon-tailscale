@@ -75,9 +75,10 @@ function setup_forwarding() {
   fi
 }
 
-if ! bashio::api.supervisor GET "/network/interface/default/info" false > /dev/null; then
+if ! bashio::api.supervisor GET "/network/interface/default/info" false &> /dev/null; then
   bashio::log.warning \
-    "The host has no primary (default) interface, can't forward incoming tailnet connections to the host"
+    "The host has no primary (default) interface, can't forward incoming tailnet connections to the host." \
+    "Restart of the add-on is required after the issue is fixed!"
 else
   # Tailscale's IP addresses
   if ! from_address_ipv4=$(/opt/tailscale ip -4); then
