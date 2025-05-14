@@ -66,4 +66,13 @@ else
   bashio::cache.set "subnet-routes-$1" "${response}"
 fi
 
+if (( 0 == ${#routes[@]} )) && \
+  [[ "$1" == "advertised" ]] && \
+  ! bashio::config.exists "advertise_routes"
+then
+  bashio::log.warning \
+    "There are no local subnets to advertise!" \
+    "Restart of the add-on is required after the issue is fixed!"
+fi
+
 printf "%s" "${response}"
