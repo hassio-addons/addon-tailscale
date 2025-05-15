@@ -6,14 +6,15 @@
 # ==============================================================================
 
 readonly DNSMASQ_ADDRESS=127.52.52.52
+readonly DEFAULT_HOSTNAME="controlplane.tailscale.com"
 
-declare hostname
+declare hostname="${DEFAULT_HOSTNAME}"
 declare -a addresses=()
 declare host_record=
 
 bashio::log.info "Starting dnsmasq..."
 
-# Resolve login_server
+# Get hostname if configured
 if bashio::config.has_value "login_server"; then
   # We have to be able to resolve this address
   if ! hostname=$(awk -F[/:] '{print $4}' <<<$(bashio::config "login_server")) || \
@@ -22,6 +23,11 @@ if bashio::config.has_value "login_server"; then
     bashio::log.error "Determining host name from '$(bashio::config "login_server")' has failed"
     bashio::exit.nok
   fi
+fi
+
+# Resolve hostname
+if [[ "${hostname}" != "${DEFAULT_HOSTNAME}" ]]; then
+  # If non-TS controlplane is used, we must be able to resolve it before TS starts up, there is built-in fallback mechanism in TS only for it's own controlplane
   if ! readarray -t addresses < <(dig ${hostname} A ${hostname} AAAA +short) || \
     (( 0 == ${#addresses[@]} ))
   then
@@ -29,9 +35,11 @@ if bashio::config.has_value "login_server"; then
     bashio::exit.nok
   fi
 else
-  # This is a best effort, if we fail, let tailscale use it's derp servers as fallback bootstrap DNS servers
-  hostname="controlplane.tailscale.com"
+  # This is a best effort, if we fail, let TS use it's DERP servers as fallback bootstrap DNS servers
   readarray -t addresses < <(dig ${hostname} A ${hostname} AAAA +short) || true
+  if (( 0 == ${#addresses[@]} )); then
+    bashio::log.warning "Resolving '${hostname}' has failed, Tailscale will start up slower, using it's DERP servers as fallback bootstrap DNS servers."
+  fi
 fi
 if (( 0 < ${#addresses[@]} )); then
   host_record="--host-record=${hostname}$(printf ",%s" "${addresses[@]}"),0"
