@@ -14,50 +14,61 @@ declare wait_counter=0
 if bashio::config.false "userspace_networking" && \
   (! bashio::config.has_value "accept_routes" || bashio::config.true "accept_routes")
 then
-  # If it is called after network configuration is changed, we need to drop cached network info
-  bashio::cache.flush_all
-  # It is possible to get "ERROR: Got unexpected response from the API: System is not ready with state: setup"
-  # So we wait a little, 60*5s = 300s = 5m
-  while ! bashio::api.supervisor GET "/addons/self/options/config" false &> /dev/null; do
-    if (( wait_counter++ == 60 )); then
-      bashio::log.error "Supervisor is unreachable"
-      bashio::exit.nok
+  if ! [[ "${1-}" =~ ^(|test|tested)$ ]]; then
+    echo "Usage: protect-subnet-routes [test|tested]" 1>&2
+    exit 1
+  fi
+
+  if [[ "${1-}" != "tested" ]]; then
+    # If it is called after network configuration is changed, we need to drop cached network info
+    bashio::cache.flush_all
+    # It is possible to get "ERROR: Got unexpected response from the API: System is not ready with state: setup"
+    # So we wait a little, 60*5s = 300s = 5m
+    while ! bashio::api.supervisor GET "/addons/self/options/config" false &> /dev/null; do
+      if (( wait_counter++ == 60 )); then
+        bashio::log.error "Supervisor is unreachable"
+        bashio::exit.nok
+      fi
+      bashio::log.info "Waiting for the supervisor to be ready..."
+      sleep 5
+    done
+    if (( wait_counter != 0 )); then
+      bashio::log.info "Supervisor is ready"
     fi
-    bashio::log.info "Waiting for the supervisor to be ready..."
-    sleep 5
-  done
-  if (( wait_counter != 0 )); then
-    bashio::log.info "Supervisor is ready"
   fi
 
   readarray -t routes < <(subnet-routes local)
-  bashio::log.info \
-    "Adding local subnets to ip rules with higher priority than Tailscale's routing," \
-    "to prevent routing local subnets if the same subnet is routed within your tailnet."
-  if (( 0 == ${#routes[@]} )); then
-    # Do not remove this warning, usually this is superfluous,
-    # but I've run into situation where Supervisor needed a restart to return valid interface address data
-    # (that seems to be a hard to reproduce bug, better have some log in the future than not).
-    # See: https://github.com/home-assistant/supervisor/issues/5361
-    bashio::log.warning \
-      "  There are no local subnets to protect!" \
-      "Maybe this is a temporary situation due to configuration change underway."
+  if [[ "${1-}" == "test" ]]; then
+    printf "%s" "${routes[@]/%/$'\n'}"
   else
-    for route in "${routes[@]}"; do
-      if [[ "${route}" =~ .*:.* ]]; then
-        family="-6"
-      else
-        family="-4"
-      fi
-      bashio::log.info "  Adding route ${route} to ip rules"
-      if ! response=$(ip "${family}" rule add to "${route}" priority ${PROTECTION_RULE_PRIORITY} table main 2>&1); then
-        if [[ "${response}" != "RTNETLINK answers: File exists" ]]; then
-          echo "${response}"
-          bashio::exit.nok
+    bashio::log.info \
+      "Adding local subnets to ip rules with higher priority than Tailscale's routing," \
+      "to prevent routing local subnets if the same subnet is routed within your tailnet."
+    if (( 0 == ${#routes[@]} )); then
+      # Do not remove this warning, usually this is superfluous,
+      # but I've run into situation where Supervisor needed a restart to return valid interface address data
+      # (that seems to be a hard to reproduce bug, better have some log in the future than not).
+      # See: https://github.com/home-assistant/supervisor/issues/5361
+      bashio::log.warning \
+        "  There are no local subnets to protect!" \
+        "Maybe this is a temporary situation due to configuration change underway."
+    else
+      for route in "${routes[@]}"; do
+        if [[ "${route}" =~ .*:.* ]]; then
+          family="-6"
         else
-          bashio::log.notice "  Route ${route} is already added to ip rules"
+          family="-4"
         fi
-      fi
-    done
+        bashio::log.info "  Adding route ${route} to ip rules"
+        if ! response=$(ip "${family}" rule add to "${route}" priority ${PROTECTION_RULE_PRIORITY} table main 2>&1); then
+          if [[ "${response}" != "RTNETLINK answers: File exists" ]]; then
+            echo "${response}"
+            bashio::exit.nok
+          else
+            bashio::log.notice "  Route ${route} is already added to ip rules"
+          fi
+        fi
+      done
+    fi
   fi
 fi
