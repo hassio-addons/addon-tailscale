@@ -12,17 +12,27 @@ declare route family
 if bashio::config.false "userspace_networking" && \
   (! bashio::config.has_value "accept_routes" || bashio::config.true "accept_routes")
 then
+  if ! [[ "${1-}" =~ ^(|test)$ ]]; then
+    echo "Usage: unprotect-subnet-routes [test]" 1>&2
+    exit 1
+  fi
+
   readarray -t routes < <( \
     { ip -4 rule list; ip -6 rule list; } \
     | { grep -E "^${PROTECTION_RULE_PRIORITY}:" || true ;} \
     | sed -nr 's/^\d+:\s+from all to ([^\s]+) lookup main$/\1/p')
-  for route in "${routes[@]}"; do
-    bashio::log.info "Removing route ${route} from ip rules"
-    if [[ "${route}" =~ .*:.* ]]; then
-      family="-6"
-    else
-      family="-4"
-    fi
-    ip "${family}" rule del to "${route}"
-  done
+
+  if [[ "${1-}" == "test" ]]; then
+    printf "%s" "${routes[@]/%/$'\n'}"
+  else
+    for route in "${routes[@]}"; do
+      bashio::log.info "Removing route ${route} from ip rules"
+      if [[ "${route}" =~ .*:.* ]]; then
+        family="-6"
+      else
+        family="-4"
+      fi
+      ip "${family}" rule del to "${route}"
+    done
+  fi
 fi
