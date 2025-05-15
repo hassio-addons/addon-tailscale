@@ -63,7 +63,6 @@ if ! bashio::config.has_value "userspace_networking" || \
     bashio::config.true "userspace_networking" || \
     bashio::config.false "accept_dns";
 then
-    rm /etc/s6-overlay/s6-rc.d/user/contents.d/dnsmasq
     rm /etc/s6-overlay/s6-rc.d/tailscaled/dependencies.d/dnsmasq
 fi
 
