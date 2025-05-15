@@ -1,0 +1,26 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Wait for the local network (default HA interface) to be ready
+# ==============================================================================
+
+declare wait_counter=0
+
+# Some services need a working local network to function properly.
+# They can mark this service as dependency, and wait for the successful startup.
+
+# Until HA has no default interface, we wait a little, 60*5s = 300s = 5m
+while ! bashio::api.supervisor GET "/network/interface/default/info" false &> /dev/null; do
+  if (( wait_counter++ == 60 )); then
+    # We emit only a warning to let the add-on start, maybe this is the only connection to access the device, better to start than not.
+    # Let Tailscale figure out a way to connect to the tailnet if the local network is temporarily down.
+    # The add-on will emit warnings where it requires local network information, but can't get it.
+    bashio::log.warning "Local network (default Home Assistant interface) is unreachable"
+    break
+  fi
+  bashio::log.info "Waiting for the local network (default Home Assistant interface) to be ready..."
+  sleep 5
+done
+if (( wait_counter != 0 && wait_counter <= 60 )); then
+  bashio::log.info "Local network is ready"
+fi
