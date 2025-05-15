@@ -10,7 +10,6 @@ if ! bashio::config.has_value "userspace_networking" || \
     bashio::config.true "userspace_networking" || \
     bashio::config.false "accept_routes";
 then
-    rm /etc/s6-overlay/s6-rc.d/user/contents.d/protect-subnets
     rm /etc/s6-overlay/s6-rc.d/post-tailscaled/dependencies.d/protect-subnets
 fi
 
