@@ -7,6 +7,7 @@
 
 readonly DNSMASQ_ADDRESS=127.52.52.52
 readonly DEFAULT_HOSTNAME="controlplane.tailscale.com"
+readonly LETSENCRYPT_HOSTNAME="acme-v02.api.letsencrypt.org"
 
 declare hostname="${DEFAULT_HOSTNAME}"
 declare -a addresses=()
@@ -48,6 +49,17 @@ else
 fi
 if (( 0 < ${#addresses[@]} )); then
   host_records+=("--host-record=${hostname}$(printf ",%s" "${addresses[@]}"),0")
+fi
+
+# If serve or funnel is used, resolve letsencrypt's api also
+if bashio::config.equals 'proxy' 'true'; then
+  if ! readarray -t addresses < <(dig_addresses ${LETSENCRYPT_HOSTNAME}) || \
+    (( 0 == ${#addresses[@]} ))
+  then
+    bashio::log.error "Resolving '${LETSENCRYPT_HOSTNAME}' has failed"
+    bashio::exit.nok
+  fi
+  host_records+=("--host-record=${LETSENCRYPT_HOSTNAME}$(printf ",%s" "${addresses[@]}"),0")
 fi
 
 # We need to delay the starting of the dependent services until the conf file is written
