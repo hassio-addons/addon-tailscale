@@ -5,6 +5,9 @@
 # Enables Tailscale Serve or Funnel feature to share Home Assistant
 # ==============================================================================
 
+readonly WAIT_DELAY=5   # 5s
+readonly WAIT_COUNT=18  # 18*5s = 90s = 1.5m
+
 declare wait_counter=0
 declare curl_result
 
@@ -32,11 +35,11 @@ fi
 
 # Wait a bit for HA to be available during startup
 while (( 200 != (curl_result=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$(bashio::core.port)")) )); do
-  if (( wait_counter++ == 18 )); then
+  if (( wait_counter++ == $WAIT_COUNT )); then
     break
   fi
   bashio::log.info "Waiting for Home Assistant to be ready..."
-  sleep 5
+  sleep $WAIT_DELAY
 done
 if (( wait_counter != 0 && curl_result == 200)); then
   bashio::log.info "Home Assistant is ready"
