@@ -4,7 +4,10 @@
 # In case of non userspace networking,
 # add local subnets to ip rules with higher priority than Tailscale's routing
 # ==============================================================================
+
 readonly PROTECTION_RULE_PRIORITY=5000
+readonly WAIT_DELAY=5   # 5s
+readonly WAIT_COUNT=60  # 60*5s = 300s = 5m
 
 declare -a routes=()
 declare route family
@@ -23,14 +26,14 @@ then
     # If it is called after network configuration is changed, we need to drop cached network info
     bashio::cache.flush_all
     # It is possible to get "ERROR: Got unexpected response from the API: System is not ready with state: setup"
-    # So we wait a little, 60*5s = 300s = 5m
+    # So we wait a little
     while ! bashio::api.supervisor GET "/addons/self/options/config" false &> /dev/null; do
-      if (( wait_counter++ == 60 )); then
+      if (( wait_counter++ == $WAIT_COUNT )); then
         bashio::log.error "Supervisor is unreachable"
         bashio::exit.nok
       fi
       bashio::log.info "Waiting for the supervisor to be ready..."
-      sleep 5
+      sleep $WAIT_DELAY
     done
     if (( wait_counter != 0 )); then
       bashio::log.info "Supervisor is ready"
