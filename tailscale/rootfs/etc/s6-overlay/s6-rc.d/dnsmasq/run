@@ -20,6 +20,18 @@ function dig_addresses() {
   dig ${hostname} A ${hostname} AAAA +short | { grep -Ev '^;|\.$|^$' || true ;}
 }
 
+function add_addresses_to_host_records() {
+  local hostname="$1"
+  local address
+  for address in "${addresses[@]}"; do
+    if [[ "${address}" =~ .*:.* ]]; then
+      host_records+=("--host-record=${hostname},,${address},0")
+    else
+      host_records+=("--host-record=${hostname},${address},,0")
+    fi
+  done
+}
+
 # Get hostname if configured
 if bashio::config.has_value "login_server"; then
   # We have to be able to resolve this address
@@ -47,9 +59,7 @@ else
     bashio::log.warning "Resolving '${hostname}' has failed, Tailscale will start up slower, using it's DERP servers as fallback bootstrap DNS servers."
   fi
 fi
-if (( 0 < ${#addresses[@]} )); then
-  host_records+=("--host-record=${hostname}$(printf ",%s" "${addresses[@]}"),0")
-fi
+add_addresses_to_host_records ${hostname}
 
 # If serve or funnel is used, resolve letsencrypt's api also
 if bashio::config.equals 'proxy' 'true'; then
@@ -59,7 +69,7 @@ if bashio::config.equals 'proxy' 'true'; then
     bashio::log.error "Resolving '${LETSENCRYPT_HOSTNAME}' has failed"
     bashio::exit.nok
   fi
-  host_records+=("--host-record=${LETSENCRYPT_HOSTNAME}$(printf ",%s" "${addresses[@]}"),0")
+  add_addresses_to_host_records ${LETSENCRYPT_HOSTNAME}
 fi
 
 # We need to delay the starting of the dependent services until the conf file is written
