@@ -1,0 +1,94 @@
+#!/command/with-contenv bashio
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Take down the S6 supervision tree when dnsmasq ingress proxy fails
+# ==============================================================================
+readonly exit_code_container=$(</run/s6-linux-init-container-results/exitcode)
+readonly exit_code_service="${1}"
+readonly exit_code_signal="${2}"
+readonly service="dnsmasq-ingress-proxy"
+
+readonly DNSMASQ_INGRESS_ADDRESS=127.100.100.102
+readonly MAGIC_DNS_IPV4="100.100.100.100"
+readonly MAGIC_DNS_IPV6="fd7a:115c:a1e0::53"
+
+function remove_dnat() {
+  local proto
+
+  for proto in $( \
+    iptables -t nat -S OUTPUT \
+    | { grep -E "^-A OUTPUT -d ${MAGIC_DNS_IPV4}/32 -p \S+ -m \S+ ! --sport 54 --dport 53 -j DNAT --to-destination ${DNSMASQ_INGRESS_ADDRESS}$" || true ;} \
+    | sed -nr 's/^.*?-p\s(\S+).*$/\1/p')
+  do
+    bashio::log.info "Removing DNAT for dnsmasq ingress proxy (${proto})"
+    if ! iptables -t nat -D OUTPUT -d ${MAGIC_DNS_IPV4} -p ${proto} --dport 53 ! --sport 54 -j DNAT --to-destination ${DNSMASQ_INGRESS_ADDRESS}; then
+      bashio::log.warning "Removing DNAT for dnsmasq ingress proxy is unsuccessful (${proto})"
+    fi
+  done
+}
+
+function remove_snat() {
+  local proto
+
+  for proto in $( \
+    iptables -t nat -S POSTROUTING \
+    | { grep -E "^-A POSTROUTING ! -s 127.0.0.1/32 -d ${DNSMASQ_INGRESS_ADDRESS}/32 -p \S+ -m \S+ ! --sport 54 --dport 53 -j SNAT --to-source 127.0.0.1$" || true ;} \
+    | sed -nr 's/^.*?-p\s(\S+).*$/\1/p')
+  do
+    bashio::log.info "Removing SNAT for dnsmasq ingress proxy (${proto})"
+    if ! iptables -t nat -D POSTROUTING ! -s 127.0.0.1 -d ${DNSMASQ_INGRESS_ADDRESS} -p ${proto} --dport 53 ! --sport 54 -j SNAT --to-source 127.0.0.1; then
+      bashio::log.warning "Removing SNAT for dnsmasq ingress proxy is unsuccessful (${proto})"
+    fi
+  done
+}
+
+function remove_accept() {
+  local i
+
+  # Under normal circumstances it should run only once
+  for i in $(seq $( \
+    iptables -S INPUT \
+    | { grep -Ec "^-I INPUT -s ${MAGIC_DNS_IPV4}/32 -i lo -j ACCEPT$" || true ;} ))
+  do
+    bashio::log.info "Removing ACCEPT for dnsmasq ingress proxy"
+    if ! iptables -D INPUT -s ${MAGIC_DNS_IPV4} -i lo -j ACCEPT; then
+      bashio::log.warning "Removing ACCEPT for dnsmasq ingress proxy is unsuccessful"
+    fi
+  done
+}
+
+function remove_drop_ipv6() {
+  local proto
+
+  for proto in $( \
+    ip6tables -S OUTPUT \
+    | { grep -E "^-A OUTPUT -d ${MAGIC_DNS_IPV6}/128 -p \S+ -m \S+ --dport 53 -j DROP$" || true ;} \
+    | sed -nr 's/^.*?-p\s(\S+).*$/\1/p')
+  do
+    bashio::log.info "Removing DROP for dnsmasq ingress proxy (${proto})"
+    if ! ip6tables -D OUTPUT -d ${MAGIC_DNS_IPV6} -p ${proto} --dport 53 -j DROP; then
+      bashio::log.warning "Removing DROP for dnsmasq ingress proxy is unsuccessful (${proto})"
+    fi
+  done
+}
+
+remove_dnat
+remove_snat
+remove_accept
+remove_drop_ipv6
+
+bashio::log.info \
+  "Service ${service} exited with code ${exit_code_service}" \
+  "(by signal ${exit_code_signal})"
+
+if [[ "${exit_code_service}" -eq 256 ]]; then
+  if [[ "${exit_code_container}" -eq 0 ]]; then
+    echo $((128 + $exit_code_signal)) > /run/s6-linux-init-container-results/exitcode
+  fi
+  [[ "${exit_code_signal}" -eq 15 ]] && exec /run/s6/basedir/bin/halt
+elif [[ "${exit_code_service}" -ne 0 ]]; then
+  if [[ "${exit_code_container}" -eq 0 ]]; then
+    echo "${exit_code_service}" > /run/s6-linux-init-container-results/exitcode
+  fi
+  exec /run/s6/basedir/bin/halt
+fi

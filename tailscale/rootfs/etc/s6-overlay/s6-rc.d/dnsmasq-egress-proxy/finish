@@ -1,12 +1,12 @@
 #!/command/with-contenv bashio
 # ==============================================================================
 # Home Assistant Community Add-on: Tailscale
-# Take down the S6 supervision tree when dnsmasq fails
+# Take down the S6 supervision tree when dnsmasq egress proxy fails
 # ==============================================================================
 readonly exit_code_container=$(</run/s6-linux-init-container-results/exitcode)
 readonly exit_code_service="${1}"
 readonly exit_code_signal="${2}"
-readonly service="dnsmasq"
+readonly service="dnsmasq-egress-proxy"
 
 bashio::log.info \
   "Service ${service} exited with code ${exit_code_service}" \
