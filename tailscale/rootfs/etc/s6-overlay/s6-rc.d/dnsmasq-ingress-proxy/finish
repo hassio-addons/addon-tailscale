@@ -8,74 +8,83 @@ readonly exit_code_service="${1}"
 readonly exit_code_signal="${2}"
 readonly service="dnsmasq-ingress-proxy"
 
-readonly DNSMASQ_INGRESS_ADDRESS=127.100.100.102
+readonly DNSMASQ_INGRESS_ADDRESS_IPV4="127.100.100.102"
+readonly DNSMASQ_INGRESS_ADDRESS_IPV6="[::1]"
+readonly DNSMASQ_INGRESS_PORT=54
+readonly DNSMASQ_INGRESS_QUERY_PORT=55
 readonly MAGIC_DNS_IPV4="100.100.100.100"
-readonly MAGIC_DNS_IPV6="fd7a:115c:a1e0::53"
+readonly MAGIC_DNS_IPV6="[fd7a:115c:a1e0::53]"
 
 function remove_dnat() {
+  local cmd="$1"
+  local ip_version="$2"
+  local from_address="$3"
+  local to_address="$4"
+  local address_bits="$5"
+
   local proto
 
   for proto in $( \
-    iptables -t nat -S OUTPUT \
-    | { grep -E "^-A OUTPUT -d ${MAGIC_DNS_IPV4}/32 -p \S+ -m \S+ ! --sport 54 --dport 53 -j DNAT --to-destination ${DNSMASQ_INGRESS_ADDRESS}$" || true ;} \
+    ${cmd} -t nat -S OUTPUT \
+    | { grep -E "^-A OUTPUT -d ${from_address//[\[\]]/}/${address_bits} -p \S+ -m \S+ ! --sport ${DNSMASQ_INGRESS_QUERY_PORT} --dport 53 -j DNAT --to-destination $(sed -r 's/(\[|\])/\\\1/g' <<< "${to_address}"):${DNSMASQ_INGRESS_PORT}$" || true ;} \
     | sed -nr 's/^.*?-p\s(\S+).*$/\1/p')
   do
-    bashio::log.info "Removing DNAT for dnsmasq ingress proxy (${proto})"
-    if ! iptables -t nat -D OUTPUT -d ${MAGIC_DNS_IPV4} -p ${proto} --dport 53 ! --sport 54 -j DNAT --to-destination ${DNSMASQ_INGRESS_ADDRESS}; then
-      bashio::log.warning "Removing DNAT for dnsmasq ingress proxy is unsuccessful (${proto})"
+    bashio::log.info "Removing DNAT for dnsmasq ingress proxy (${proto}, ${ip_version})"
+    if ! ${cmd} -t nat -D OUTPUT -d ${from_address//[\[\]]/} -p ${proto} ! --sport ${DNSMASQ_INGRESS_QUERY_PORT} --dport 53 -j DNAT --to-destination ${to_address}:${DNSMASQ_INGRESS_PORT}; then
+      bashio::log.warning "Removing DNAT for dnsmasq ingress proxy is unsuccessful (${proto}, ${ip_version})"
     fi
   done
 }
 
 function remove_snat() {
+  local cmd="$1"
+  local ip_version="$2"
+  local from_address="$3"
+  local to_address="$4"
+  local address_bits="$5"
+
   local proto
 
   for proto in $( \
-    iptables -t nat -S POSTROUTING \
-    | { grep -E "^-A POSTROUTING ! -s 127.0.0.1/32 -d ${DNSMASQ_INGRESS_ADDRESS}/32 -p \S+ -m \S+ ! --sport 54 --dport 53 -j SNAT --to-source 127.0.0.1$" || true ;} \
+    ${cmd} -t nat -S POSTROUTING \
+    | { grep -E "^-A POSTROUTING ! -s ${from_address//[\[\]]/}/${address_bits} -d ${to_address//[\[\]]/}/${address_bits} -p \S+ -m \S+ ! --sport ${DNSMASQ_INGRESS_QUERY_PORT} --dport ${DNSMASQ_INGRESS_PORT} -j SNAT --to-source ${from_address//[\[\]]/}$" || true ;} \
     | sed -nr 's/^.*?-p\s(\S+).*$/\1/p')
   do
-    bashio::log.info "Removing SNAT for dnsmasq ingress proxy (${proto})"
-    if ! iptables -t nat -D POSTROUTING ! -s 127.0.0.1 -d ${DNSMASQ_INGRESS_ADDRESS} -p ${proto} --dport 53 ! --sport 54 -j SNAT --to-source 127.0.0.1; then
-      bashio::log.warning "Removing SNAT for dnsmasq ingress proxy is unsuccessful (${proto})"
+    bashio::log.info "Removing SNAT for dnsmasq ingress proxy (${proto}, ${ip_version})"
+    if ! ${cmd} -t nat -D POSTROUTING ! -s ${from_address//[\[\]]/} -d ${to_address//[\[\]]/} -p ${proto} ! --sport ${DNSMASQ_INGRESS_QUERY_PORT} --dport ${DNSMASQ_INGRESS_PORT} -j SNAT --to-source ${from_address//[\[\]]/}; then
+      bashio::log.warning "Removing SNAT for dnsmasq ingress proxy is unsuccessful (${proto}, ${ip_version})"
     fi
   done
 }
 
 function remove_accept() {
+  local cmd="$1"
+  local ip_version="$2"
+  local from_address="$3"
+  local address_bits="$4"
+
   local i
 
   # Under normal circumstances it should run only once
   for i in $(seq $( \
-    iptables -S INPUT \
-    | { grep -Ec "^-I INPUT -s ${MAGIC_DNS_IPV4}/32 -i lo -j ACCEPT$" || true ;} ))
+    ${cmd} -S INPUT \
+    | { grep -Ec "^-A INPUT -s ${from_address//[\[\]]/}/${address_bits} -i lo -j ACCEPT$" || true ;} ))
   do
-    bashio::log.info "Removing ACCEPT for dnsmasq ingress proxy"
-    if ! iptables -D INPUT -s ${MAGIC_DNS_IPV4} -i lo -j ACCEPT; then
-      bashio::log.warning "Removing ACCEPT for dnsmasq ingress proxy is unsuccessful"
+    bashio::log.info "Removing ACCEPT for dnsmasq ingress proxy (${ip_version})"
+    if ! ${cmd} -D INPUT -s ${from_address//[\[\]]/} -i lo -j ACCEPT; then
+      bashio::log.warning "Removing ACCEPT for dnsmasq ingress proxy is unsuccessful (${ip_version})"
     fi
   done
 }
 
-function remove_drop_ipv6() {
-  local proto
+remove_dnat "iptables" "IPv4" "${MAGIC_DNS_IPV4}" "${DNSMASQ_INGRESS_ADDRESS_IPV4}" "32"
+remove_dnat "ip6tables" "IPv6" "${MAGIC_DNS_IPV6}" "${DNSMASQ_INGRESS_ADDRESS_IPV6}" "128"
 
-  for proto in $( \
-    ip6tables -S OUTPUT \
-    | { grep -E "^-A OUTPUT -d ${MAGIC_DNS_IPV6}/128 -p \S+ -m \S+ --dport 53 -j DROP$" || true ;} \
-    | sed -nr 's/^.*?-p\s(\S+).*$/\1/p')
-  do
-    bashio::log.info "Removing DROP for dnsmasq ingress proxy (${proto})"
-    if ! ip6tables -D OUTPUT -d ${MAGIC_DNS_IPV6} -p ${proto} --dport 53 -j DROP; then
-      bashio::log.warning "Removing DROP for dnsmasq ingress proxy is unsuccessful (${proto})"
-    fi
-  done
-}
+remove_snat "iptables" "IPv4" "127.0.0.1" "${DNSMASQ_INGRESS_ADDRESS_IPV4}" "32"
+remove_snat "ip6tables" "IPv6" "[::1]" "${DNSMASQ_INGRESS_ADDRESS_IPV6}" "128"
 
-remove_dnat
-remove_snat
-remove_accept
-remove_drop_ipv6
+remove_accept "iptables" "IPv4" "${MAGIC_DNS_IPV4}" "32"
+remove_accept "ip6tables" "IPv6" "${MAGIC_DNS_IPV6}" "128"
 
 bashio::log.info \
   "Service ${service} exited with code ${exit_code_service}" \
