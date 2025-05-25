@@ -7,6 +7,7 @@
 
 readonly DEFAULT_LOGIN_SERVER="controlplane.tailscale.com"
 readonly LETSENCRYPT_API="acme-v02.api.letsencrypt.org"
+readonly DNSMASQ_BLACK_WHITE_LIST_LOCATION="/etc/dnsmasq-black-white-list"
 
 declare login_server="${DEFAULT_LOGIN_SERVER}"
 declare -a black_white_list=()
@@ -25,4 +26,4 @@ if ! bashio::config.equals 'share_homeassistant' 'disabled'; then
   black_white_list+=(${LETSENCRYPT_API})
 fi
 
-bashio::cache.set "dnsmasq-black-white-list" "$(printf "%s" "${black_white_list[@]/%/$'\n'}")"
+printf "%s" "${black_white_list[@]/%/$'\n'}" > ${DNSMASQ_BLACK_WHITE_LIST_LOCATION}

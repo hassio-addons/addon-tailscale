@@ -7,6 +7,7 @@
 
 readonly DNSMASQ_EGRESS_ADDRESS_IPV4="127.100.100.102"
 readonly DNSMASQ_EGRESS_PORT=53
+readonly DNSMASQ_BLACK_WHITE_LIST_LOCATION="/etc/dnsmasq-black-white-list"
 
 declare hassio_dns_address
 declare -a white_list
@@ -14,7 +15,7 @@ declare -a white_list
 bashio::log.info "Starting dnsmasq egress proxy..."
 
 hassio_dns_address=$(cat /etc/resolv.conf | grep -m 1 -E '^nameserver' | awk '{print $2}')
-readarray -t white_list < <(bashio::cache.get "dnsmasq-black-white-list")
+readarray -t white_list < ${DNSMASQ_BLACK_WHITE_LIST_LOCATION}
 
 # We need to delay the starting of the dependent services until the conf file is written
 echo "nameserver ${DNSMASQ_EGRESS_ADDRESS_IPV4}" > /etc/resolv.dnsmasq.conf
