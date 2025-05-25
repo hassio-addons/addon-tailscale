@@ -11,6 +11,7 @@ readonly DNSMASQ_INGRESS_PORT=54
 readonly DNSMASQ_INGRESS_QUERY_PORT=55
 readonly MAGIC_DNS_IPV4="100.100.100.100"
 readonly MAGIC_DNS_IPV6="[fd7a:115c:a1e0::53]"
+readonly DNSMASQ_BLACK_WHITE_LIST_LOCATION="/etc/dnsmasq-black-white-list"
 
 declare -a black_list
 
@@ -88,7 +89,7 @@ setup_snat "ip6tables" "tcp" "IPv6" "[::1]" "${DNSMASQ_INGRESS_ADDRESS_IPV6}" "1
 setup_accept "iptables" "IPv4" "${MAGIC_DNS_IPV4}" "32"
 setup_accept "ip6tables" "IPv6" "${MAGIC_DNS_IPV6}" "128"
 
-readarray -t black_list < <(bashio::cache.get "dnsmasq-black-white-list")
+readarray -t black_list < ${DNSMASQ_BLACK_WHITE_LIST_LOCATION}
 
 # We need to delay the starting of the dependent services until iptables are configured
 echo "" >&3
