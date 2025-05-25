@@ -5,7 +5,8 @@
 # Runs the dnsmasq egress proxy
 # ==============================================================================
 
-readonly DNSMASQ_EGRESS_ADDRESS=127.52.52.50
+readonly DNSMASQ_EGRESS_ADDRESS_IPV4="127.100.100.102"
+readonly DNSMASQ_EGRESS_PORT=53
 
 declare hassio_dns_address
 declare -a white_list
@@ -16,10 +17,12 @@ hassio_dns_address=$(cat /etc/resolv.conf | grep -m 1 -E '^nameserver' | awk '{p
 readarray -t white_list < <(bashio::cache.get "dnsmasq-black-white-list")
 
 # We need to delay the starting of the dependent services until the conf file is written
-echo "nameserver ${DNSMASQ_EGRESS_ADDRESS}" > /etc/resolv.dnsmasq.conf
+echo "nameserver ${DNSMASQ_EGRESS_ADDRESS_IPV4}" > /etc/resolv.dnsmasq.conf
 echo "" >&3
 
 # This DNS forwards the white_list to HA's DNS, otherwise replies REFUSED for everything
 # It must run on port 53 to be able to specify it in a resolv.conf
-exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --listen-address=${DNSMASQ_EGRESS_ADDRESS} --port=53 --bind-interfaces \
+exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' \
+  --listen-address=${DNSMASQ_EGRESS_ADDRESS_IPV4} --bind-interfaces \
+  --port=${DNSMASQ_EGRESS_PORT} \
   $(printf -- " --server=/%s/${hassio_dns_address}" "${white_list[@]}")

@@ -5,82 +5,88 @@
 # Runs the dnsmasq ingress proxy
 # ==============================================================================
 
-readonly DNSMASQ_INGRESS_ADDRESS=127.100.100.102
+readonly DNSMASQ_INGRESS_ADDRESS_IPV4="127.100.100.102"
+readonly DNSMASQ_INGRESS_ADDRESS_IPV6="[::1]"
+readonly DNSMASQ_INGRESS_PORT=54
+readonly DNSMASQ_INGRESS_QUERY_PORT=55
 readonly MAGIC_DNS_IPV4="100.100.100.100"
-readonly MAGIC_DNS_IPV6="fd7a:115c:a1e0::53"
+readonly MAGIC_DNS_IPV6="[fd7a:115c:a1e0::53]"
 
 declare -a black_list
 
 function setup_dnat() {
-  local proto="$1"
+  local cmd="$1"
+  local proto="$2"
+  local ip_version="$3"
+  local from_address="$4"
+  local to_address="$5"
+  local address_bits="$6"
 
-  bashio::log.info "Setting up DNAT for dnsmasq ingress proxy (${proto})"
-  if iptables -t nat -S OUTPUT \
-    | grep -Eq "^-A OUTPUT -d ${MAGIC_DNS_IPV4}/32 -p ${proto} -m ${proto} ! --sport 54 --dport 53 -j DNAT --to-destination ${DNSMASQ_INGRESS_ADDRESS}$"
+  bashio::log.info "Setting up DNAT for dnsmasq ingress proxy (${proto}, ${ip_version})"
+  if ${cmd} -t nat -S OUTPUT \
+    | grep -Eq "^-A OUTPUT -d ${from_address//[\[\]]/}/${address_bits} -p ${proto} -m ${proto} ! --sport ${DNSMASQ_INGRESS_QUERY_PORT} --dport 53 -j DNAT --to-destination $(sed -r 's/(\[|\])/\\\1/g' <<< "${to_address}"):${DNSMASQ_INGRESS_PORT}$"
   then
-    bashio::log.notice "DNAT is already set for dnsmasq ingress proxy (${proto})"
+    bashio::log.notice "DNAT is already set for dnsmasq ingress proxy (${proto}, ${ip_version})"
   else
-    if ! iptables -t nat -A OUTPUT -d ${MAGIC_DNS_IPV4} -p ${proto} --dport 53 ! --sport 54 -j DNAT --to-destination ${DNSMASQ_INGRESS_ADDRESS}; then
-      bashio::log.warning "Setting up DNAT for dnsmasq ingress proxy is unsuccessful (${proto})"
+    if ! ${cmd} -t nat -A OUTPUT -d ${from_address//[\[\]]/} -p ${proto} ! --sport ${DNSMASQ_INGRESS_QUERY_PORT} --dport 53 -j DNAT --to-destination ${to_address}:${DNSMASQ_INGRESS_PORT}; then
+      bashio::log.warning "Setting up DNAT for dnsmasq ingress proxy is unsuccessful (${proto}, ${ip_version})"
     fi
   fi
 }
 
 function setup_snat() {
-  local proto="$1"
+  local cmd="$1"
+  local proto="$2"
+  local ip_version="$3"
+  local from_address="$4"
+  local to_address="$5"
+  local address_bits="$6"
 
-  bashio::log.info "Setting up SNAT for dnsmasq ingress proxy (${proto})"
-  if iptables -t nat -S POSTROUTING \
-    | grep -Eq "^-A POSTROUTING ! -s 127.0.0.1/32 -d ${DNSMASQ_INGRESS_ADDRESS}/32 -p ${proto} -m ${proto} ! --sport 54 --dport 53 -j SNAT --to-source 127.0.0.1$"
+  bashio::log.info "Setting up SNAT for dnsmasq ingress proxy (${proto}, ${ip_version})"
+  if ${cmd} -t nat -S POSTROUTING \
+    | grep -Eq "^-A POSTROUTING ! -s ${from_address//[\[\]]/}/${address_bits} -d ${to_address//[\[\]]/}/${address_bits} -p ${proto} -m ${proto} ! --sport ${DNSMASQ_INGRESS_QUERY_PORT} --dport ${DNSMASQ_INGRESS_PORT} -j SNAT --to-source ${from_address//[\[\]]/}$"
   then
-    bashio::log.notice "SNAT is already set for dnsmasq ingress proxy (${proto})"
+    bashio::log.notice "SNAT is already set for dnsmasq ingress proxy (${proto}, ${ip_version})"
   else
-    if ! iptables -t nat -A POSTROUTING ! -s 127.0.0.1 -d ${DNSMASQ_INGRESS_ADDRESS} -p ${proto} --dport 53 ! --sport 54 -j SNAT --to-source 127.0.0.1; then
-      bashio::log.warning "Setting up SNAT for dnsmasq ingress proxy is unsuccessful (${proto})"
+    if ! ${cmd} -t nat -A POSTROUTING ! -s ${from_address//[\[\]]/} -d ${to_address//[\[\]]/} -p ${proto} ! --sport ${DNSMASQ_INGRESS_QUERY_PORT} --dport ${DNSMASQ_INGRESS_PORT} -j SNAT --to-source ${from_address//[\[\]]/}; then
+      bashio::log.warning "Setting up SNAT for dnsmasq ingress proxy is unsuccessful (${proto}, ${ip_version})"
     fi
   fi
 }
 
 # This is to enable return packets, because TS will add a general DROP to prevent creating tailnet packets from lo
 function setup_accept() {
-  bashio::log.info "Setting up ACCEPT for dnsmasq ingress proxy"
-  if iptables -S INPUT \
-    | grep -Eq "^-I INPUT -s ${MAGIC_DNS_IPV4}/32 -i lo -j ACCEPT$"
-  then
-    bashio::log.notice "ACCEPT is already set for dnsmasq ingress proxy"
-  else
-    if ! iptables -I INPUT -s ${MAGIC_DNS_IPV4} -i lo -j ACCEPT; then
-      bashio::log.warning "Setting up ACCEPT for dnsmasq ingress proxy is unsuccessful"
-    fi
-  fi
-}
+  local cmd="$1"
+  local ip_version="$2"
+  local from_address="$3"
+  local address_bits="$4"
 
-# IPv6 doesn't support multiple loopback addresses, but we need to put at least 1 proxy on port 53 due to resolv.conf limitation,
-# and this can collide with any DNS already on localhost if we can't use non-default loopback addresses (ie. not 127.0.0.1 or ::1)
-function setup_drop_ipv6() {
-  local proto="$1"
-
-  bashio::log.info "Setting up DROP for dnsmasq ingress proxy (${proto})"
-  if ip6tables -S OUTPUT \
-    | grep -Eq "^-A OUTPUT -d ${MAGIC_DNS_IPV6}/128 -p ${proto} -m ${proto} --dport 53 -j DROP$"
+  bashio::log.info "Setting up ACCEPT for dnsmasq ingress proxy (${ip_version})"
+  if ${cmd} -S INPUT \
+    | grep -Eq "^-A INPUT -s ${from_address//[\[\]]/}/${address_bits} -i lo -j ACCEPT$"
   then
-    bashio::log.notice "DROP is already set for dnsmasq ingress proxy (${proto})"
+    bashio::log.notice "ACCEPT is already set for dnsmasq ingress proxy (${ip_version})"
   else
-    if ! ip6tables -A OUTPUT -d ${MAGIC_DNS_IPV6} -p ${proto} --dport 53 -j DROP; then
-      bashio::log.warning "Setting up DROP for dnsmasq ingress proxy is unsuccessful (${proto})"
+    if ! ${cmd} -I INPUT -s ${from_address//[\[\]]/} -i lo -j ACCEPT; then
+      bashio::log.warning "Setting up ACCEPT for dnsmasq ingress proxy is unsuccessful (${ip_version})"
     fi
   fi
 }
 
 bashio::log.info "Starting dnsmasq ingress proxy..."
 
-setup_dnat "udp"
-setup_snat "udp"
-setup_dnat "tcp"
-setup_snat "tcp"
-setup_accept
-setup_drop_ipv6 "udp"
-setup_drop_ipv6 "tcp"
+setup_dnat "iptables" "udp" "IPv4" "${MAGIC_DNS_IPV4}" "${DNSMASQ_INGRESS_ADDRESS_IPV4}" "32"
+setup_dnat "iptables" "tcp" "IPv4" "${MAGIC_DNS_IPV4}" "${DNSMASQ_INGRESS_ADDRESS_IPV4}" "32"
+setup_dnat "ip6tables" "udp" "IPv6" "${MAGIC_DNS_IPV6}" "${DNSMASQ_INGRESS_ADDRESS_IPV6}" "128"
+setup_dnat "ip6tables" "tcp" "IPv6" "${MAGIC_DNS_IPV6}" "${DNSMASQ_INGRESS_ADDRESS_IPV6}" "128"
+
+setup_snat "iptables" "udp" "IPv4" "127.0.0.1" "${DNSMASQ_INGRESS_ADDRESS_IPV4}" "32"
+setup_snat "iptables" "tcp" "IPv4" "127.0.0.1" "${DNSMASQ_INGRESS_ADDRESS_IPV4}" "32"
+setup_snat "ip6tables" "udp" "IPv6" "[::1]" "${DNSMASQ_INGRESS_ADDRESS_IPV6}" "128"
+setup_snat "ip6tables" "tcp" "IPv6" "[::1]" "${DNSMASQ_INGRESS_ADDRESS_IPV6}" "128"
+
+setup_accept "iptables" "IPv4" "${MAGIC_DNS_IPV4}" "32"
+setup_accept "ip6tables" "IPv6" "${MAGIC_DNS_IPV6}" "128"
 
 readarray -t black_list < <(bashio::cache.get "dnsmasq-black-white-list")
 
@@ -88,6 +94,8 @@ readarray -t black_list < <(bashio::cache.get "dnsmasq-black-white-list")
 echo "" >&3
 
 # This DNS replies NXDOMAIN for the black_list, otherwise forwards queries to MagicDNS
-# Sends queries out on port 54
-exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --listen-address=${DNSMASQ_INGRESS_ADDRESS} --port=53 --query-port=54 --bind-interfaces \
+# Listens on port 54 and sends queries out on port 55
+exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' \
+  --listen-address=${DNSMASQ_INGRESS_ADDRESS_IPV4} --listen-address=${DNSMASQ_INGRESS_ADDRESS_IPV6//[\[\]]/} --bind-interfaces \
+  --port=${DNSMASQ_INGRESS_PORT} --query-port=${DNSMASQ_INGRESS_QUERY_PORT} \
   --server=${MAGIC_DNS_IPV4} $(printf -- " --server=/%s/" "${black_list[@]}")
