@@ -23,7 +23,7 @@ echo "" >&3
 
 # This DNS forwards the white_list to HA's DNS, otherwise replies REFUSED for everything
 # It must run on port 53 to be able to specify it in a resolv.conf
-exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' \
+exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --cache-size=0 \
   --listen-address=${DNSMASQ_EGRESS_ADDRESS_IPV4} --bind-interfaces \
   --port=${DNSMASQ_EGRESS_PORT} \
   $(printf -- " --server=/%s/${hassio_dns_address}" "${white_list[@]}")
