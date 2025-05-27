@@ -13,7 +13,7 @@ if bashio::config.false "userspace_networking" && \
   (! bashio::config.has_value "accept_routes" || bashio::config.true "accept_routes")
 then
   if ! [[ "${1-}" =~ ^(|test)$ ]]; then
-    echo "Usage: unprotect-subnet-routes [test]" 1>&2
+    echo "Usage: $(basename "$0") [test]" 1>&2
     exit 1
   fi
 
