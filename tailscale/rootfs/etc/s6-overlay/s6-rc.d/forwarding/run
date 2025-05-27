@@ -63,12 +63,12 @@ function setup_forwarding() {
     bashio::log.info \
       "Forwarding incoming tailnet connections directed to ${from_address} to the host's ${to_address} address (${ip_version})"
     if ${cmd} -t nat -S PREROUTING \
-      | grep -Eq "^-A PREROUTING -d ${from_address}/${from_address_bits} -j DNAT --to-destination ${to_address}$"
+      | grep -Eq "^-A PREROUTING -d ${from_address}/${from_address_bits} ! -i hassio -j DNAT --to-destination ${to_address}$"
     then
       bashio::log.notice "Forwarding is already set (${ip_version})"
     else
       # Difference compared to Tailscale's docker image: using only -A append, less intrusive than -I insert
-      if ! ${cmd} -t nat -A PREROUTING -d ${from_address} -j DNAT --to-destination ${to_address}; then
+      if ! ${cmd} -t nat -A PREROUTING -d ${from_address} ! -i hassio -j DNAT --to-destination ${to_address}; then
         bashio::log.warning "Setting up forwarding is unsuccessful (${ip_version})"
       fi
     fi

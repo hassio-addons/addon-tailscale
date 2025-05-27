@@ -18,11 +18,11 @@ function remove_forwarding() {
   if bashio::var.has_value "${from_address}"; then
     for to_address in $( \
       ${cmd} -t nat -S PREROUTING \
-      | { grep -E "^-A PREROUTING -d ${from_address}/${from_address_bits} -j DNAT --to-destination \S+$" || true ;} \
+      | { grep -E "^-A PREROUTING -d ${from_address}/${from_address_bits} ! -i hassio -j DNAT --to-destination \S+$" || true ;} \
       | sed -nr 's/^.*?--to-destination\s(\S+)$/\1/p')
     do
       bashio::log.info "Removing the forwarding from ${from_address} to ${to_address} (${ip_version})"
-      if ! ${cmd} -t nat -D PREROUTING -d ${from_address} -j DNAT --to-destination ${to_address}; then
+      if ! ${cmd} -t nat -D PREROUTING -d ${from_address} ! -i hassio -j DNAT --to-destination ${to_address}; then
         bashio::log.warning "Removing forwarding is unsuccessful (${ip_version})"
       fi
     done
