@@ -55,15 +55,15 @@ function get_host_address() {
 function setup_forwarding() {
   local cmd="$1"
   local ip_version="$2"
-  local from_address="$3"
-  local from_address_bits="$4"
+  local address_bits="$3"
+  local from_address="$4"
   local to_address="$5"
 
   if bashio::var.has_value "${from_address}" && bashio::var.has_value "${to_address}"; then
     bashio::log.info \
       "Forwarding incoming tailnet connections directed to ${from_address} to the host's ${to_address} address (${ip_version})"
     if ${cmd} -t nat -S PREROUTING \
-      | grep -Eq "^-A PREROUTING -d ${from_address}/${from_address_bits} ! -i hassio -j DNAT --to-destination ${to_address}$"
+      | grep -Eq "^-A PREROUTING -d ${from_address}/${address_bits} ! -i hassio -j DNAT --to-destination ${to_address}$"
     then
       bashio::log.notice "Forwarding is already set (${ip_version})"
     else
@@ -92,6 +92,6 @@ else
   to_address_ipv4=$(get_host_address "ipv4")
   to_address_ipv6=$(get_host_address "ipv6")
 
-  setup_forwarding "iptables" "IPv4" "${from_address_ipv4}" "32" "${to_address_ipv4}"
-  setup_forwarding "ip6tables" "IPv6" "${from_address_ipv6}" "128" "${to_address_ipv6}"
+  setup_forwarding "iptables" "IPv4" "32" "${from_address_ipv4}" "${to_address_ipv4}"
+  setup_forwarding "ip6tables" "IPv6" "128" "${from_address_ipv6}" "${to_address_ipv6}"
 fi
