@@ -2,19 +2,32 @@
 # shellcheck shell=bash
 # ==============================================================================
 # Home Assistant Community Add-on: Tailscale
-# Runs the dnsmasq egress proxy
+# Runs the MagicDNS egress proxy
 # ==============================================================================
 
-readonly DNSMASQ_EGRESS_ADDRESS_IPV4="127.100.100.102"
+readonly DNSMASQ_EGRESS_ADDRESS_IPV4="127.100.100.100"
 readonly DNSMASQ_EGRESS_PORT=53
 readonly DNSMASQ_BLACK_WHITE_LIST_LOCATION="/etc/dnsmasq-black-white-list"
 
-declare hassio_dns_address
+declare hassio_dns_ipv4
 declare -a white_list
 
-bashio::log.info "Starting dnsmasq egress proxy..."
+bashio::log.info "Starting MagicDNS egress proxy..."
 
-hassio_dns_address=$(cat /etc/resolv.conf | grep -m 1 -E '^nameserver' | awk '{print $2}')
+function dig_hassio_dns() {
+  local type="$1"
+  dig dns.local.hass.io "${type}" +short | { grep -Ev '^;|\.$|^$' || true ;}
+}
+
+# Hassio DNS's IP addresses
+if ! hassio_dns_ipv4=$(dig_hassio_dns A) || \
+  bashio::var.is_empty "${hassio_dns_ipv4}"
+then
+  bashio::log.error "Failed to resolve Home Assistant's DNS address"
+  bashio::exit.nok
+fi
+
+# White-list
 readarray -t white_list < ${DNSMASQ_BLACK_WHITE_LIST_LOCATION}
 
 # We need to delay the starting of the dependent services until the conf file is written
@@ -26,4 +39,4 @@ echo "" >&3
 exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --cache-size=0 \
   --listen-address=${DNSMASQ_EGRESS_ADDRESS_IPV4} --bind-interfaces \
   --port=${DNSMASQ_EGRESS_PORT} \
-  $(printf -- " --server=/%s/${hassio_dns_address}" "${white_list[@]}")
+  $(printf -- " --server=/%s/${hassio_dns_ipv4}" "${white_list[@]}")

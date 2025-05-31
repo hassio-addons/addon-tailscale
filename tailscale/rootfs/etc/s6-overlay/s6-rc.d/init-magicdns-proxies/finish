@@ -1,0 +1,8 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Remove forwarding
+# ==============================================================================
+
+magicdns-ingress-proxy-forwarding remove drop
