@@ -38,7 +38,7 @@ function get_forwardable_address() {
 
 # Host's IP addresses, it never fails, but can return empty
 function get_host_address() {
-  local ip_version="$1"
+  local ip_version="${1}"
 
   if ! bashio::var.equals "$(bashio::network.${ip_version}_method)" "disabled"; then
     for address in "$(bashio::network.${ip_version}_address)"; do
@@ -53,11 +53,11 @@ function get_host_address() {
 
 # In case of non userspace networking, forward incoming tailnet connections to the host's primary interface
 function setup_forwarding() {
-  local cmd="$1"
-  local ip_version="$2"
-  local address_bits="$3"
-  local from_address="$4"
-  local to_address="$5"
+  local cmd="${1}"
+  local ip_version="${2}"
+  local address_bits="${3}"
+  local from_address="${4}"
+  local to_address="${5}"
 
   if bashio::var.has_value "${from_address}" && bashio::var.has_value "${to_address}"; then
     bashio::log.info \

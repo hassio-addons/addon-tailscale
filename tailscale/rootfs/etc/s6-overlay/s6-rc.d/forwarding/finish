@@ -9,10 +9,10 @@ declare from_address_ipv4 from_address_ipv6
 
 # In case of non userspace networking, remove the forwarding from tailnet to host
 function remove_forwarding() {
-  local cmd="$1"
-  local ip_version="$2"
-  local address_bits="$3"
-  local from_address="$4"
+  local cmd="${1}"
+  local ip_version="${2}"
+  local address_bits="${3}"
+  local from_address="${4}"
   local to_address
 
   if bashio::var.has_value "${from_address}"; then
