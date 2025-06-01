@@ -12,6 +12,7 @@ readonly DNSMASQ_BLACK_WHITE_LIST_LOCATION="/etc/dnsmasq-black-white-list"
 
 declare tailscale_address_ipv4
 declare tailscale_address_ipv6
+declare -a listen_addresses
 declare -a black_list
 
 bashio::log.info "Starting MagicDNS ingress proxy..."
@@ -25,6 +26,14 @@ then
   bashio::exit.nok
 fi
 
+# Listen addresses
+if bashio::var.has_value "${tailscale_address_ipv4}"; then
+  listen_addresses+=(${tailscale_address_ipv4})
+fi
+if bashio::var.has_value "${tailscale_address_ipv6}"; then
+  listen_addresses+=(${tailscale_address_ipv6})
+fi
+
 # Black-list
 readarray -t black_list < ${DNSMASQ_BLACK_WHITE_LIST_LOCATION}
 
@@ -36,6 +45,6 @@ echo "" >&3
 
 # This DNS replies NXDOMAIN for the black_list, otherwise forwards queries to MagicDNS
 exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --cache-size=0 \
-  --listen-address=${tailscale_address_ipv4} --listen-address=${tailscale_address_ipv6} --bind-interfaces \
+  $(printf -- " --listen-address=%s" "${listen_addresses[@]}") --bind-dynamic \
   --port=${DNSMASQ_INGRESS_PORT} \
   --server=${MAGIC_DNS_IPV4} $(printf -- " --server=/%s/" "${black_list[@]}")
