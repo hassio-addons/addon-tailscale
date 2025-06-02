@@ -22,7 +22,7 @@ fi
 black_white_list+=(${login_server})
 
 # If serve or funnel is used, resolve letsencrypt's api also
-if ! bashio::config.equals 'share_homeassistant' 'disabled'; then
+if bashio::config.equals 'proxy' 'true'; then
   black_white_list+=(${LETSENCRYPT_API})
 fi
 
