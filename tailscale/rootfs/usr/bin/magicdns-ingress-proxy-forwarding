@@ -33,7 +33,7 @@ function setup_forwarding() {
   then
     bashio::log.notice "${name^} is already set for MagicDNS ingress proxy (${proto}, ${ip_version})"
   else
-    if ! ${cmd} -t nat -${sub_cmd} PREROUTING -s ${source_address//[\[\]]/} -d ${from_address//[\[\]]/} -i hassio -p ${proto} --dport 53 -j DNAT --to-destination ${to_address}:${to_port}; then
+    if ! ${cmd} -t nat "-${sub_cmd}" PREROUTING -s "${source_address//[\[\]]/}" -d "${from_address//[\[\]]/}" -i hassio -p "${proto}" --dport 53 -j DNAT --to-destination "${to_address}:${to_port}"; then
       bashio::log.warning "Setting up ${name} for MagicDNS ingress proxy is unsuccessful (${proto}, ${ip_version})"
     fi
   fi
@@ -57,7 +57,7 @@ function remove_forwarding() {
     | sed -nr 's/^.*?-p\s(\S+).*$/\1/p')
   do
     bashio::log.info "Removing ${name} for MagicDNS ingress proxy (${proto}, ${ip_version})"
-    if ! ${cmd} -t nat -D PREROUTING -s ${source_address//[\[\]]/} -d ${from_address//[\[\]]/} -i hassio -p ${proto} --dport 53 -j DNAT --to-destination ${to_address}:${to_port}; then
+    if ! ${cmd} -t nat -D PREROUTING -s "${source_address//[\[\]]/}" -d "${from_address//[\[\]]/}" -i hassio -p "${proto}" --dport 53 -j DNAT --to-destination "${to_address}:${to_port}"; then
       bashio::log.warning "Removing ${name} for MagicDNS ingress proxy is unsuccessful (${proto}, ${ip_version})"
     fi
   done
