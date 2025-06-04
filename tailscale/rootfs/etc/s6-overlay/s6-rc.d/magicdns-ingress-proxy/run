@@ -28,10 +28,10 @@ fi
 
 # Listen addresses
 if bashio::var.has_value "${tailscale_address_ipv4}"; then
-  listen_addresses+=(${tailscale_address_ipv4})
+  listen_addresses+=("${tailscale_address_ipv4}")
 fi
 if bashio::var.has_value "${tailscale_address_ipv6}"; then
-  listen_addresses+=(${tailscale_address_ipv6})
+  listen_addresses+=("${tailscale_address_ipv6}")
 fi
 
 # Black-list
