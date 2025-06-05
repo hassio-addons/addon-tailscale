@@ -11,6 +11,8 @@ readonly DNSMASQ_BLACK_WHITE_LIST_LOCATION="/etc/dnsmasq-black-white-list"
 
 declare hassio_dns_ipv4
 declare -a white_list
+declare domain
+declare -a options
 
 bashio::log.info "Starting MagicDNS egress proxy..."
 
@@ -18,6 +20,16 @@ function dig_hassio_dns() {
   local type="${1}"
   dig dns.local.hass.io "${type}" +short | { grep -Ev '^;|\.$|^$' || true ;} | head -n 1
 }
+
+options+=(--no-hosts)
+options+=(--no-resolv)
+options+=(--keep-in-foreground)
+options+=(--log-facility='-')
+options+=(--cache-size=0)
+
+options+=(--listen-address=${DNSMASQ_EGRESS_ADDRESS_IPV4})
+options+=(--bind-dynamic)
+options+=(--port=${DNSMASQ_EGRESS_PORT})
 
 # Hassio DNS's IP addresses
 if ! hassio_dns_ipv4=$(dig_hassio_dns A) || \
@@ -30,13 +42,21 @@ fi
 # White-list
 readarray -t white_list < ${DNSMASQ_BLACK_WHITE_LIST_LOCATION}
 
+# Return NXDOMAIN for everything, except the white_list
+options+=(--address=/#/)
+for domain in "${white_list[@]}"; do
+  options+=(--server=/${domain}/${hassio_dns_ipv4})
+done
+
+if bashio::debug; then
+  options+=(--log-queries)
+  options+=(--log-debug)
+fi
+
 # We need to delay the starting of the dependent services until the conf file is written
 echo "nameserver ${DNSMASQ_EGRESS_ADDRESS_IPV4}" > /etc/resolv.dnsmasq.conf
 echo "" >&3
 
-# This DNS forwards the white_list to HA's DNS, otherwise replies REFUSED for everything
+# This DNS forwards the white_list to HA's DNS, otherwise replies NXDOMAIN for everything
 # It must run on port 53 to be able to specify it in a resolv.conf
-exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --cache-size=0 \
-  --listen-address=${DNSMASQ_EGRESS_ADDRESS_IPV4} --bind-dynamic \
-  --port=${DNSMASQ_EGRESS_PORT} \
-  --address=/#/ $(printf -- " --server=/%s/${hassio_dns_ipv4}" "${white_list[@]}")
+exec dnsmasq "${options[@]}"
