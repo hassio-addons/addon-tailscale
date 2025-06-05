@@ -12,10 +12,17 @@ readonly DNSMASQ_BLACK_WHITE_LIST_LOCATION="/etc/dnsmasq-black-white-list"
 
 declare tailscale_address_ipv4
 declare tailscale_address_ipv6
-declare -a listen_addresses
 declare -a black_list
+declare domain
+declare -a options
 
 bashio::log.info "Starting MagicDNS ingress proxy..."
+
+options+=(--no-hosts)
+options+=(--no-resolv)
+options+=(--keep-in-foreground)
+options+=(--log-facility='-')
+options+=(--cache-size=0)
 
 # Tailscale's local IP addresses
 if ! tailscale_address_ipv4=$(/opt/tailscale ip -4) || \
@@ -28,14 +35,28 @@ fi
 
 # Listen addresses
 if bashio::var.has_value "${tailscale_address_ipv4}"; then
-  listen_addresses+=("${tailscale_address_ipv4}")
+  options+=(--listen-address=${tailscale_address_ipv4})
 fi
 if bashio::var.has_value "${tailscale_address_ipv6}"; then
-  listen_addresses+=("${tailscale_address_ipv6}")
+  options+=(--listen-address=${tailscale_address_ipv6})
 fi
+
+options+=(--bind-dynamic)
+options+=(--port=${DNSMASQ_INGRESS_PORT})
 
 # Black-list
 readarray -t black_list < ${DNSMASQ_BLACK_WHITE_LIST_LOCATION}
+
+# Forward everything to MagicDNS, except the black_list
+options+=(--server=${MAGIC_DNS_IPV4})
+for domain in "${black_list[@]}"; do
+  options+=(--server=/${domain}/)
+done
+
+if bashio::debug; then
+  options+=(--log-queries)
+  options+=(--log-debug)
+fi
 
 magicdns-ingress-proxy-forwarding setup forwarding
 magicdns-ingress-proxy-forwarding remove drop
@@ -43,8 +64,5 @@ magicdns-ingress-proxy-forwarding remove drop
 # We need to delay the starting of the dependent services until iptables are configured
 echo "" >&3
 
-# This DNS replies NXDOMAIN for the black_list, otherwise forwards queries to MagicDNS
-exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --cache-size=0 \
-  $(printf -- " --listen-address=%s" "${listen_addresses[@]}") --bind-dynamic \
-  --port=${DNSMASQ_INGRESS_PORT} \
-  --server=${MAGIC_DNS_IPV4} $(printf -- " --server=/%s/" "${black_list[@]}")
+# This DNS replies NXDOMAIN for the black_list, otherwise forwards everything to MagicDNS
+exec dnsmasq "${options[@]}"
