@@ -39,4 +39,4 @@ echo "" >&3
 exec dnsmasq --no-hosts --no-resolv --keep-in-foreground --log-facility='-' --cache-size=0 \
   --listen-address=${DNSMASQ_EGRESS_ADDRESS_IPV4} --bind-dynamic \
   --port=${DNSMASQ_EGRESS_PORT} \
-  $(printf -- " --server=/%s/${hassio_dns_ipv4}" "${white_list[@]}")
+  --address=/#/ $(printf -- " --server=/%s/${hassio_dns_ipv4}" "${white_list[@]}")
