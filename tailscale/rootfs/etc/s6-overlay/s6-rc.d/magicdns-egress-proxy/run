@@ -5,6 +5,8 @@
 # Runs the MagicDNS egress proxy
 # ==============================================================================
 
+source /usr/lib/trace.sh
+
 readonly DNSMASQ_EGRESS_ADDRESS_IPV4="127.100.100.100"
 readonly DNSMASQ_EGRESS_PORT=53
 readonly DNSMASQ_BLACK_WHITE_LIST_LOCATION="/etc/dnsmasq-black-white-list"
@@ -48,7 +50,7 @@ for domain in "${white_list[@]}"; do
   options+=(--server=/${domain}/${hassio_dns_ipv4})
 done
 
-if bashio::debug; then
+if is_bashio_log_level_trace; then
   options+=(--log-queries)
   options+=(--log-debug)
 fi
