@@ -6,6 +6,7 @@
 # ==============================================================================
 
 readonly DEFAULT_LOGIN_SERVER="controlplane.tailscale.com"
+readonly LOG_SERVER="log.tailscale.com"
 readonly LETSENCRYPT_API="acme-v02.api.letsencrypt.org"
 readonly DNSMASQ_BLACK_WHITE_LIST_LOCATION="/etc/dnsmasq-black-white-list"
 
@@ -20,6 +21,11 @@ then
   bashio::exit.nok
 fi
 black_white_list+=(${login_server})
+
+# When log upload is enabled, resolve log server also
+if bashio::debug; then
+  black_white_list+=(${LOG_SERVER})
+fi
 
 # If serve or funnel is used, resolve letsencrypt's api also
 if bashio::config.equals 'proxy' 'true'; then
