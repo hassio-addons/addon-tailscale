@@ -19,8 +19,7 @@ if bashio::config.has_value "login_server"; then
   if ! login_server=$(awk -F[/:] '{print $4}' <<<$(bashio::config "login_server")) || \
     ! bashio::var.has_value "${login_server}"
   then
-    bashio::log.error "Determining host name from '$(bashio::config "login_server")' has failed"
-    bashio::exit.nok
+    bashio::exit.nok "Determining host name from '$(bashio::config "login_server")' has failed"
   fi
 fi
 black_white_list+=(${login_server})

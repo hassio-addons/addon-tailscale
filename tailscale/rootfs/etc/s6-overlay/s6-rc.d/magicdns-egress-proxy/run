@@ -37,8 +37,7 @@ options+=(--port=${DNSMASQ_EGRESS_PORT})
 if ! hassio_dns_ipv4=$(dig_hassio_dns A) || \
   bashio::var.is_empty "${hassio_dns_ipv4}"
 then
-  bashio::log.error "Failed to resolve Home Assistant's DNS address"
-  bashio::exit.nok
+  bashio::exit.nok "Failed to resolve Home Assistant's DNS address"
 fi
 
 # White-list

@@ -31,8 +31,7 @@ if ! tailscale_address_ipv4=$(/opt/tailscale ip -4) || \
   ! tailscale_address_ipv6=$(/opt/tailscale ip -6) || \
   bashio::var.is_empty "${tailscale_address_ipv4}" && bashio::var.is_empty "${tailscale_address_ipv6}"
 then
-  bashio::log.error "Failed to retrieve Tailscale's local address"
-  bashio::exit.nok
+  bashio::exit.nok "Failed to retrieve Tailscale's local address"
 fi
 
 # Listen addresses

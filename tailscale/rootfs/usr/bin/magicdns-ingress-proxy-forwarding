@@ -34,7 +34,7 @@ function setup_forwarding() {
     bashio::log.notice "${name^} is already set for MagicDNS ingress proxy (${proto}, ${ip_version})"
   else
     if ! ${cmd} -t nat "-${sub_cmd}" PREROUTING -s "${source_address//[\[\]]/}" -d "${from_address//[\[\]]/}" -i hassio -p "${proto}" --dport 53 -j DNAT --to-destination "${to_address}:${to_port}"; then
-      bashio::log.warning "Setting up ${name} for MagicDNS ingress proxy is unsuccessful (${proto}, ${ip_version})"
+      bashio::exit.nok "Setting up ${name} for MagicDNS ingress proxy is unsuccessful (${proto}, ${ip_version})"
     fi
   fi
 }
@@ -74,8 +74,7 @@ if ! hassio_dns_ipv4=$(dig_hassio_dns A) || \
   ! hassio_dns_ipv6=$(dig_hassio_dns AAAA) || \
   bashio::var.is_empty "${hassio_dns_ipv4}" && bashio::var.is_empty "${hassio_dns_ipv6}"
 then
-  bashio::log.error "Failed to resolve Home Assistant's DNS address"
-  bashio::exit.nok
+  bashio::exit.nok "Failed to resolve Home Assistant's DNS address"
 fi
 # Tailscale's local IP addresses
 if bashio::var.equals "${2-}" "forwarding"; then
@@ -83,14 +82,12 @@ if bashio::var.equals "${2-}" "forwarding"; then
     ! tailscale_address_ipv6=$(/opt/tailscale ip -6) || \
     bashio::var.is_empty "${tailscale_address_ipv4}" && bashio::var.is_empty "${tailscale_address_ipv6}"
   then
-    bashio::log.error "Failed to retrieve Tailscale's local address"
-    bashio::exit.nok
+    bashio::exit.nok "Failed to retrieve Tailscale's local address"
   fi
   if bashio::var.has_value "${hassio_dns_ipv4}" && bashio::var.is_empty "${tailscale_address_ipv4}" || \
     bashio::var.has_value "${hassio_dns_ipv6}" && bashio::var.is_empty "${tailscale_address_ipv6}"
   then
-    bashio::log.error "Failed to retrieve Tailscale's local address with matching IP version (v4 or v6) to Home Assistant's DNS address"
-    bashio::exit.nok
+    bashio::exit.nok "Failed to retrieve Tailscale's local address with matching IP version (v4 or v6) to Home Assistant's DNS address"
   fi
 fi
 
