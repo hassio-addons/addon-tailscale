@@ -29,8 +29,7 @@ then
     # So we wait a little
     while ! bashio::api.supervisor GET "/addons/self/options/config" false &> /dev/null; do
       if (( wait_counter++ == $WAIT_COUNT )); then
-        bashio::log.error "Supervisor is unreachable"
-        bashio::exit.nok
+        bashio::exit.nok "Supervisor is unreachable"
       fi
       bashio::log.info "Waiting for the supervisor to be ready..."
       sleep $WAIT_DELAY
@@ -66,7 +65,7 @@ then
         if ! response=$(ip "${family}" rule add to "${route}" priority ${PROTECTION_RULE_PRIORITY} table main 2>&1); then
           if [[ "${response}" != "RTNETLINK answers: File exists" ]]; then
             echo "${response}"
-            bashio::exit.nok
+            bashio::exit.nok "  Adding route ${route} to ip rules is unsuccessful"
           else
             bashio::log.notice "  Route ${route} is already added to ip rules"
           fi
