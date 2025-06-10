@@ -22,7 +22,7 @@ fi
 
 if bashio::cache.exists "subnet-routes-$1"; then
   readarray -t routes < <(bashio::cache.get "subnet-routes-$1")
-  printf -v response "%s" "${routes[@]/%/$'\n'}"
+  printf -v response "%s\n" "${routes[@]}"
 else
   if [[ "$1" == "advertised" ]] && bashio::config.exists "advertise_routes"; then
     # Configuration exists, use configured values
@@ -60,9 +60,9 @@ else
   done
 
   # Remove duplicate entries
-  readarray -t routes < <(printf "%s" "${routes[@]/%/$'\n'}" | sort -u)
+  readarray -t routes < <(printf "%s\n" "${routes[@]}" | sort -u)
 
-  printf -v response "%s" "${routes[@]/%/$'\n'}"
+  printf -v response "%s\n" "${routes[@]}"
   bashio::cache.set "subnet-routes-$1" "${response}"
 fi
 
