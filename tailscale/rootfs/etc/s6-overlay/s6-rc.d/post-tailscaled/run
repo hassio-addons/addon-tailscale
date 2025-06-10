@@ -130,8 +130,7 @@ fi
 # This step can be removed in a later version with the file in the data folder also
 if ! bashio::fs.file_exists "/data/final_serve_reset_is_done"; then
   if ! /opt/tailscale serve reset; then
-    bashio::log.error "Unable to remove previous Tailscale Serve and Funnel settings"
-    bashio::exit.nok
+    bashio::exit.nok "Unable to remove previous Tailscale Serve and Funnel settings"
   fi
   touch "/data/final_serve_reset_is_done"
 fi
