@@ -54,7 +54,7 @@ for domain in "${black_list[@]}"; do
   options+=(--server=/${domain}/)
 done
 
-if is_bashio_log_level_trace; then
+if bashio_custom::trace; then
   options+=(--log-queries)
   options+=(--log-debug)
 fi
