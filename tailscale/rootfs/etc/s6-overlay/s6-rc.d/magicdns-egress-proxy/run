@@ -49,7 +49,7 @@ for domain in "${white_list[@]}"; do
   options+=(--server=/${domain}/${hassio_dns_ipv4})
 done
 
-if is_bashio_log_level_trace; then
+if bashio_custom::trace; then
   options+=(--log-queries)
   options+=(--log-debug)
 fi
