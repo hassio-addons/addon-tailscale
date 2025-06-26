@@ -72,7 +72,7 @@ function dig_hassio_dns() {
 # For the status of IPv6 support see https://github.com/home-assistant/supervisor/issues/2133
 if ! hassio_dns_ipv4=$(dig_hassio_dns A) || \
   ! hassio_dns_ipv6=$(dig_hassio_dns AAAA) || \
-  bashio::var.is_empty "${hassio_dns_ipv4}" && bashio::var.is_empty "${hassio_dns_ipv6}"
+  bashio::var.is_empty "${hassio_dns_ipv4-}" && bashio::var.is_empty "${hassio_dns_ipv6-}"
 then
   bashio::exit.nok "Failed to resolve Home Assistant's DNS address"
 fi
@@ -80,12 +80,12 @@ fi
 if bashio::var.equals "${2-}" "forwarding"; then
   if ! tailscale_address_ipv4=$(/opt/tailscale ip -4) || \
     ! tailscale_address_ipv6=$(/opt/tailscale ip -6) || \
-    bashio::var.is_empty "${tailscale_address_ipv4}" && bashio::var.is_empty "${tailscale_address_ipv6}"
+    bashio::var.is_empty "${tailscale_address_ipv4-}" && bashio::var.is_empty "${tailscale_address_ipv6-}"
   then
     bashio::exit.nok "Failed to retrieve Tailscale's local address"
   fi
-  if bashio::var.has_value "${hassio_dns_ipv4}" && bashio::var.is_empty "${tailscale_address_ipv4}" || \
-    bashio::var.has_value "${hassio_dns_ipv6}" && bashio::var.is_empty "${tailscale_address_ipv6}"
+  if bashio::var.has_value "${hassio_dns_ipv4-}" && bashio::var.is_empty "${tailscale_address_ipv4-}" || \
+    bashio::var.has_value "${hassio_dns_ipv6-}" && bashio::var.is_empty "${tailscale_address_ipv6-}"
   then
     bashio::exit.nok "Failed to retrieve Tailscale's local address with matching IP version (v4 or v6) to Home Assistant's DNS address"
   fi
@@ -96,38 +96,38 @@ case "${1-}-${2-}" in
     # Due to forwarding to localhost is not enabled in HA OS, this is de facto a DROP (see martian packets).
     # This temporary trick is needed, because when TS starts, it adds a general ACCEPT FORWARD line in front of existing settings,
     # so we have to drop it during PREROUTING.
-    if bashio::var.has_value "${hassio_dns_ipv4}"; then
+    if bashio::var.has_value "${hassio_dns_ipv4-}"; then
       setup_forwarding "iptables" "I" "udp" "IPv4" "32" "${hassio_dns_ipv4}" "${MAGIC_DNS_IPV4}" "127.0.0.1" "0" "${2}"
       setup_forwarding "iptables" "I" "tcp" "IPv4" "32" "${hassio_dns_ipv4}" "${MAGIC_DNS_IPV4}" "127.0.0.1" "0" "${2}"
     fi
-    if bashio::var.has_value "${hassio_dns_ipv6}"; then
+    if bashio::var.has_value "${hassio_dns_ipv6-}"; then
       setup_forwarding "ip6tables" "I" "udp" "IPv6" "128" "${hassio_dns_ipv6}" "${MAGIC_DNS_IPV6}" "[::1]" "0" "${2}"
       setup_forwarding "ip6tables" "I" "tcp" "IPv6" "128" "${hassio_dns_ipv6}" "${MAGIC_DNS_IPV6}" "[::1]" "0" "${2}"
     fi
     ;;
   setup-forwarding)
-    if bashio::var.has_value "${hassio_dns_ipv4}"; then
+    if bashio::var.has_value "${hassio_dns_ipv4-}"; then
       setup_forwarding "iptables" "A" "udp" "IPv4" "32" "${hassio_dns_ipv4}" "${MAGIC_DNS_IPV4}" "${tailscale_address_ipv4}" "${DNSMASQ_INGRESS_PORT}" "${2}"
       setup_forwarding "iptables" "A" "tcp" "IPv4" "32" "${hassio_dns_ipv4}" "${MAGIC_DNS_IPV4}" "${tailscale_address_ipv4}" "${DNSMASQ_INGRESS_PORT}" "${2}"
     fi
-    if bashio::var.has_value "${hassio_dns_ipv6}"; then
+    if bashio::var.has_value "${hassio_dns_ipv6-}"; then
       setup_forwarding "ip6tables" "A" "udp" "IPv6" "128" "${hassio_dns_ipv6}" "${MAGIC_DNS_IPV6}" "[${tailscale_address_ipv6}]" "${DNSMASQ_INGRESS_PORT}" "${2}"
       setup_forwarding "ip6tables" "A" "tcp" "IPv6" "128" "${hassio_dns_ipv6}" "${MAGIC_DNS_IPV6}" "[${tailscale_address_ipv6}]" "${DNSMASQ_INGRESS_PORT}" "${2}"
     fi
     ;;
   remove-drop)
-    if bashio::var.has_value "${hassio_dns_ipv4}"; then
+    if bashio::var.has_value "${hassio_dns_ipv4-}"; then
       remove_forwarding "iptables" "IPv4" "32" "${hassio_dns_ipv4}" "${MAGIC_DNS_IPV4}" "127.0.0.1" "0" "${2}"
     fi
-    if bashio::var.has_value "${hassio_dns_ipv6}"; then
+    if bashio::var.has_value "${hassio_dns_ipv6-}"; then
       remove_forwarding "ip6tables" "IPv6" "128" "${hassio_dns_ipv6}" "${MAGIC_DNS_IPV6}" "[::1]" "0" "${2}"
     fi
     ;;
   remove-forwarding)
-    if bashio::var.has_value "${hassio_dns_ipv4}"; then
+    if bashio::var.has_value "${hassio_dns_ipv4-}"; then
       remove_forwarding "iptables" "IPv4" "32" "${hassio_dns_ipv4}" "${MAGIC_DNS_IPV4}" "${tailscale_address_ipv4}" "${DNSMASQ_INGRESS_PORT}" "${2}"
     fi
-    if bashio::var.has_value "${hassio_dns_ipv6}"; then
+    if bashio::var.has_value "${hassio_dns_ipv6-}"; then
       remove_forwarding "ip6tables" "IPv6" "128" "${hassio_dns_ipv6}" "${MAGIC_DNS_IPV6}" "[${tailscale_address_ipv6}]" "${DNSMASQ_INGRESS_PORT}" "${2}"
     fi
     ;;
