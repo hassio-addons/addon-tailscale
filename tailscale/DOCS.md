@@ -389,11 +389,10 @@ Pi-hole from anywhere][tailscale_info_pi_hole]
 
 1. Check that the `userspace_networking` option is disabled.
 
-1. Under **Settings** -> **System** -> **Network** configure Tailscale's DNS as
-   the first DNS server (IPv4: 100.100.100.100, IPv6: fd7a:115c:a1e0::53).
+1. In the command line execute `ha dns options --servers dns://100.100.100.100`.
 
-1. Move your normal DNS servers (e.g. 192.168.1.1 or 1.1.1.1) to lower
-   positions.
+1. Check that under **Settings** -> **System** -> **Network** Tailscale's DNS is
+   ***not*** configured as DNS server.
 
 **Note:** The only difference compared to the general Tailscale experience, is
 that you always have to use the fully qualified domain name instead of only the
