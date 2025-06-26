@@ -25,14 +25,18 @@ for dns in $(bashio::dns.servers); do
   if bashio::var.equals "${dns}" "dns://${MAGIC_DNS_IPV4}" || \
     bashio::var.equals "${dns}" "dns://${MAGIC_DNS_IPV6}"
   then
-    invalid_dns_config=""
+    invalid_dns_config="false"
     break
   fi
 done
 if bashio::var.true "${invalid_dns_config}"; then
-  bashio::log.warning "To use MagicDNS in Home Assistant, please configure MagicDNS's IP address as DNS server with cli, eg. 'ha dns options --servers dns://${MAGIC_DNS_IPV4}'"
+  bashio::log.notice \
+    "To use MagicDNS in Home Assistant, configure MagicDNS's IP address as DNS server with cli," \
+    "eg. 'ha dns options --servers dns://${MAGIC_DNS_IPV4}'"
+  bashio::log.notice \
+    "Please check your configuration based on the add-on's documentation under the \"DNS\" section"
 fi
-invalid_dns_config=""
+invalid_dns_config="false"
 for dns in $(bashio::dns.locals); do
   if bashio::var.equals "${dns}" "dns://${MAGIC_DNS_IPV4}" || \
     bashio::var.equals "${dns}" "dns://${MAGIC_DNS_IPV6}"
