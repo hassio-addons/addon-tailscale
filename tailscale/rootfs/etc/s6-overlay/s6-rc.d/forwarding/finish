@@ -37,5 +37,5 @@ if ! from_address_ipv6=$(/opt/tailscale ip -6); then
   bashio::log.warning "Failed to retrieve Tailscale's IPv6 address"
 fi
 
-remove_forwarding "iptables" "IPv4" "32" "${from_address_ipv4}"
-remove_forwarding "ip6tables" "IPv6" "128" "${from_address_ipv6}"
+remove_forwarding "iptables" "IPv4" "32" "${from_address_ipv4-}"
+remove_forwarding "ip6tables" "IPv6" "128" "${from_address_ipv6-}"

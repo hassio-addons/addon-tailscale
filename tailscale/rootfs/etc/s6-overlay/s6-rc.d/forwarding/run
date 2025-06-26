@@ -92,6 +92,6 @@ else
   to_address_ipv4=$(get_host_address "ipv4")
   to_address_ipv6=$(get_host_address "ipv6")
 
-  setup_forwarding "iptables" "IPv4" "32" "${from_address_ipv4}" "${to_address_ipv4}"
-  setup_forwarding "ip6tables" "IPv6" "128" "${from_address_ipv6}" "${to_address_ipv6}"
+  setup_forwarding "iptables" "IPv4" "32" "${from_address_ipv4-}" "${to_address_ipv4}"
+  setup_forwarding "ip6tables" "IPv6" "128" "${from_address_ipv6-}" "${to_address_ipv6}"
 fi
