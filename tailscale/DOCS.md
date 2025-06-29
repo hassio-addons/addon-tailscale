@@ -389,7 +389,13 @@ Pi-hole from anywhere][tailscale_info_pi_hole]
 
 1. Check that the `userspace_networking` option is disabled.
 
-1. In the command line execute `ha dns options --servers dns://100.100.100.100`.
+1. In the command line, execute `ha dns options --servers
+   dns://100.100.100.100`.
+
+   **Note:** _This command replaces the existing DNS server list in Home
+   Assistant and restarts the internal DNS server. To specify an emtpy DNS list
+   (ie. to remove dns://100.100.100.100 from the list), you must use `ha dns
+   reset` and `ha dns restart` commands both._
 
 1. Check that under **Settings** -> **System** -> **Network** Tailscale's DNS is
    **_not_** configured as DNS server.
