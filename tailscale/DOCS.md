@@ -88,7 +88,7 @@ userspace_networking: true
 
 This option allows you to accept the DNS settings of your tailnet that are
 configured on the [DNS page][tailscale_dns] of the admin console. When disabled,
-Tailscale's DNS resolves only tailnet addresses
+Tailscale's DNS resolves only tailnet addresses.
 
 For more information, see the "DNS" section of this documentation.
 
@@ -340,8 +340,8 @@ If you need to access other clients on your tailnet from your Home Assistant
 instance, disable userspace networking mode, which will create a `tailscale0`
 network interface on your host.
 
-To be able to address other clients on your tailnet not only with their tailnet
-IP, but with their tailnet name, see the "DNS" section of this documentation.
+To be able to address other clients on your tailnet not only by their tailnet IP
+but also by their tailnet name, see the "DNS" section of this documentation.
 
 If you want to access other clients on your tailnet even from your local subnet,
 follow steps in the [Site-to-site networking][tailscale_info_site_to_site] guide
@@ -385,7 +385,7 @@ with their tailnet IP, but with their tailnet name.
 
 More information: [What is 100.100.100.100][tailscale_info_quad100], [DNS in
 Tailscale][tailscale_info_dns], [MagicDNS][tailscale_info_magicdns], [Access a
-Pi-hole from anywhere][tailscale_info_pi_hole]
+Pi-hole from anywhere][tailscale_info_pi_hole].
 
 1. Check that the `userspace_networking` option is disabled.
 
@@ -393,7 +393,7 @@ Pi-hole from anywhere][tailscale_info_pi_hole]
    dns://100.100.100.100`.
 
    **Note:** _This command replaces the existing DNS server list in Home
-   Assistant and restarts the internal DNS server. To specify an emtpy DNS list
+   Assistant and restarts the internal DNS server. To specify an empty DNS list
    (i.e. to remove `dns://100.100.100.100` from the list), you must use `ha dns
    reset` and `ha dns restart` commands both._
 
