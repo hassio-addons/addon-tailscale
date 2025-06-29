@@ -394,11 +394,11 @@ Pi-hole from anywhere][tailscale_info_pi_hole]
 
    **Note:** _This command replaces the existing DNS server list in Home
    Assistant and restarts the internal DNS server. To specify an emtpy DNS list
-   (ie. to remove dns://100.100.100.100 from the list), you must use `ha dns
+   (i.e. to remove `dns://100.100.100.100` from the list), you must use `ha dns
    reset` and `ha dns restart` commands both._
 
 1. Check that under **Settings** -> **System** -> **Network** Tailscale's DNS is
-   **_not_** configured as DNS server.
+   **_not_** configured as a DNS server.
 
 **Note:** The only difference compared to the general Tailscale experience, is
 that you always have to use the fully qualified domain name instead of only the
@@ -409,8 +409,8 @@ some-tailnet-device` does not work.
 device also, and this device is configured as global nameserver on the [DNS
 page][tailscale_dns] of the admin console, then:
 
-1. Disable the `accept_dns` option to prevent the Tailscale DNS to redirect
-   queries from your device back to your device, causing a loop.
+1. Disable the `accept_dns` option to prevent the Tailscale DNS from redirecting
+   queries from your device back to itself, which would cause a loop.
 
 1. Configure your DNS for Home Assistant, and in your DNS configure Tailscale
    DNS for your tailnet domain as upstream DNS server (e.g. in case of AdGuard
