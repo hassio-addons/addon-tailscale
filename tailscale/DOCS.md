@@ -88,7 +88,8 @@ userspace_networking: true
 
 This option allows you to accept the DNS settings of your tailnet that are
 configured on the [DNS page][tailscale_dns] of the admin console. When disabled,
-Tailscale's DNS resolves only tailnet addresses.
+Tailscale's DNS resolves only tailnet addresses, no global nameservers from the
+admin console are applied.
 
 For more information, see the "DNS" section of this documentation.
 
@@ -383,9 +384,9 @@ When the `userspace_networking` option is disabled, Tailscale provides a DNS (at
 100.100.100.100) to be able to address other clients on your tailnet not only
 with their tailnet IP, but with their tailnet name.
 
-More information: [What is 100.100.100.100][tailscale_info_quad100], [DNS in
-Tailscale][tailscale_info_dns], [MagicDNS][tailscale_info_magicdns], [Access a
-Pi-hole from anywhere][tailscale_info_pi_hole].
+More information: [What is 100.100.100.100][tailscale_info_quad100],
+[DNS in Tailscale][tailscale_info_dns], [MagicDNS][tailscale_info_magicdns],
+[Access a Pi-hole from anywhere][tailscale_info_pi_hole].
 
 1. Check that the `userspace_networking` option is disabled.
 
