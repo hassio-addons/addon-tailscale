@@ -381,8 +381,8 @@ When not set, an automatically selected port is used by default.
 ## DNS
 
 When the `userspace_networking` option is disabled, Tailscale provides a DNS (at
-100.100.100.100) to be able to address other clients on your tailnet not only
-with their tailnet IP, but with their tailnet name.
+100.100.100.100 and fd7a:115c:a1e0::53) to be able to address other clients on
+your tailnet not only by their tailnet IP but also by their tailnet name.
 
 More information: [What is 100.100.100.100][tailscale_info_quad100],
 [DNS in Tailscale][tailscale_info_dns], [MagicDNS][tailscale_info_magicdns],
