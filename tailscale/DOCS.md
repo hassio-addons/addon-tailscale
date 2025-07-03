@@ -233,7 +233,6 @@ Serve][tailscale_info_serve], [Tailscale Funnel][tailscale_info_funnel]
 
 1. Optionally, if you want to use Tailscale Funnel, navigate to the [Access
    controls page][tailscale_acls] of the admin console:
-
    - Add the required `funnel` node attribute to the tailnet policy file. See
      [Tailnet policy file requirement][tailscale_info_funnel_policy_requirement]
      for more information.
