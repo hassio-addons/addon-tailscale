@@ -247,7 +247,8 @@ previously to access Home Assistant. Tailscale Serve and Funnel works on the
 default HTTPS port 443 (or the port configured in option `share_on_port`).
 
 **Note:** If you encounter strange browser behaviour or strange error messages,
-try to clear all site-related cookies, clear all browser cache, restart browser.
+try to clear all site-related cookies, clear all browser cache, and restart the
+browser.
 
 ### Option: `share_on_port`
 
