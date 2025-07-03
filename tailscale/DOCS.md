@@ -180,7 +180,7 @@ own Tailscale control server, for example, a self-hosted [Headscale] instance.
 ### Option: `share_homeassistant`
 
 This option allows you to enable Tailscale Serve or Funnel features to present
-your Home Assistant instance with a valid certificate on your tailnet or
+your Home Assistant instance with a valid certificate on your tailnet or on the
 internet.
 
 When not set, this option is disabled by default.
