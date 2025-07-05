@@ -97,8 +97,7 @@ done
 
 # Start Tailscale
 if ! /opt/tailscale up "${options[@]}"; then
-  bashio::log.error "Unable to start up Tailscale"
-  bashio::exit.nok
+  bashio::exit.nok "Unable to start up Tailscale"
 fi
 
 # Wait for the network to be available and logged in
