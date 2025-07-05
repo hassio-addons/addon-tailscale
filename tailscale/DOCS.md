@@ -205,8 +205,8 @@ Tailscale VPN client** (for example, on general phones, tablets, and laptops).
 **Client** &#8658; _Internet_ &#8658; **Tailscale Funnel** (TCP proxy) &#8658;
 _VPN_ &#8658; **Tailscale Serve** (HTTPS proxy) &#8594; **HA** (HTTP web-server)
 
-More information: [Enabling HTTPS][tailscale_info_https], [Tailscale
-Serve][tailscale_info_serve], [Tailscale Funnel][tailscale_info_funnel].
+More information: [Enabling HTTPS][tailscale_info_https],
+[Tailscale Serve][tailscale_info_serve], [Tailscale Funnel][tailscale_info_funnel].
 
 1. Configure Home Assistant to be accessible through an HTTP connection (this is
    the default). See [HTTP integration documentation][http_integration] for more
@@ -252,10 +252,11 @@ browser.
 
 ### Option: `share_on_port`
 
-This option allows you to configure the port the Tailscale Serve and Funnel
-features are accessible on the tailnet and internet.
+This option lets you specify which port the Tailscale Serve and Funnel features
+will use to present your Home Assistant instance on the tailnet and on the
+internet.
 
-Only the ports 443, 8443, and 10000 are allowed by Tailscale.
+Only ports 443, 8443, and 10000 are allowed by Tailscale.
 
 When not set, port 443 is used by default.
 
