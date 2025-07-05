@@ -59,6 +59,7 @@ configuration:
       will use to present your Home Assistant instance on the tailnet and on the
       internet.
       Only ports 443, 8443, and 10000 are allowed by Tailscale.
+      When not set, port 443 is used by default.
   snat_subnet_routes:
     name: Source NAT subnet routes
     description: >-
