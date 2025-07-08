@@ -5,6 +5,14 @@
 # Runs the MagicDNS egress proxy
 # ==============================================================================
 
+# Note: This script assumes that internal hassio network is available in IPv4.
+# Sets up IPv4 upstream DNS for tailscaled, and redirects the white_list to IPv4 hassio DNS.
+# In case of an IPv6-only hassio network this IPv4 solution won't work.
+# But running an egress DNS proxy on ::1 IPv6 localhost is impossible, because DNS add-ons can bind to this address also,
+# but we can specify only port 53 DNS in resolv.conf for tailscaled.
+# So in case of IPv6-only hassio, we can't use [::1]:53 for the egress DNS proxy, but we can't use anything else in resolv.conf for tailscaled.
+# For the status of IPv6 support see https://github.com/home-assistant/supervisor/issues/2133
+
 source /usr/lib/trace.sh
 
 readonly DNSMASQ_EGRESS_ADDRESS_IPV4="127.100.100.100"
