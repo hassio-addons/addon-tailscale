@@ -27,7 +27,7 @@ then
     bashio::cache.flush_all
     # It is possible to get "ERROR: Got unexpected response from the API: System is not ready with state: setup"
     # So we wait a little
-    while ! bashio::api.supervisor GET "/addons/self/options/config" false &> /dev/null; do
+    while ! bashio::api.supervisor GET "/network/interface/default/info" false &> /dev/null; do
       if (( wait_counter++ == $WAIT_COUNT )); then
         bashio::exit.nok "Supervisor is unreachable"
       fi
