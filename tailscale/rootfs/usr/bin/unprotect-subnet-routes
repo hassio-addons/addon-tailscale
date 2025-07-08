@@ -23,7 +23,7 @@ then
     | sed -nr 's/^\d+:\s+from all to ([^\s]+) lookup main$/\1/p')
 
   if [[ "${1-}" == "test" ]]; then
-    printf "%s\n" "${routes[@]}"
+    printf "%s" "${routes[@]/%/$'\n'}"
   else
     for route in "${routes[@]}"; do
       bashio::log.info "Removing route ${route} from ip rules"

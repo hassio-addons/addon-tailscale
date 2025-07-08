@@ -41,7 +41,7 @@ then
 
   readarray -t routes < <(subnet-routes local)
   if [[ "${1-}" == "test" ]]; then
-    printf "%s\n" "${routes[@]}"
+    printf "%s" "${routes[@]/%/$'\n'}"
   else
     bashio::log.info \
       "Adding local subnets to ip rules with higher priority than Tailscale's routing," \
