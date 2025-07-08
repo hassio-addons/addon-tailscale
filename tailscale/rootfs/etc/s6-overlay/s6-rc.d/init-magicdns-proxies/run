@@ -70,7 +70,7 @@ if bashio::config.equals 'proxy' 'true'; then
   black_white_list+=(${LETSENCRYPT_API})
 fi
 
-printf "%s\n" "${black_white_list[@]}" > ${DNSMASQ_BLACK_WHITE_LIST_LOCATION}
+printf "%s" "${black_white_list[@]/%/$'\n'}" > ${DNSMASQ_BLACK_WHITE_LIST_LOCATION}
 
 # This is necessary to prevent accessing MagicDNS before the ingress proxy starts up
 # The ingress proxy will remove these entries on startup
