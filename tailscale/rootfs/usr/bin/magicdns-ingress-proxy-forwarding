@@ -68,13 +68,30 @@ function dig_hassio_dns() {
   dig dns.local.hass.io "${type}" +short | { grep -Ev '^;|\.$|^$' || true ;} | head -n 1
 }
 
+# This is useful when stopping services and dig fails but we already added this value to iptables
+function get_hassio_dns_from_iptables() {
+  local cmd="${1}"
+  local address_bits="${2}"
+  local from_address="${3}"
+
+  ${cmd} -t nat -S PREROUTING \
+  | { grep -E "^-A PREROUTING -s \S+ -d ${from_address}/${address_bits} -i hassio -p udp -m udp --dport 53 -j DNAT --to-destination \S+$" || true ;} \
+  | sed -nr 's/^.*?-s\s([^\/]+)\/\d+\s-d.*$/\1/p' \
+  | head -n 1
+}
+
 # Hassio DNS's IP addresses
 # For the status of IPv6 support see https://github.com/home-assistant/supervisor/issues/2133
 if ! hassio_dns_ipv4=$(dig_hassio_dns A) || \
   ! hassio_dns_ipv6=$(dig_hassio_dns AAAA) || \
   bashio::var.is_empty "${hassio_dns_ipv4-}" && bashio::var.is_empty "${hassio_dns_ipv6-}"
 then
-  bashio::exit.nok "Failed to resolve Home Assistant's DNS address"
+  if ! hassio_dns_ipv4=$(get_hassio_dns_from_iptables "iptables" "32" "${MAGIC_DNS_IPV4}") || \
+    ! hassio_dns_ipv6=$(get_hassio_dns_from_iptables "ip6tables" "128" "${MAGIC_DNS_IPV6}") || \
+    bashio::var.is_empty "${hassio_dns_ipv4-}" && bashio::var.is_empty "${hassio_dns_ipv6-}"
+  then
+    bashio::exit.nok "Failed to resolve Home Assistant's DNS address"
+  fi
 fi
 # Tailscale's local IP addresses
 if bashio::var.equals "${2-}" "forwarding"; then
