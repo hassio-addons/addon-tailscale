@@ -16,7 +16,7 @@ RUN \
         iptables=1.8.11-r1 \
         nginx=1.28.0-r3 \
         coreutils=9.7-r1 \
-        networkmanager=1.52.0-r2 \
+        networkmanager=1.52.1-r0 \
     \
     && ln -sf /sbin/xtables-nft-multi /sbin/ip6tables \
     && ln -sf /sbin/xtables-nft-multi /sbin/iptables \
