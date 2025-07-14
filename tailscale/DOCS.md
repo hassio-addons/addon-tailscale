@@ -390,15 +390,17 @@ More information: [What is 100.100.100.100][tailscale_info_quad100],
 
 1. Check that the `userspace_networking` option is disabled.
 
+1. Check that under **Settings** -> **System** -> **Network** Tailscale's DNS is
+   **_not_** configured as a DNS server.
+
 1. In the command line, execute `ha dns options --servers dns://100.100.100.100`.
 
    **Note:** _This command replaces the existing DNS server list in Home
    Assistant and restarts the internal DNS server. To specify an empty DNS list
    (i.e. to remove `dns://100.100.100.100` from the list), you must use
-   `ha dns reset` and `ha dns restart` commands both._
-
-1. Check that under **Settings** -> **System** -> **Network** Tailscale's DNS is
-   **_not_** configured as a DNS server.
+   `ha dns reset` and `ha dns restart` commands both. This server list is
+   additional and queried before the DNS servers specified in Network settings
+   above._
 
 **Note:** The only difference compared to the general Tailscale experience, is
 that you always have to use the fully qualified domain name instead of only the
