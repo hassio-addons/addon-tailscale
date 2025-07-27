@@ -26,33 +26,23 @@ options=$(bashio::addon.options)
 proxy=$(bashio::jq "${options}" '.proxy | select(.!=null)')
 funnel=$(bashio::jq "${options}" '.funnel | select(.!=null)')
 proxy_and_funnel_port=$(bashio::jq "${options}" '.proxy_and_funnel_port | select(.!=null)')
-share_homeassistant=$(bashio::jq "${options}" '.share_homeassistant | select(.!=null)')
-share_on_port=$(bashio::jq "${options}" '.share_on_port | select(.!=null)')
 # Upgrade to share_homeassistant
 if bashio::var.true "${proxy}"; then
-    if bashio::var.has_value "${share_homeassistant}"; then
-        bashio::log.warning "The proxy and funnel options are already migrated to share_homeassistant option, do not configure deprecated options, proxy and funnel options are dropped."
+    if bashio::var.true "${funnel}"; then
+        bashio::addon.option 'share_homeassistant' 'funnel'
+        bashio::log.info "Successfully migrated proxy and funnel options to share_homeassistant: funnel"
     else
-        if bashio::var.true "${funnel}"; then
-            bashio::addon.option 'share_homeassistant' 'funnel'
-            bashio::log.info "Successfully migrated proxy and funnel options to share_homeassistant: funnel"
-        else
-            bashio::addon.option 'share_homeassistant' 'serve'
-            bashio::log.info "Successfully migrated proxy and funnel options to share_homeassistant: serve"
-        fi
+        bashio::addon.option 'share_homeassistant' 'serve'
+        bashio::log.info "Successfully migrated proxy and funnel options to share_homeassistant: serve"
     fi
 fi
 # Upgrade to share_on_port
 if bashio::var.has_value "${proxy_and_funnel_port}"; then
-    if bashio::var.has_value "${share_on_port}"; then
-        bashio::log.warning "The proxy_and_funnel_port option is already migrated to share_on_port option, do not configure deprecated options, proxy_and_funnel_port option is dropped."
+    try bashio::addon.option 'share_on_port' "^${proxy_and_funnel_port}"
+    if ((TRY_ERROR)); then
+        bashio::log.warning "The proxy_and_funnel_port option value '${proxy_and_funnel_port}' is invalid, proxy_and_funnel_port option is dropped, using default port."
     else
-        try bashio::addon.option 'share_on_port' "^${proxy_and_funnel_port}"
-        if ((TRY_ERROR)); then
-            bashio::log.warning "The proxy_and_funnel_port option value '${proxy_and_funnel_port}' is invalid, proxy_and_funnel_port option is dropped, using default port."
-        else
-            bashio::log.info "Successfully migrated proxy_and_funnel_port option to share_on_port: ${proxy_and_funnel_port}"
-        fi
+        bashio::log.info "Successfully migrated proxy_and_funnel_port option to share_on_port: ${proxy_and_funnel_port}"
     fi
 fi
 # Remove previous options
