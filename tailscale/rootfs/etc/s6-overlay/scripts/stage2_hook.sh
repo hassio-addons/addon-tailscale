@@ -7,7 +7,6 @@
 
 declare options
 declare proxy funnel proxy_and_funnel_port
-declare share_homeassistant share_on_port
 
 # This is to execute potentially failing supervisor api functions within conditions,
 # where set -e is not propagated inside the function and bashio relies on set -e for api error handling
