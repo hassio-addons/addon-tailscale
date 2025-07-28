@@ -181,7 +181,6 @@ proxying for HTTPS communication.
 More information: [Tailscale Funnel][tailscale_info_funnel]
 
 1. Navigate to the [Access controls page][tailscale_acls] of the admin console:
-
    - Add the required `funnel` node attribute to the tailnet policy file. See
      [Tailnet policy file requirement][tailscale_info_funnel_policy_requirement]
      for more information.
@@ -258,7 +257,6 @@ More information: [Enabling HTTPS][tailscale_info_https]
    ```
 
 1. Navigate to the [DNS page][tailscale_dns] of the admin console:
-
    - Choose a tailnet name.
 
    - Enable MagicDNS if not already enabled.
