@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:18.0.3
+ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:18.1.1
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
@@ -7,7 +7,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Setup base
 ARG BUILD_ARCH=amd64
-ARG TAILSCALE_VERSION="v1.86.0"
+ARG TAILSCALE_VERSION="v1.86.2"
 RUN \
     apk add --no-cache \
         ethtool=6.14.1-r0 \
@@ -34,6 +34,9 @@ RUN \
 
 # Copy root filesystem
 COPY rootfs /
+
+HEALTHCHECK \
+    CMD healthcheck
 
 # S6 Overlay stage 2 hook
 ENV S6_STAGE2_HOOK=/etc/s6-overlay/scripts/stage2_hook.sh

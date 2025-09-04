@@ -90,15 +90,14 @@ unset IFS
 # Wait for the network to be available and logged in
 while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock" || \
   ! /opt/tailscale status --json --peers=false --self=false \
-    | jq --exit-status '.BackendState == "Running" or .BackendState == "NeedsLogin"' > /dev/null;
+    | jq --exit-status '.BackendState == "Running" or .BackendState == "NeedsLogin" or .BackendState == "Stopped"' > /dev/null;
 do
   sleep 2
 done
 
 # Start Tailscale
 if ! /opt/tailscale up "${options[@]}"; then
-  bashio::log.error "Unable to start up Tailscale"
-  bashio::exit.nok
+  bashio::exit.nok "Unable to start up Tailscale"
 fi
 
 # Wait for the network to be available and logged in
