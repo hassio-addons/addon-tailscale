@@ -1,0 +1,41 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Remove forwarding
+# ==============================================================================
+
+declare from_address_ipv4 from_address_ipv6
+
+# In case of non userspace networking, remove the forwarding from tailnet to host
+function remove_forwarding() {
+  local cmd="${1}"
+  local ip_version="${2}"
+  local address_bits="${3}"
+  local from_address="${4}"
+  local to_address
+
+  if bashio::var.has_value "${from_address}"; then
+    for to_address in $( \
+      ${cmd} -t nat -S PREROUTING \
+      | { grep -E "^-A PREROUTING -d ${from_address}/${address_bits} -j DNAT --to-destination \S+$" || true ;} \
+      | sed -nr 's/^.*?--to-destination\s(\S+)$/\1/p')
+    do
+      bashio::log.info "Removing the forwarding from ${from_address} to ${to_address} (${ip_version})"
+      if ! ${cmd} -t nat -D PREROUTING -d "${from_address}" -j DNAT --to-destination "${to_address}"; then
+        bashio::log.warning "Removing forwarding is unsuccessful (${ip_version})"
+      fi
+    done
+  fi
+}
+
+# Tailscale's IP addresses
+if ! from_address_ipv4=$(/opt/tailscale ip -4); then
+  bashio::log.warning "Failed to retrieve Tailscale's IPv4 address"
+fi
+if ! from_address_ipv6=$(/opt/tailscale ip -6); then
+  bashio::log.warning "Failed to retrieve Tailscale's IPv6 address"
+fi
+
+remove_forwarding "iptables" "IPv4" "32" "${from_address_ipv4-}"
+remove_forwarding "ip6tables" "IPv6" "128" "${from_address_ipv6-}"

@@ -90,15 +90,14 @@ unset IFS
 # Wait for the network to be available and logged in
 while ! bashio::fs.socket_exists "/var/run/tailscale/tailscaled.sock" || \
   ! /opt/tailscale status --json --peers=false --self=false \
-    | jq --exit-status '.BackendState == "Running" or .BackendState == "NeedsLogin"' > /dev/null;
+    | jq --exit-status '.BackendState == "Running" or .BackendState == "NeedsLogin" or .BackendState == "Stopped"' > /dev/null;
 do
   sleep 2
 done
 
 # Start Tailscale
 if ! /opt/tailscale up "${options[@]}"; then
-  bashio::log.error "Unable to start up Tailscale"
-  bashio::exit.nok
+  bashio::exit.nok "Unable to start up Tailscale"
 fi
 
 # Wait for the network to be available and logged in
@@ -126,12 +125,11 @@ then
 fi
 
 # Delete previously created persistent tailscale serve configuration ONCE
-# After add-on's serve (proxy and funnel) service is a longrun service, we do not modify the serve state permanently
+# After the add-on's share-homeassistant (serve and funnel) service is a longrun service, we do not modify the serve state permanently
 # This step can be removed in a later version with the file in the data folder also
 if ! bashio::fs.file_exists "/data/final_serve_reset_is_done"; then
   if ! /opt/tailscale serve reset; then
-    bashio::log.error "Unable to remove previous Tailscale Proxy and Funnel settings"
-    bashio::exit.nok
+    bashio::exit.nok "Unable to remove previous Tailscale Serve and Funnel settings"
   fi
   touch "/data/final_serve_reset_is_done"
 fi

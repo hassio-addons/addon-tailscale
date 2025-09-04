@@ -1,0 +1,47 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+
+# Plain (non-json) tailscale status returns error when status is not Running or Starting, so eg. NeedsLogin and NeedsMachineAuth would make it unhealthy
+# The .Health json filter returns any problems, so even temporary health problems would make it unhealthy
+# This script treats the following situations unhealthy:
+# - .BackendState == "Stopped"
+# - if once was online but gets offline for more then HEALTHCHECK_OFFLINE_TIMEOUT seconds
+# - if never gets online for more then HEALTHCHECK_RESTART_TIMEOUT seconds
+
+# Redirect healthchecks' output to the log
+exec &> /proc/1/fd/1
+
+readonly HEALTHCHECK_OFFLINE_TIMEOUT=300   # 5 minutes
+readonly HEALTHCHECK_RESTART_TIMEOUT=3600  # 1 hour
+
+declare status_json
+declare backend_state is_self_online
+# STARTED_TIMESTAMP is in contenv at /var/run/s6/container_environment
+# LAST_ONLINE_TIMESTAMP is in contenv at /var/run/s6/container_environment
+
+if ! bashio::var.has_value "${STARTED_TIMESTAMP-}"
+then
+  STARTED_TIMESTAMP=$(date +"%s")
+  printf "${STARTED_TIMESTAMP}" > /var/run/s6/container_environment/STARTED_TIMESTAMP
+fi
+
+if status_json=$(/opt/tailscale status --json --self=true --peers=false 2> /dev/null); then
+  backend_state=$(jq -r '.BackendState' <<< "${status_json}")
+  is_self_online=$(jq -r '.Self.Online' <<< "${status_json}")
+fi
+
+if bashio::var.equals "${backend_state-}" "Running" && bashio::var.true "${is_self_online-}"
+then
+  LAST_ONLINE_TIMESTAMP=$(date +"%s")
+  printf "${LAST_ONLINE_TIMESTAMP}" > /var/run/s6/container_environment/LAST_ONLINE_TIMESTAMP
+fi
+
+if [[ "${backend_state-}" == "Stopped" ]] || \
+  (bashio::var.has_value "${LAST_ONLINE_TIMESTAMP-}" && \
+    (( $(date +"%s") - ${LAST_ONLINE_TIMESTAMP} > ${HEALTHCHECK_OFFLINE_TIMEOUT} )) ) || \
+  (! bashio::var.has_value "${LAST_ONLINE_TIMESTAMP-}" && \
+    (( $(date +"%s") - ${STARTED_TIMESTAMP} > ${HEALTHCHECK_RESTART_TIMEOUT} )) )
+then
+  # Unhealthy
+  bashio::exit.nok
+fi
