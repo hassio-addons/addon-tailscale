@@ -3,9 +3,9 @@ configuration:
   accept_dns:
     name: Accept DNS
     description: >-
-      If you are experiencing trouble with MagicDNS on this device and wish to
-      disable, you can do so using this option.
-      When not set, this option is enabled by default.
+      This option allows you to accept DNS settings of your tailnet that are
+      configured on the DNS page of the admin console.
+      This option is enabled by default.
   accept_routes:
     name: Accept routes
     description: >-
