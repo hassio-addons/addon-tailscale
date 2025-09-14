@@ -101,8 +101,8 @@ if bashio::var.equals "${2-}" "forwarding"; then
   then
     bashio::exit.nok "Failed to retrieve Tailscale's local address"
   fi
-  if bashio::var.has_value "${hassio_dns_ipv4-}" && bashio::var.is_empty "${tailscale_address_ipv4-}" || \
-    bashio::var.has_value "${hassio_dns_ipv6-}" && bashio::var.is_empty "${tailscale_address_ipv6-}"
+  if (bashio::var.has_value "${hassio_dns_ipv4-}" && bashio::var.is_empty "${tailscale_address_ipv4-}") || \
+    (bashio::var.has_value "${hassio_dns_ipv6-}" && bashio::var.is_empty "${tailscale_address_ipv6-}")
   then
     bashio::exit.nok "Failed to retrieve Tailscale's local address with matching IP version (v4 or v6) to Home Assistant's DNS address"
   fi
