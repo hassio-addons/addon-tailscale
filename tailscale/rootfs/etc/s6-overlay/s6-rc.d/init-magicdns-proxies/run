@@ -67,7 +67,7 @@ if ! bashio::config.equals 'share_homeassistant' 'disabled'; then
   black_white_list+=(${LETSENCRYPT_API})
 fi
 
-printf "%s" "${black_white_list[@]/%/$'\n'}" > ${DNSMASQ_BLACK_WHITE_LIST_LOCATION}
+printf "%s" "${black_white_list[@]/%/$'\n'}" > "${DNSMASQ_BLACK_WHITE_LIST_LOCATION}"
 
 # This is necessary to prevent accessing MagicDNS before the ingress proxy starts up
 # The ingress proxy will remove these entries on startup
