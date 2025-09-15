@@ -51,7 +51,7 @@ then
 fi
 
 # White-list
-readarray -t white_list < ${DNSMASQ_BLACK_WHITE_LIST_LOCATION}
+readarray -t white_list < "${DNSMASQ_BLACK_WHITE_LIST_LOCATION}"
 
 # Return NXDOMAIN for everything, except the white_list
 options+=(--address=/#/)
