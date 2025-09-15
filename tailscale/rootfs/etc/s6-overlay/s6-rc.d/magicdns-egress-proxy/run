@@ -28,7 +28,9 @@ bashio::log.info "Starting MagicDNS egress proxy..."
 
 function dig_hassio_dns() {
   local type="${1}"
-  dig dns.local.hass.io "${type}" +short | { grep -Ev '^;|\.$|^$' || true ;} | head -n 1
+  dig dns.local.hass.io "${type}" +short \
+    | { grep -Ev '^;|\.$|^$' || true ;} \
+    | head -n 1
 }
 
 options+=(--no-hosts)
