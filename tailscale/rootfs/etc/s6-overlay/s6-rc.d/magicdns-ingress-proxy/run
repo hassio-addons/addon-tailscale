@@ -22,6 +22,7 @@ bashio::log.info "Starting MagicDNS ingress proxy..."
 
 options+=(--no-hosts)
 options+=(--no-resolv)
+options+=(--conf-file=/dev/null)
 options+=(--keep-in-foreground)
 options+=(--log-facility='-')
 options+=(--cache-size=0)
