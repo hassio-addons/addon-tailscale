@@ -241,7 +241,8 @@ More information: [Enabling HTTPS][tailscale_info_https],
 
 1. Home Assistant, by default, blocks requests from reverse proxies, like the
    Tailscale Serve. To enable it, add the following lines to your
-   `configuration.yaml`, without changing anything:
+   `configuration.yaml`, without changing anything (don't forget to restart Home
+   Assistant after the changes are saved):
 
    ```yaml
    http:
