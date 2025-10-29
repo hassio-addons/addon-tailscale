@@ -29,6 +29,7 @@ ports:
   41641/udp: null
 schema:
   4via6: bool?
+  4via6_site_id: int(0,65535)
   accept_dns: bool?
   accept_routes: bool?
   advertise_exit_node: bool?
