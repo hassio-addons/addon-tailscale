@@ -103,16 +103,16 @@ options+=(--advertise-tags="${tags}")
 readarray -t routes < <(subnet-routes advertised)
 
 # Check for 4via6 configuration and modify routes if enabled
-if bashio::config.true "4via6"; then
+if bashio::config.true "map4via6"; then
     declare -a ipv6_routes=()
     declare site_id
     declare ipv6_route
     
     # Get the site ID configured for 4via6
-    if ! bashio::config.has_value "4via6_site_id"; then
+    if ! bashio::config.has_value "map4via6_site_id"; then
         bashio::exit.nok "4via6 is enabled, but '4via6_site_id' is not set!"
     fi
-    site_id=$(bashio::config "4via6_site_id")
+    site_id=$(bashio::config "map4via6_site_id")
 
     bashio::log.info "4via6 is enabled. Converting advertised IPv4 routes using Site ID ${site_id}."
 

@@ -1,20 +1,5 @@
 ---
 configuration:
-  4via6:
-    name: Enable 4via6 Subnet Routing
-    description: >-
-      If enabled, this feature converts your advertised IPv4 subnet routes into 
-      unique IPv6 routes to handle **overlapping subnets** across different 
-      physical locations (**sites**). This is required if multiple sites in your 
-      Tailnet use the same private IPv4 address range (e.g., two networks using 
-      192.168.1.0/24). **Requires '4via6_site_id' to be set.**
-  4via6_site_id:
-    name: 4via6 Site ID
-    description: >-
-      A **unique identifier** (integer 0-65535) for this location. Tailscale uses 
-      this ID to generate a unique IPv6 address for each advertised IPv4 subnet, 
-      ensuring traffic is routed to the correct physical location. **Each device 
-      advertising the overlapping subnet from a different site MUST have a unique ID.**
   accept_dns:
     name: Accept DNS
     description: >-
@@ -68,6 +53,21 @@ configuration:
       This option allows you to specify a custom control server for this
       Tailscale instance, for example, a self-host Headscale instance.
       By default, it uses the control server provided by Tailscale.
+  map4via6:
+    name: Enable 4via6 Subnet Routing
+    description: >-
+      If enabled, this feature converts your advertised IPv4 subnet routes into 
+      unique IPv6 routes to handle **overlapping subnets** across different 
+      physical locations (**sites**). This is required if multiple sites in your 
+      Tailnet use the same private IPv4 address range (e.g., two networks using 
+      192.168.1.0/24). **Requires '4via6_site_id' to be set.**
+  map4via6_site_id:
+    name: 4via6 Site ID
+    description: >-
+      A **unique identifier** (integer 0-65535) for this location. Tailscale uses 
+      this ID to generate a unique IPv6 address for each advertised IPv4 subnet, 
+      ensuring traffic is routed to the correct physical location. **Each device 
+      advertising the overlapping subnet from a different site MUST have a unique ID.**
   share_homeassistant:
     name: Share Home Assistant with Serve or Funnel
     description: >-
