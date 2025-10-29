@@ -203,6 +203,26 @@ This option lets you to specify a custom control server instead of the default
 (`https://controlplane.tailscale.com`). This is useful if you are running your
 own Tailscale control server, for example, a self-hosted [Headscale] instance.
 
+### Option: `map4via6`
+
+This option enables 4via6 routing 
+(`https://tailscale.com/kb/1201/4via6-subnets`). All subnets in 
+**advertise_routes** will use it, even if it is populated automatically by this 
+plugin for all subnets on all supported interfaces will use it. It is not 
+currently possible to limit it in any way.
+Useful for overlapping subnets or to bypass Tailscale when accessing the local
+subnet and there is another node in the same network 
+(`https://github.com/tailscale/tailscale/issues/1227`)
+Requires **4via6_site_id** to be set.
+
+
+### Option: `map4via6_site_id`
+
+Site ID for 4via6. A unique identifier (0-65535) for this location. Tailscale 
+uses this ID to generate a unique IPv6 address for each advertised IPv4 subnet, 
+ensuring traffic is routed to the correct physical location. Each device 
+advertising the overlapping subnet from a different site MUST have a unique ID.
+
 ### Option: `share_homeassistant`
 
 This option allows you to enable Tailscale Serve or Funnel features to present
