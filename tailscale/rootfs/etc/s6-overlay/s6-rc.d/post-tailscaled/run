@@ -101,6 +101,36 @@ options+=(--advertise-tags="${tags}")
 
 # Advertise subnet routes
 readarray -t routes < <(subnet-routes advertised)
+
+# Check for 4via6 configuration and modify routes if enabled
+if bashio::config.true "4via6"; then
+    declare -a ipv6_routes=()
+    declare site_id
+    declare ipv6_route
+    
+    # Get the site ID configured for 4via6
+    if ! bashio::config.has_value "4via6_site_id"; then
+        bashio::exit.nok "4via6 is enabled, but '4via6_site_id' is not set!"
+    fi
+    site_id=$(bashio::config "4via6_site_id")
+
+    bashio::log.info "4via6 is enabled. Converting advertised IPv4 routes using Site ID ${site_id}."
+
+    # Iterate over the standard IPv4 routes and convert them to 4via6 IPv6 routes
+    for route in "${routes[@]}"; do
+        # Call 'tailscale debug via <site-id>' to get the 4via6-specific IPv6 route
+        if ipv6_route=$(/opt/tailscale debug via "${site_id}" "${route}" 2>/dev/null); then
+            ipv6_routes+=("${ipv6_route}")
+            bashio::log.info "  - ${route} converted to ${ipv6_route}"
+        else
+            bashio::log.warning "  - Failed to convert route ${route} using 'tailscale debug via ${site_id}'."
+        fi
+    done
+
+    # Replace the original routes array with the new IPv6 routes for 4via6
+    routes=("${ipv6_routes[@]}")
+fi
+
 IFS=","
 options+=(--advertise-routes="${routes[*]}")
 unset IFS
