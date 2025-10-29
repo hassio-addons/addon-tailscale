@@ -38,7 +38,7 @@ schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
   login_server: url?
   map4via6: bool?
-  map4via6_site_id: int(0,65535)
+  map4via6_site_id: int(0,65535)?
   share_homeassistant: list(disabled|serve|funnel)?
   share_on_port: match(^(443|8443|10000)$)?
   snat_subnet_routes: bool?
