@@ -205,16 +205,14 @@ own Tailscale control server, for example, a self-hosted [Headscale] instance.
 
 ### Option: `map4via6`
 
-This option enables 4via6 routing 
-(`https://tailscale.com/kb/1201/4via6-subnets`). All subnets in 
+This option enables [4via6 routing][tailscale_info_4via6]. All subnets in 
 **advertise_routes** will use it, even if it is populated automatically by this 
-plugin for all subnets on all supported interfaces will use it. It is not 
+plugin (check the documentation of **advertise_routes** for more) . It is not 
 currently possible to limit it in any way.
-Useful for overlapping subnets or to bypass Tailscale when accessing the local
-subnet and there is another node in the same network 
-(`https://github.com/tailscale/tailscale/issues/1227`)
-Requires **4via6_site_id** to be set.
+Useful for overlapping subnets or to bypass Tailscale when there is a local 
+route to a subnet, e.g this [issue][tailscale_issue_use_local_route]
 
+Requires **4via6_site_id** to be set.
 
 ### Option: `map4via6_site_id`
 
@@ -471,6 +469,7 @@ SOFTWARE.
 [semver]: https://semver.org/spec/v2.0.0.html
 [tailscale_acls]: https://login.tailscale.com/admin/acls
 [tailscale_dns]: https://login.tailscale.com/admin/dns
+[tailscale_info_4via6]: https://tailscale.com/kb/1201/4via6-subnets
 [tailscale_info_exit_nodes]: https://tailscale.com/kb/1103/exit-nodes
 [tailscale_info_app_connectors]: https://tailscale.com/kb/1281/app-connectors
 [tailscale_info_funnel]: https://tailscale.com/kb/1223/funnel
@@ -483,3 +482,4 @@ SOFTWARE.
 [tailscale_info_tags]: https://tailscale.com/kb/1068/tags
 [tailscale_info_taildrop]: https://tailscale.com/kb/1106/taildrop
 [tailscale_info_userspace_networking]: https://tailscale.com/kb/1112/userspace-networking
+[tailscale_issue_use_local_route]: https://github.com/tailscale/tailscale/issues/1227
