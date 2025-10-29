@@ -110,7 +110,7 @@ if bashio::config.true "map4via6"; then
     
     # Get the site ID configured for 4via6
     if ! bashio::config.has_value "map4via6_site_id"; then
-        bashio::exit.nok "4via6 is enabled, but '4via6_site_id' is not set!"
+        bashio::exit.nok "4via6 is enabled, but 'map4via6_site_id' is not set!"
     fi
     site_id=$(bashio::config "map4via6_site_id")
 

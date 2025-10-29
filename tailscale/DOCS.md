@@ -207,12 +207,12 @@ own Tailscale control server, for example, a self-hosted [Headscale] instance.
 
 This option enables [4via6 routing][tailscale_info_4via6]. All subnets in 
 **advertise_routes** will use it, even if it is populated automatically by this 
-plugin (check the documentation of **advertise_routes** for more) . It is not 
+add-on (check the documentation of **advertise_routes** for more) . It is not 
 currently possible to limit it in any way.
 Useful for overlapping subnets or to bypass Tailscale when there is a local 
 route to a subnet, e.g this [issue][tailscale_issue_use_local_route]
 
-Requires **4via6_site_id** to be set.
+Requires **map4via6_site_id** to be set.
 
 ### Option: `map4via6_site_id`
 
