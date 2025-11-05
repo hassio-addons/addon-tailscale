@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck shell=bash
 
 # ------------------------------------------------------------------------------
 # Checks if we are currently running in trace mode, based on the bashio log module.
