@@ -1,5 +1,6 @@
 #!/command/with-contenv bashio
 # shellcheck shell=bash
+export LOG_FD
 
 # Plain (non-json) tailscale status returns error when status is not Running or Starting, so eg. NeedsLogin and NeedsMachineAuth would make it unhealthy
 # The .Health json filter returns any problems, so even temporary health problems would make it unhealthy
