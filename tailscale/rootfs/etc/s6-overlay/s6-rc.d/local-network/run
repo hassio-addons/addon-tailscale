@@ -1,5 +1,6 @@
 #!/command/with-contenv bashio
 # shellcheck shell=bash
+export LOG_FD
 # ==============================================================================
 # Wait for the local network (default HA interface) to be ready
 # ==============================================================================
