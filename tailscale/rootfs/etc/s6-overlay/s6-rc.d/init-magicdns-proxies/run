@@ -1,0 +1,75 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+export LOG_FD
+# ==============================================================================
+# Home Assistant Community Add-on: Tailscale
+# Runs the dnsmasq proxies initialization
+# ==============================================================================
+
+readonly MAGIC_DNS_IPV4="100.100.100.100"
+readonly MAGIC_DNS_IPV6="fd7a:115c:a1e0::53"
+
+readonly DEFAULT_LOGIN_SERVER="controlplane.tailscale.com"
+readonly LOG_SERVER="log.tailscale.com"
+readonly LETSENCRYPT_API="acme-v02.api.letsencrypt.org"
+readonly DNSMASQ_BLACK_WHITE_LIST_LOCATION="/etc/dnsmasq-black-white-list"
+
+declare dns
+declare invalid_dns_config
+
+declare login_server="${DEFAULT_LOGIN_SERVER}"
+declare -a black_white_list=()
+
+# Check DNS configuration
+invalid_dns_config="true"
+for dns in $(bashio::dns.servers); do
+  if bashio::var.equals "${dns}" "dns://${MAGIC_DNS_IPV4}" || \
+    bashio::var.equals "${dns}" "dns://${MAGIC_DNS_IPV6}"
+  then
+    invalid_dns_config="false"
+    break
+  fi
+done
+if bashio::var.true "${invalid_dns_config}"; then
+  bashio::log.notice \
+    "To use MagicDNS in Home Assistant, configure MagicDNS's IP address as DNS server with cli," \
+    "eg. 'ha dns options --servers dns://${MAGIC_DNS_IPV4}'"
+  bashio::log.notice \
+    "Please check your configuration based on the add-on's documentation under the \"DNS\" section"
+fi
+invalid_dns_config="false"
+for dns in $(bashio::dns.locals); do
+  if bashio::var.equals "${dns}" "dns://${MAGIC_DNS_IPV4}" || \
+    bashio::var.equals "${dns}" "dns://${MAGIC_DNS_IPV6}"
+  then
+    bashio::log.fatal "Do not configure MagicDNS's IP address (${dns:6}) as DNS server under Settings -> System -> Network"
+    invalid_dns_config="true"
+  fi
+done
+if bashio::var.true "${invalid_dns_config}"; then
+  bashio::exit.nok
+fi
+
+# We have to be able to determine login_server from this address
+if ! login_server=$(awk -F[/:] '{print $4}' <<<$(bashio::config "login_server")) || \
+  ! bashio::var.has_value "${login_server}"
+then
+  bashio::exit.nok "Determining host name from '$(bashio::config "login_server")' has failed"
+fi
+black_white_list+=(${login_server})
+
+# When log upload is enabled, resolve log server also
+if bashio::debug; then
+  black_white_list+=(${LOG_SERVER})
+fi
+
+# If serve or funnel is used, resolve letsencrypt's api also
+if ! bashio::config.equals 'share_homeassistant' 'disabled'; then
+  black_white_list+=(${LETSENCRYPT_API})
+fi
+
+printf "%s" "${black_white_list[@]/%/$'\n'}" > "${DNSMASQ_BLACK_WHITE_LIST_LOCATION}"
+
+# This is necessary to prevent accessing MagicDNS before the ingress proxy starts up
+# The ingress proxy will remove these entries on startup
+magicdns-ingress-proxy-forwarding setup drop
