@@ -1,4 +1,4 @@
-#!/command/with-contenv bashio
+#!/usr/bin/env bashio
 # shellcheck shell=bash
 # ==============================================================================
 # In case of non userspace networking,

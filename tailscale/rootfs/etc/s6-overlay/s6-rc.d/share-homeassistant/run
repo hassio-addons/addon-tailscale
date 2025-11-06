@@ -32,7 +32,7 @@ fi
 
 # Wait a bit for HA to be available during startup
 while (( 200 != (curl_result=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$(bashio::core.port)")) )); do
-  if (( wait_counter++ == $WAIT_COUNT )); then
+  if (( wait_counter++ == WAIT_COUNT )); then
     break
   fi
   bashio::log.info "Waiting for Home Assistant to be ready..."
