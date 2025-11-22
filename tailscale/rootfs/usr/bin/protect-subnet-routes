@@ -1,4 +1,4 @@
-#!/command/with-contenv bashio
+#!/usr/bin/env bashio
 # shellcheck shell=bash
 # ==============================================================================
 # In case of non userspace networking,
@@ -28,7 +28,7 @@ if [[ "${1-}" != "tested" ]]; then
   while ! bashio::api.supervisor GET "/network/interface/default/info" false &> /dev/null || \
     ! bashio::api.supervisor GET "/addons/self/options/config" false &> /dev/null
   do
-    if (( wait_counter++ == $WAIT_COUNT )); then
+    if (( wait_counter++ == WAIT_COUNT )); then
       bashio::exit.nok "Supervisor is unreachable"
     fi
     bashio::log.info "Waiting for the supervisor to be ready..."
