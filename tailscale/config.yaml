@@ -12,7 +12,6 @@ panel_icon: mdi:vpn
 arch:
   - aarch64
   - amd64
-  - armv7
 init: false
 hassio_api: true
 host_network: true
