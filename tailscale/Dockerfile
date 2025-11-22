@@ -22,7 +22,6 @@ RUN \
     && ln -sf /sbin/xtables-nft-multi /sbin/iptables \
     \
     && if [ "${BUILD_ARCH}" = "aarch64" ]; then ARCH="arm64"; fi \
-    && if [ "${BUILD_ARCH}" = "armv7" ]; then ARCH="arm"; fi \
     && if [ "${BUILD_ARCH}" = "amd64" ]; then ARCH="amd64"; fi \
     \
     && curl -L -s \
