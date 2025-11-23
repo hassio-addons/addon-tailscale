@@ -65,7 +65,7 @@ their interface.
 
 ```yaml
 accept_dns: true
-accept_routes: true
+accept_routes: false
 advertise_exit_node: true
 advertise_connector: true
 advertise_routes:
@@ -111,7 +111,7 @@ your tailnet.
 
 More information: [Subnet routers][tailscale_info_subnets]
 
-This option is enabled by default.
+This option is disabled by default.
 
 ### Option: `advertise_exit_node`
 

@@ -11,7 +11,7 @@ configuration:
     description: >-
       This option allows you to accept subnet routes advertised by other nodes
       in your tailnet.
-      This option is enabled by default.
+      This option is disabled by default.
   advertise_exit_node:
     name: Advertise as an exit node
     description: >-
