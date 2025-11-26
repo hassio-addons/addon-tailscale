@@ -2,6 +2,12 @@
 # shellcheck shell=bash
 # The shebang 'with-contenv-merge' above is identical with 'with-contenv', but doesn't clear the current environment containing the dispatcher variables
 
+# Redirect outputs to the log (&2 is already set up as pipe by s6)
+exec 1>&2
+if [[ "${LOG_FD:-}" =~ ^[0-9]+$ ]]; then
+  eval "exec ${LOG_FD}>&1" || true
+fi
+
 function halt-add-on() {
   bashio::log.error "Failed to protect subnet routes. Halting add-on to prevent network loss."
   echo -n 1 > /run/s6-linux-init-container-results/exitcode
