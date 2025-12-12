@@ -23,11 +23,15 @@ if bashio::var.has_value "${udp_port}"; then
   options+=(--port=${udp_port})
 fi
 
-# Use userspace networking by default when not set, or when explicitly enabled
-if ! bashio::config.has_value "userspace_networking" || \
-  bashio::config.true "userspace_networking";
-then
+# Use userspace networking when explicitly enabled
+if bashio::config.true "userspace_networking"; then
   options+=(--tun=userspace-networking)
+fi
+
+# If always_use_derp enabled, set TS_DEBUG_ALWAYS_USE_DERP=true
+if bashio::config.true "always_use_derp"; then
+  export TS_DEBUG_ALWAYS_USE_DERP=true
+  bashio::log.notice "You have enabled always_use_derp, all traffic will be routed via DERP servers"
 fi
 
 # Run Tailscale
