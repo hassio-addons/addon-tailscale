@@ -1,5 +1,6 @@
 #!/usr/bin/env bashio
 # shellcheck shell=bash
+export LOG_FD
 # ==============================================================================
 # In case of non userspace networking,
 # add local subnets to ip rules with higher priority than Tailscale's routing
