@@ -10,7 +10,7 @@ ARG BUILD_ARCH=amd64
 ARG TAILSCALE_VERSION="v1.92.3"
 RUN \
     apk add --no-cache \
-        bind-tools=9.20.16-r0 \
+        bind-tools=9.20.17-r0 \
         dnsmasq=2.91-r0 \
         ethtool=6.14.1-r0 \
         ipcalc=1.0.3-r0 \
