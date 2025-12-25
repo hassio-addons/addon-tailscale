@@ -51,21 +51,21 @@ if bashio::var.true "${invalid_dns_config}"; then
 fi
 
 # We have to be able to determine login_server from this address
-if ! login_server=$(awk -F[/:] '{print $4}' <<<$(bashio::config "login_server")) || \
+if ! login_server=$(awk -F[/:] '{print $4}' <<<"$(bashio::config "login_server")") || \
   ! bashio::var.has_value "${login_server}"
 then
   bashio::exit.nok "Determining host name from '$(bashio::config "login_server")' has failed"
 fi
-black_white_list+=(${login_server})
+black_white_list+=("${login_server}")
 
 # When log upload is enabled, resolve log server also
 if bashio::debug; then
-  black_white_list+=(${LOG_SERVER})
+  black_white_list+=("${LOG_SERVER}")
 fi
 
 # If serve or funnel is used, resolve letsencrypt's api also
 if ! bashio::config.equals 'share_homeassistant' 'disabled'; then
-  black_white_list+=(${LETSENCRYPT_API})
+  black_white_list+=("${LETSENCRYPT_API}")
 fi
 
 printf "%s" "${black_white_list[@]/%/$'\n'}" > "${DNSMASQ_BLACK_WHITE_LIST_LOCATION}"

@@ -41,9 +41,9 @@ options+=(--keep-in-foreground)
 options+=(--log-facility='-')
 options+=(--cache-size=0)
 
-options+=(--listen-address=${DNSMASQ_EGRESS_ADDRESS_IPV4})
+options+=(--listen-address="${DNSMASQ_EGRESS_ADDRESS_IPV4}")
 options+=(--bind-dynamic)
-options+=(--port=${DNSMASQ_EGRESS_PORT})
+options+=(--port="${DNSMASQ_EGRESS_PORT}")
 
 # Hassio DNS's IP addresses
 if ! hassio_dns_ipv4=$(dig_hassio_dns A) || \
