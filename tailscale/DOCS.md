@@ -59,7 +59,7 @@ device. See [Key expiry][tailscale_info_key_expiry] for more information.
 ```yaml
 accept_dns: true
 accept_routes: true
-auto_update: false
+experimental_update: false
 advertise_exit_node: true
 advertise_connector: true
 advertise_routes:
@@ -106,15 +106,40 @@ More information: [Subnet routers][tailscale_info_subnets]
 
 When not set, this option is enabled by default.
 
-### Option: `auto_update`
+### Option: `experimental_update`
 
-This option enables automatic updates of the Tailscale binary when a newer
-version is available. This allows Tailscale to update independently of the
-add-on itself.
+**IMPORTANT: Updates using this option are TEMPORARY and do NOT survive add-on
+restarts.**
 
-When enabled, Tailscale will automatically download and install updates to the
-Tailscale client binary, keeping you up-to-date with the latest features and
-security patches without requiring an add-on update.
+This option enables experimental Tailscale client updates for testing newer
+versions or applying urgent security patches before an official add-on release.
+
+#### How It Works
+
+- When enabled, Tailscale will automatically update its client binary to the
+  latest version
+- The update **only lasts until the add-on restarts** - it will then revert to
+  the Tailscale version included in the add-on's Docker image
+- This is a limitation of how Tailscale works in containerized environments
+
+#### When to Use This
+
+1. **Urgent Security Patches**: Apply critical security fixes immediately while
+   waiting for an official add-on update
+2. **Testing**: Try newer Tailscale versions to verify compatibility with your
+   setup before the add-on updates
+3. **New Features**: Access latest Tailscale features faster (with the
+   understanding they'll revert on restart)
+
+#### How to Rollback
+
+If an experimental update causes issues, simply restart the add-on to revert to
+the stable version included with the add-on.
+
+#### For Permanent Updates
+
+For permanent Tailscale updates, wait for official add-on releases which include
+tested and verified Tailscale versions.
 
 More information: [Tailscale auto-updates][tailscale_info_auto_updates]
 

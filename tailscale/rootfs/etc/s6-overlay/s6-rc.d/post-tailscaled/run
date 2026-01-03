@@ -118,17 +118,19 @@ if ! /opt/tailscale up "${options[@]}"; then
   bashio::exit.nok "Unable to start up Tailscale"
 fi
 
-# Configure auto-update if the option is set
-if bashio::config.has_value "auto_update"; then
-  if bashio::config.true "auto_update"; then
-    bashio::log.info "Enabling Tailscale auto-update"
+# Configure experimental update if the option is set
+if bashio::config.has_value "experimental_update"; then
+  if bashio::config.true "experimental_update"; then
+    bashio::log.info "Enabling experimental Tailscale client updates"
+    bashio::log.warning "NOTICE: Updates are TEMPORARY and will reset when the add-on restarts"
+    bashio::log.info "To rollback from an update, simply restart the add-on"
     if ! /opt/tailscale set --auto-update; then
-      bashio::log.warning "Unable to enable Tailscale auto-update"
+      bashio::log.warning "Unable to enable Tailscale experimental updates"
     fi
   else
-    bashio::log.info "Disabling Tailscale auto-update"
+    bashio::log.info "Disabling experimental Tailscale client updates"
     if ! /opt/tailscale set --auto-update=false; then
-      bashio::log.warning "Unable to disable Tailscale auto-update"
+      bashio::log.warning "Unable to disable Tailscale experimental updates"
     fi
   fi
 fi

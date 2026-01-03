@@ -12,12 +12,14 @@ configuration:
       This option allows you to accept subnet routes advertised by other nodes
       in your tailnet.
       When not set, this option is enabled by default.
-  auto_update:
-    name: Auto-update Tailscale
+  experimental_update:
+    name: Experimental Tailscale updates (temporary)
     description: >-
-      This option enables automatic updates of the Tailscale binary when a newer
-      version is available. This allows Tailscale to update independently of the
-      add-on itself.
+      IMPORTANT: Updates are TEMPORARY and reset when the add-on restarts.
+      This option enables experimental Tailscale client updates for testing or
+      urgent security patches. The update only lasts until the add-on restarts -
+      then it reverts to the version included with the add-on. To rollback, simply
+      restart the add-on. For permanent updates, wait for an official add-on release.
       When not set, this option is disabled by default.
   advertise_exit_node:
     name: Advertise as an exit node
