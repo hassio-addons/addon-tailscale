@@ -118,6 +118,21 @@ if ! /opt/tailscale up "${options[@]}"; then
   bashio::exit.nok "Unable to start up Tailscale"
 fi
 
+# Configure auto-update if the option is set
+if bashio::config.has_value "auto_update"; then
+  if bashio::config.true "auto_update"; then
+    bashio::log.info "Enabling Tailscale auto-update"
+    if ! /opt/tailscale set --auto-update; then
+      bashio::log.warning "Unable to enable Tailscale auto-update"
+    fi
+  else
+    bashio::log.info "Disabling Tailscale auto-update"
+    if ! /opt/tailscale set --auto-update=false; then
+      bashio::log.warning "Unable to disable Tailscale auto-update"
+    fi
+  fi
+fi
+
 # Wait for the network to be available and logged in
 while ! /opt/tailscale status --json --peers=false --self=false \
   | jq --exit-status '.BackendState == "Running"' > /dev/null

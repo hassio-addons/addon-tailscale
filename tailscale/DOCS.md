@@ -59,6 +59,7 @@ device. See [Key expiry][tailscale_info_key_expiry] for more information.
 ```yaml
 accept_dns: true
 accept_routes: true
+auto_update: false
 advertise_exit_node: true
 advertise_connector: true
 advertise_routes:
@@ -104,6 +105,20 @@ your tailnet.
 More information: [Subnet routers][tailscale_info_subnets]
 
 When not set, this option is enabled by default.
+
+### Option: `auto_update`
+
+This option enables automatic updates of the Tailscale binary when a newer
+version is available. This allows Tailscale to update independently of the
+add-on itself.
+
+When enabled, Tailscale will automatically download and install updates to the
+Tailscale client binary, keeping you up-to-date with the latest features and
+security patches without requiring an add-on update.
+
+More information: [Tailscale auto-updates][tailscale_info_auto_updates]
+
+When not set, this option is disabled by default.
 
 ### Option: `advertise_exit_node`
 
@@ -452,6 +467,7 @@ SOFTWARE.
 [semver]: https://semver.org/spec/v2.0.0.html
 [tailscale_acls]: https://login.tailscale.com/admin/acls
 [tailscale_dns]: https://login.tailscale.com/admin/dns
+[tailscale_info_auto_updates]: https://tailscale.com/kb/1067/update
 [tailscale_info_exit_nodes]: https://tailscale.com/kb/1103/exit-nodes
 [tailscale_info_app_connectors]: https://tailscale.com/kb/1281/app-connectors
 [tailscale_info_funnel]: https://tailscale.com/kb/1223/funnel

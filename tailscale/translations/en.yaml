@@ -12,6 +12,13 @@ configuration:
       This option allows you to accept subnet routes advertised by other nodes
       in your tailnet.
       When not set, this option is enabled by default.
+  auto_update:
+    name: Auto-update Tailscale
+    description: >-
+      This option enables automatic updates of the Tailscale binary when a newer
+      version is available. This allows Tailscale to update independently of the
+      add-on itself.
+      When not set, this option is disabled by default.
   advertise_exit_node:
     name: Advertise as an exit node
     description: >-

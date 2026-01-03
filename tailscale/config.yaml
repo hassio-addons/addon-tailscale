@@ -28,6 +28,7 @@ ports:
 schema:
   accept_dns: bool?
   accept_routes: bool?
+  auto_update: bool?
   advertise_exit_node: bool?
   advertise_connector: bool?
   advertise_routes:
