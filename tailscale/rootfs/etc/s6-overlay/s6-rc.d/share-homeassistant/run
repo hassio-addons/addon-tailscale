@@ -1,5 +1,6 @@
 #!/command/with-contenv bashio
 # shellcheck shell=bash
+export LOG_FD
 # ==============================================================================
 # Home Assistant Community Add-on: Tailscale
 # Enables Tailscale Serve or Funnel feature to share Home Assistant
