@@ -24,15 +24,15 @@ function log.error_or_warning() {
 #   -w "Warning only" Log only warnings instead of errors
 # ------------------------------------------------------------------------------
 function core.api() {
-    local method=${1}; shift
+    local method="${1}"; shift
     local resource="/core/api/${1}"; shift
     local data='{}'
     if [[ "${method}" = "POST" ]]; then
-        data=${1}; shift
+        data="${1}"; shift
     fi
     local filter=
-    if [[ ! -z ${1:-} && "${1::1}" != "-" ]]; then
-        filter=${1}; shift
+    if [[ ! -z "${1:-}" && "${1::1}" != "-" ]]; then
+        filter="${1}"; shift
     fi
 
     local o
