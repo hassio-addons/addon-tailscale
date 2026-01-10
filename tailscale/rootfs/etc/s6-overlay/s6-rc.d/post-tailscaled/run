@@ -4,6 +4,9 @@
 # Home Assistant Community Add-on: Tailscale
 # Runs after the machine has been logged in into the Tailscale network
 # ==============================================================================
+
+source /usr/lib/core.sh
+
 declare interface
 declare -a options
 declare -a routes=()
