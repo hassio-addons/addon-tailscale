@@ -173,7 +173,7 @@ if keyexpiry=$(/opt/tailscale status --self=true --peers=false --json | jq -rce 
           "Consider disabling key expiry to avoid losing connection to your Home Assistant device." \
           "You can use the [Machines page](https://login.tailscale.com/admin/machines) of Tailscale's admin console to disable key expiry." \
           "Please check your configuration based on the add-on's documentation under the \"Configuration\" section.")")
-    core.api POST services/persistent_notification/create "${attributes}" -w > /dev/null
+    core.api POST services/persistent_notification/create "${attributes}" -w > /dev/null || true
     touch "/data/key_expiry_notification_is_done"
   fi
 fi
