@@ -4,9 +4,9 @@
 function log.error_or_warning() {
     local warning_only="$1"; shift
     if ! bashio::var.has_value "${warning_only}"; then
-        bashio::log.error $*
+        bashio::log.error "$@"
     else
-        bashio::log.warning $*
+        bashio::log.warning "$@"
     fi
 }
 
@@ -35,8 +35,9 @@ function core.api() {
         filter=${1}; shift
     fi
 
-    local OPTIND o a
-    local silent= local warning_only=
+    local o
+    local silent=
+    local warning_only=
     while getopts "sw" o; do
         case "${o}" in
             s)
@@ -44,6 +45,8 @@ function core.api() {
                 ;;
             w)
                 warning_only=1
+                ;;
+            *)
                 ;;
         esac
     done
