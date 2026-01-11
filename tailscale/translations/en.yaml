@@ -32,8 +32,8 @@ configuration:
     description: >-
       This option allows you to advertise routes to subnets (accessible on the network
       your device is connected to) to other clients on your tailnet.
-      The add-on by default will advertise routes to your subnets on all supported
-      interfaces by adding `local_subnets` to the list.
+      By adding `local_subnets` to the list, the add-on will advertise routes to your
+      subnets on all supported interfaces.
   advertise_tags:
     name: Advertise tags
     description: >-

@@ -30,8 +30,7 @@ options:
   accept_routes: false
   advertise_connector: false
   advertise_exit_node: false
-  advertise_routes:
-    - local_subnets
+  advertise_routes: []
   advertise_tags: []
   log_level: info
   login_server: "https://controlplane.tailscale.com"
