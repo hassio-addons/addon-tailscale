@@ -31,7 +31,7 @@ function core.api() {
         data="${1}"; shift
     fi
     local filter=
-    if [[ ! -z "${1:-}" && "${1::1}" != "-" ]]; then
+    if [[ -n "${1:-}" && "${1::1}" != "-" ]]; then
         filter="${1}"; shift
     fi
 
