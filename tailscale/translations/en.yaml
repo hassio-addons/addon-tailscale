@@ -12,13 +12,6 @@ configuration:
       This option allows you to accept subnet routes advertised by other nodes
       in your tailnet.
       This option is disabled by default.
-  advertise_exit_node:
-    name: Advertise as an exit node
-    description: >-
-      This option allows you to advertise this Tailscale instance as an exit node.
-      By setting a device on your network as an exit node, you can use it to
-      route all your public internet traffic as needed, like a consumer VPN.
-      This option is enabled by default.
   advertise_connector:
     name: Advertise as an app connector
     description: >-
@@ -26,7 +19,14 @@ configuration:
       accessible over your tailnet, and the domains for those applications. Any traffic
       for that application is then forced over the tailnet to a node running an app
       connector before egressing to the target domains.
-      This option is enabled by default.
+      This option is disabled by default.
+  advertise_exit_node:
+    name: Advertise as an exit node
+    description: >-
+      This option allows you to advertise this Tailscale instance as an exit node.
+      By setting a device on your network as an exit node, you can use it to
+      route all your public internet traffic as needed, like a consumer VPN.
+      This option is disabled by default.
   advertise_routes:
     name: Advertise subnet routes
     description: >-
@@ -93,7 +93,7 @@ configuration:
     description: >-
       This option allows you to enable Taildrop, a file sharing service
       that allows you to share files with other Tailscale nodes.
-      This option is enabled by default.
+      This option is disabled by default.
   userspace_networking:
     name: Userspace networking mode
     description: >-

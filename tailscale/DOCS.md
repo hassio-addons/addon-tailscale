@@ -66,8 +66,8 @@ their interface.
 ```yaml
 accept_dns: true
 accept_routes: false
-advertise_exit_node: true
-advertise_connector: true
+advertise_connector: false
+advertise_exit_node: false
 advertise_routes:
   - local_subnets
   - 192.168.1.0/24
@@ -82,7 +82,7 @@ stateful_filtering: false
 tags:
   - tag:example
   - tag:homeassistant
-taildrop: true
+taildrop: false
 userspace_networking: true
 ```
 
@@ -113,21 +113,6 @@ More information: [Subnet routers][tailscale_info_subnets]
 
 This option is disabled by default.
 
-### Option: `advertise_exit_node`
-
-This option allows you to advertise this Tailscale instance as an exit node.
-
-By setting a device on your network as an exit node, you can use it to
-route all your public internet traffic as needed, like a consumer VPN.
-
-More information: [Exit nodes][tailscale_info_exit_nodes]
-
-This option is enabled by default.
-
-**Note:** You can't advertise this device as an exit node and at the same time
-specify an exit node to use. See also the "Option: `exit_node`" section of this
-documentation.
-
 ### Option: `advertise_connector`
 
 This option allows you to advertise this Tailscale instance as an app connector.
@@ -142,7 +127,22 @@ all nodes on the tailnet will use that IP address for their traffic egress.
 
 More information: [App connectors][tailscale_info_app_connectors]
 
-This option is enabled by default.
+This option is disabled by default.
+
+### Option: `advertise_exit_node`
+
+This option allows you to advertise this Tailscale instance as an exit node.
+
+By setting a device on your network as an exit node, you can use it to
+route all your public internet traffic as needed, like a consumer VPN.
+
+More information: [Exit nodes][tailscale_info_exit_nodes]
+
+This option is disabled by default.
+
+**Note:** You can't advertise this device as an exit node and at the same time
+specify an exit node to use. See also the "Option: `exit_node`" section of this
+documentation.
 
 ### Option: `advertise_routes`
 
@@ -334,7 +334,7 @@ This add-on supports [Tailscale's Taildrop][tailscale_info_taildrop] feature,
 which allows you to send files to your Home Assistant instance from other
 Tailscale devices.
 
-This option is enabled by default.
+This option is disabled by default.
 
 Received files are stored in the `/share/taildrop` directory.
 
