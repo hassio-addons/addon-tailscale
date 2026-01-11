@@ -34,6 +34,11 @@ configuration:
       your device is connected to) to other clients on your tailnet.
       The add-on by default will advertise routes to your subnets on all supported
       interfaces by adding `local_subnets` to the list.
+  advertise_tags:
+    name: Advertise tags
+    description: >-
+      This option allows you to specify specific ACL tags for this
+      Tailscale instance. They need to start with `tag:`.
   exit_node:
     name: Use exit node
     description: >-
@@ -83,11 +88,6 @@ configuration:
       nodes, subnet routers, and app connectors), to only allow return packets for
       existing outbound connections.
       This option is disabled by default.
-  tags:
-    name: Tags
-    description: >-
-      This option allows you to specify specific ACL tags for this
-      Tailscale instance. They need to start with `tag:`.
   taildrop:
     name: Taildrop
     description: >-

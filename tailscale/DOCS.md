@@ -72,6 +72,9 @@ advertise_routes:
   - local_subnets
   - 192.168.1.0/24
   - fd12:3456:abcd::/64
+advertise_tags:
+  - tag:example
+  - tag:homeassistant
 exit_node: 100.101.102.103
 log_level: info
 login_server: "https://controlplane.tailscale.com"
@@ -79,9 +82,6 @@ share_homeassistant: disabled
 share_on_port: 443
 snat_subnet_routes: true
 stateful_filtering: false
-tags:
-  - tag:example
-  - tag:homeassistant
 taildrop: false
 userspace_networking: true
 ```
@@ -159,6 +159,13 @@ More information: [Subnet routers][tailscale_info_subnets]
 
 The add-on by default will advertise routes to your subnets on all supported
 interfaces by adding `local_subnets` to the list.
+
+### Option: `advertise_tags`
+
+This option allows you to specify specific tags for this Tailscale instance.
+They need to start with `tag:`.
+
+More information: [Tags][tailscale_info_tags]
 
 ### Option: `exit_node`
 
@@ -320,13 +327,6 @@ existing outbound connections. Inbound packets that don't belong to an existing
 connection are dropped.
 
 This option is disabled by default.
-
-### Option: `tags`
-
-This option allows you to specify specific tags for this Tailscale instance.
-They need to start with `tag:`.
-
-More information: [Tags][tailscale_info_tags]
 
 ### Option: `taildrop`
 
