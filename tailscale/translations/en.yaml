@@ -97,11 +97,10 @@ configuration:
   userspace_networking:
     name: Userspace networking mode
     description: >-
-      This option allows you to enable userspace networking mode.
-      If you need to access other clients on your tailnet from your Home
-      Assistant instance, disable userspace networking mode, which will create a
-      `tailscale0` network interface on your host.
-      This option is enabled by default.
+      When enabled, Tailscale will not create a `tailscale0` network interface on your
+      host, i.e. you get one-way access from tailnet clients to your Home Assistant
+      instance (and optionally the local subnets).
+      This option is disabled by default.
 network:
   41641/udp: >-
     UDP port to listen on for WireGuard and peer-to-peer traffic.

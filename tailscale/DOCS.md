@@ -83,7 +83,7 @@ share_on_port: 443
 snat_subnet_routes: true
 stateful_filtering: false
 taildrop: false
-userspace_networking: true
+userspace_networking: false
 ```
 
 > [!NOTE]
@@ -337,22 +337,20 @@ Received files are stored in the `/share/taildrop` directory.
 
 ### Option: `userspace_networking`
 
-The add-on uses [userspace networking mode][tailscale_info_userspace_networking]
-to make your Home Assistant instance (and optionally the local subnets)
-accessible within your tailnet.
+When enabled, Tailscale will not create a `tailscale0` network interface on your
+host, i.e. you get one-way access from tailnet clients to your Home Assistant
+instance (and optionally the local subnets).
 
-This option is enabled by default.
-
-If you need to access other clients on your tailnet from your Home Assistant
-instance, disable userspace networking mode, which will create a `tailscale0`
-network interface on your host. To be able to address those clients not only
-with their tailnet IP, but with their tailnet name, you have to configure Home
-Assistant's DNS options also.
+This option is disabled by default.
 
 If you want to access other clients on your tailnet even from your local subnet,
 follow steps in the [Site-to-site networking][tailscale_info_site_to_site] guide
 (Note: The add-on already handles "IP address forwarding" and "Clamp the MSS to
-the MTU" for you).
+the MTU" for you). See also the "Option: `snat_subnet_routes`" section of this
+documentation.
+
+More information: [Userspace networking
+mode][tailscale_info_userspace_networking]
 
 **Note:** In case your local subnets collide with subnet routes within your
 tailnet, your local network access has priority, and these addresses won't be
@@ -360,15 +358,6 @@ routed toward your tailnet. This will prevent your Home Assistant instance from
 losing network connection. This also means that using the same subnet on
 multiple nodes for load balancing and failover is impossible with the current
 add-on behavior.
-
-**Note:** The `userspace_networking` option can remain enabled if you only need
-one-way access from tailnet clients to your local subnet, without requiring
-access from your local subnet to other tailnet clients.
-
-**Note:** If you implement Site-to-site networking, but you are not interested
-in the real source IP address, i.e. subnet devices can see the traffic
-originating from the subnet router, you don't need to disable the
-`snat_subnet_routes` option, this can simplify routing configuration.
 
 ## Network
 

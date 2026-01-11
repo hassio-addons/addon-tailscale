@@ -39,7 +39,7 @@ options:
   snat_subnet_routes: true
   stateful_filtering: false
   taildrop: false
-  userspace_networking: true
+  userspace_networking: false
 schema:
   accept_dns: bool
   accept_routes: bool
