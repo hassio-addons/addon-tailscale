@@ -6,6 +6,12 @@ export LOG_FD
 # Runs the MagicDNS ingress proxy
 # ==============================================================================
 
+# Note: This service runs when userspace_networking is disabled, and
+# - when accept_dns is enabled, it treats black_white_list as black_list, and
+#   returns NXDOMAIN for anything that is on the list
+# - when accept_dns is disabled, it treats black_white_list as white_list, and
+#   returns NXDOMAIN for anything that is NOT on the list
+
 source /usr/lib/trace.sh
 
 readonly MAGIC_DNS_IPV4="100.100.100.100"
@@ -16,6 +22,7 @@ readonly DNSMASQ_BLACK_WHITE_LIST_LOCATION="/etc/dnsmasq-black-white-list"
 declare tailscale_address_ipv4
 declare tailscale_address_ipv6
 declare -a black_list
+declare -a white_list
 declare domain
 declare -a options
 
@@ -47,14 +54,25 @@ fi
 options+=(--bind-dynamic)
 options+=(--port=${DNSMASQ_INGRESS_PORT})
 
-# Black-list
-readarray -t black_list < "${DNSMASQ_BLACK_WHITE_LIST_LOCATION}"
+if bashio::config.true "accept_dns"; then
+  # Black-list
+  readarray -t black_list < "${DNSMASQ_BLACK_WHITE_LIST_LOCATION}"
 
-# Forward everything to MagicDNS, except the black_list
-options+=(--server=${MAGIC_DNS_IPV4})
-for domain in "${black_list[@]}"; do
-  options+=(--server=/${domain}/)
-done
+  # Forward everything to MagicDNS, except the black_list
+  options+=(--server=${MAGIC_DNS_IPV4})
+  for domain in "${black_list[@]}"; do
+    options+=(--server=/${domain}/)
+  done
+else
+  # White-list
+  readarray -t white_list < "${DNSMASQ_BLACK_WHITE_LIST_LOCATION}"
+
+  # Return NXDOMAIN for everything, except the white_list
+  options+=(--address=/#/)
+  for domain in "${white_list[@]}"; do
+    options+=(--server=/${domain}/${MAGIC_DNS_IPV4})
+  done
+fi
 
 if bashio_custom::trace; then
   options+=(--log-queries)

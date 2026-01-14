@@ -6,6 +6,8 @@ export LOG_FD
 # Runs the MagicDNS egress proxy
 # ==============================================================================
 
+# Note: This service runs when userspace_networking is disabled, and accept_dns is enabled.
+
 # Note: This script assumes that internal hassio network is available in IPv4.
 # Sets up IPv4 upstream DNS for tailscaled, and redirects the white_list to IPv4 hassio DNS.
 # In case of an IPv6-only hassio network this IPv4 solution won't work.
