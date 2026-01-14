@@ -35,6 +35,10 @@ if bashio::var.true "${invalid_dns_config}"; then
     "To use MagicDNS in Home Assistant, configure MagicDNS's IP address as DNS server with cli," \
     "eg. 'ha dns options --servers dns://${MAGIC_DNS_IPV4}'"
   bashio::log.notice \
+    "Ignore this notice if you already configured your own DNS (like AdGuard) as DNS server for" \
+    "Home Assistant, and in your own DNS you configured MagicDNS's IP address for your tailnet" \
+    "domain as upstream DNS server."
+  bashio::log.notice \
     "Please check your configuration based on the add-on's documentation under the \"DNS\" section"
 fi
 invalid_dns_config="false"
