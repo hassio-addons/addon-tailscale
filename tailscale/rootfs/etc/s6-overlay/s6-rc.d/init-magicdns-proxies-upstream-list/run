@@ -3,7 +3,7 @@
 export LOG_FD
 # ==============================================================================
 # Home Assistant Community Add-on: Tailscale
-# Runs the dnsmasq proxies initialization
+# Runs the dnsmasq proxies upstream black/white list initialization
 # ==============================================================================
 
 # Note: This service runs when userspace_networking is disabled, and
@@ -92,9 +92,3 @@ else
 fi
 
 printf "%s" "${black_white_list[@]/%/$'\n'}" > "${DNSMASQ_BLACK_WHITE_LIST_LOCATION}"
-
-# This is necessary to prevent accessing MagicDNS before the ingress proxy starts up
-# The ingress proxy will remove these entries on startup
-# In case of accept_dns enabled, this will prevent DNS query loops
-# In case of accept_dns disabled, this will prevent SERVFAIL logging by MagicDNS for non-tailnet queries
-magicdns-ingress-proxy-forwarding setup drop
