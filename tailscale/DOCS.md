@@ -406,7 +406,7 @@ More information: [What is 100.100.100.100][tailscale_info_quad100],
    (i.e. to remove `dns://100.100.100.100` from the list), you must use
    `ha dns reset` and `ha dns restart` commands both. This server list is
    additional and queried before the DNS servers specified in Network settings
-   above._
+   above. This configuration is persistent, you have to execute it only once._
 
 **Note:** The only difference compared to the general Tailscale experience, is
 that you always have to use the fully qualified domain name instead of only the
