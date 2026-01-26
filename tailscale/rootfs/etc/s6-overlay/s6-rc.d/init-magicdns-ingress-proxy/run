@@ -6,6 +6,46 @@ export LOG_FD
 # Runs the dnsmasq proxies initialization
 # ==============================================================================
 
+readonly MAGIC_DNS_IPV4="100.100.100.100"
+readonly MAGIC_DNS_IPV6="fd7a:115c:a1e0::53"
+
+declare dns
+declare invalid_dns_config
+
+# Check DNS configuration
+invalid_dns_config="true"
+for dns in $(bashio::dns.servers); do
+  if bashio::var.equals "${dns}" "dns://${MAGIC_DNS_IPV4}" || \
+    bashio::var.equals "${dns}" "dns://${MAGIC_DNS_IPV6}"
+  then
+    invalid_dns_config="false"
+    break
+  fi
+done
+if bashio::var.true "${invalid_dns_config}"; then
+  bashio::log.notice \
+    "To use MagicDNS in Home Assistant, configure MagicDNS's IP address as DNS server with cli," \
+    "eg. 'ha dns options --servers dns://${MAGIC_DNS_IPV4}'"
+  bashio::log.notice \
+    "Ignore this notice if you already configured your own DNS (like AdGuard) as DNS server for" \
+    "Home Assistant, and in your own DNS you configured MagicDNS's IP address for your tailnet" \
+    "domain as upstream DNS server."
+  bashio::log.notice \
+    "Please check your configuration based on the add-on's documentation under the \"DNS\" section"
+fi
+invalid_dns_config="false"
+for dns in $(bashio::dns.locals); do
+  if bashio::var.equals "${dns}" "dns://${MAGIC_DNS_IPV4}" || \
+    bashio::var.equals "${dns}" "dns://${MAGIC_DNS_IPV6}"
+  then
+    bashio::log.fatal "Do not configure MagicDNS's IP address (${dns:6}) as DNS server under Settings -> System -> Network"
+    invalid_dns_config="true"
+  fi
+done
+if bashio::var.true "${invalid_dns_config}"; then
+  bashio::exit.nok
+fi
+
 # This is necessary to prevent accessing MagicDNS before the ingress proxy starts up
 # The ingress proxy will remove these entries on startup
 # In case of accept_dns enabled, this will prevent DNS query loops
