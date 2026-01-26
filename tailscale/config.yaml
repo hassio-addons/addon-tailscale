@@ -19,6 +19,7 @@ host_dbus: true
 privileged:
   - NET_ADMIN
   - NET_RAW
+  - SYS_ADMIN
 devices:
   - /dev/net/tun
 map:

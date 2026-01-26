@@ -86,15 +86,20 @@ userspace_networking: true
 
 ### Option: `accept_dns`
 
-If you are experiencing trouble with MagicDNS on this device and wish to
-disable, you can do so using this option.
+This option allows you to accept the DNS settings of your tailnet that are
+configured on the [DNS page][tailscale_dns] of the admin console. When disabled,
+Tailscale's DNS resolves only tailnet addresses, no global nameservers from the
+admin console are applied.
+
+For more information, see the "DNS" section of this documentation.
 
 When not set, this option is enabled by default.
 
-MagicDNS may cause issues if you run things like Pi-hole or AdGuard Home
-on the same machine as this add-on. In such cases disabling `accept_dns`
-will help. You can still leverage MagicDNS on other devices on your network,
-by adding `100.100.100.100` as a DNS server in your Pi-hole or AdGuard Home.
+**Note:** If you disable this option, there will be DNS-related warnings in
+Tailscale's log messages, repeating hourly: "no upstream resolvers set,
+returning SERVFAIL", and Tailscale's health also will warn about "Tailscale
+can't reach the configured DNS servers". It's true, this is not a problem,
+Tailscale's DNS will not use any upstream server.
 
 ### Option: `accept_routes`
 
@@ -340,9 +345,10 @@ When not set, this option is enabled by default.
 
 If you need to access other clients on your tailnet from your Home Assistant
 instance, disable userspace networking mode, which will create a `tailscale0`
-network interface on your host. To be able to address those clients not only
-with their tailnet IP, but with their tailnet name, you have to configure Home
-Assistant's DNS options also.
+network interface on your host.
+
+To be able to address other clients on your tailnet not only by their tailnet IP
+but also by their tailnet name, see the "DNS" section of this documentation.
 
 If you want to access other clients on your tailnet even from your local subnet,
 follow steps in the [Site-to-site networking][tailscale_info_site_to_site] guide
@@ -377,6 +383,46 @@ CGNAT networks). You can test connections with `tailscale ping
 <hostname-or-ip>`.
 
 When not set, an automatically selected port is used by default.
+
+## DNS
+
+When the `userspace_networking` option is disabled, Tailscale provides a DNS (at
+100.100.100.100 and fd7a:115c:a1e0::53) to be able to address other clients on
+your tailnet not only by their tailnet IP but also by their tailnet name.
+
+More information: [What is 100.100.100.100][tailscale_info_quad100],
+[DNS in Tailscale][tailscale_info_dns], [MagicDNS][tailscale_info_magicdns],
+[Access a Pi-hole from anywhere][tailscale_info_pi_hole].
+
+1. Check that the `userspace_networking` option is disabled.
+
+1. Check that under **Settings** -> **System** -> **Network** Tailscale's DNS is
+   **_not_** configured as a DNS server.
+
+1. In the command line, execute `ha dns options --servers dns://100.100.100.100`.
+
+   **Note:** _This command replaces the existing DNS server list in Home
+   Assistant and restarts the internal DNS server. To specify an empty DNS list
+   (i.e. to remove `dns://100.100.100.100` from the list), you must use
+   `ha dns reset` and `ha dns restart` commands both. This server list is
+   additional and queried before the DNS servers specified in Network settings
+   above. This configuration is persistent, you have to execute it only once._
+
+**Note:** The only difference compared to the general Tailscale experience, is
+that you always have to use the fully qualified domain name instead of only the
+device name, i.e. `ping some-tailnet-device.tail1234.ts.net` works, but `ping
+some-tailnet-device` does not work.
+
+**Note:** If you are running your own DNS (like AdGuard) **_on this_** Home
+Assistant device also, and this device is configured as global nameserver on the
+[DNS page][tailscale_dns] of the admin console, then:
+
+1. Disable the `accept_dns` option to prevent the Tailscale DNS from redirecting
+   queries from your device back to itself, which would cause a loop.
+
+1. Configure your own DNS for Home Assistant (instead of 100.100.100.100), and
+   in your own DNS configure Tailscale DNS for your tailnet domain as upstream
+   DNS server (e.g. in case of AdGuard `[/tail1234.ts.net/]100.100.100.100`).
 
 ## Changelog & Releases
 
@@ -452,12 +498,16 @@ SOFTWARE.
 [semver]: https://semver.org/spec/v2.0.0.html
 [tailscale_acls]: https://login.tailscale.com/admin/acls
 [tailscale_dns]: https://login.tailscale.com/admin/dns
+[tailscale_info_dns]: https://tailscale.com/kb/1054/dns
 [tailscale_info_exit_nodes]: https://tailscale.com/kb/1103/exit-nodes
 [tailscale_info_app_connectors]: https://tailscale.com/kb/1281/app-connectors
 [tailscale_info_funnel]: https://tailscale.com/kb/1223/funnel
 [tailscale_info_funnel_policy_requirement]: https://tailscale.com/kb/1223/funnel#requirements-and-limitations
 [tailscale_info_https]: https://tailscale.com/kb/1153/enabling-https
 [tailscale_info_key_expiry]: https://tailscale.com/kb/1028/key-expiry
+[tailscale_info_magicdns]: https://tailscale.com/kb/1081/magicdns
+[tailscale_info_pi_hole]: https://tailscale.com/kb/1114/pi-hole
+[tailscale_info_quad100]: https://tailscale.com/kb/1381/what-is-quad100
 [tailscale_info_serve]: https://tailscale.com/kb/1312/serve
 [tailscale_info_site_to_site]: https://tailscale.com/kb/1214/site-to-site
 [tailscale_info_subnets]: https://tailscale.com/kb/1019/subnets
