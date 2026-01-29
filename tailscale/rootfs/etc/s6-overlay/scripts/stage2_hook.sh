@@ -7,6 +7,7 @@
 
 declare options
 declare proxy funnel proxy_and_funnel_port
+declare tags
 
 # This is to execute potentially failing supervisor api functions within conditions,
 # where set -e is not propagated inside the function and bashio relies on set -e for api error handling
@@ -58,31 +59,39 @@ if bashio::var.has_value "${proxy_and_funnel_port}"; then
     bashio::addon.option 'proxy_and_funnel_port'
 fi
 
+# Rename changed options
+tags=$(bashio::jq "${options}" '.tags | select(.!=null)')
+if bashio::var.has_value "${tags}"; then
+    try bashio::addon.option 'advertise_tags' "^${tags}"
+    if ((TRY_ERROR)); then
+        bashio::log.warning "The tags option value is invalid, tags option is dropped, using default no advertise_tags."
+        bashio::log.warning "The invalid tags option value is: '${tags}'"
+    else
+        bashio::log.info "Successfully renamed tags option to advertise_tags"
+    fi
+    bashio::addon.option 'tags'
+fi
+
 # Disable protect-subnets service when userspace-networking is enabled or accepting routes is disabled
-if ! bashio::config.has_value "userspace_networking" || \
-    bashio::config.true "userspace_networking" || \
+if bashio::config.true "userspace_networking" || \
     bashio::config.false "accept_routes";
 then
     rm /etc/s6-overlay/s6-rc.d/post-tailscaled/dependencies.d/protect-subnets
 fi
 
-# If advertise_routes is configured, do not wait for the local network to be ready to collect subnet information
-if bashio::config.exists "advertise_routes";
+# If local subnets are not configured in advertise_routes, do not wait for the local network to be ready to collect subnet information
+if ! bashio::config "advertise_routes" | grep -Eq "^local_subnets$";
 then
     rm /etc/s6-overlay/s6-rc.d/post-tailscaled/dependencies.d/local-network
 fi
 
 # Disable forwarding service when userspace-networking is enabled
-if ! bashio::config.has_value "userspace_networking" || \
-    bashio::config.true "userspace_networking";
-then
+if bashio::config.true "userspace_networking"; then
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/forwarding
 fi
 
 # Disable mss-clamping service when userspace-networking is enabled
-if ! bashio::config.has_value "userspace_networking" || \
-    bashio::config.true "userspace_networking";
-then
+if bashio::config.true "userspace_networking"; then
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/mss-clamping
 fi
 
@@ -91,9 +100,7 @@ if bashio::config.false 'taildrop'; then
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/taildrop
 fi
 
-# Disable share-homeassistant service when share_homeassistant has not been explicitly enabled
-if ! bashio::config.has_value 'share_homeassistant' || \
-    bashio::config.equals 'share_homeassistant' 'disabled'
-then
+# Disable share-homeassistant service when it has been explicitly disabled
+if bashio::config.equals 'share_homeassistant' 'disabled'; then
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/share-homeassistant
 fi
